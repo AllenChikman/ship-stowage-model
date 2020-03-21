@@ -1,0 +1,14 @@
+//
+// Created by Allen on 21/03/2020.
+//
+
+#ifndef SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
+#define SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
+
+
+class StowageAlgorithm {
+
+};
+
+
+#endif //SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
