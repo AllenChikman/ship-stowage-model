@@ -6,9 +6,5 @@
 #define SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
 
 
-class StowageAlgorithm {
-
-};
-
 
 #endif //SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
