@@ -5,50 +5,74 @@
 #include "WeightBalanceCalculator.h"
 ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(int balanceThreshold, ShipPlan shipPlan1): balanceThreshold(balanceThreshold), shipPlan1(shipPlan1)
 {
-    state = APPROVED; // for now
+    status = APPROVED; // for now
 }
 
-
-
-balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, int kg, int X, int Y)
+bool ShipWeightBalanceCalculator::validateArguments(char loadUnload, int kg, int X, int Y, ShipPlan shipPlan1)
 {
     if(loadUnload != 'U' && loadUnload != 'L')
     {
-        std :: cerr << "Illegal operation argument";
-        return APPROVED;
+        std :: cerr << "Illegal operation.";
+        return false;
     }
     if(X>shipPlan1.getWidth() || Y>shipPlan1.getLength())
     {
-        return APPROVED; // needs to be fixed
+        std :: cerr << "Illegal container location on ship.";
+        return false;
+    }
+    if(kg <= 0)
+    {
+        std :: cerr << "Illegal container weight.";
+        return false;
+    }
+    return true;
+}
+
+}
+balanceStatus ShipWeightBalanceCalculator::tryOperationRec(char loadUnload, int kg, int X, int Y, unsigned curHeight) {
+    if (!validateArguments(loadUnload, kg, X, Y, shipPlan1)) {
+        return status;
     }
     unsigned startingHeight = shipPlan1.getStartingHeight()[X][Y];
-
-    if(loadUnload == 'U')
-    {
-        int z = shipPlan1.getHeight();
-        while (z >= startingHeight)
-        {
-            int curWeight = shipPlan1.getCargo()[X][Y][z].getWeight();
-                if (curWeight== kg) // ie. the wanted container
-                {
-                    //There should be an algorithm that calculates the balance itself
-                    return APPROVED;
+    unsigned z;
+    int curWeight;
+    if (loadUnload == 'U') {
+        z = curHeight;
+        while (startingHeight <= z) {
+            curWeight = shipPlan1.getCargo()[X][Y][z].getWeight();
+            if (curWeight == kg) // ie. the wanted container
+            {
+                //There should be an algorithm that calculates the balance itself
+                return APPROVED;
+            } else if (curWeight > 0) {
+                balanceStatus moveUnload = tryOperationRec('U', curWeight, X, Y, z);
+                balanceStatus moveLoad = tryOperationRec('L', curWeight, X, Y, z);
+                if (moveUnload == APPROVED && moveLoad == APPROVED) {
+                    z--;
+                } else if (moveUnload == X_IMBALANCED && moveLoad == X_IMBALANCED) {
+                    return X_IMBALANCED;
+                } else if (moveUnload == Y_IMBALANCED && moveLoad == Y_IMBALANCED) {
+                    return Y_IMBALANCED;
+                } else {
+                    return X_Y_IMBALANCED;
                 }
-               /* else if(curWeight != 0) // ie. not the one we wanted but not empty
-                {
-                    if(tryOperation('U',curWeight,X,Y))
-                }*/
+            }
+            z--;
         }
     }
-    if(loadUnload == 'L')
+    if (loadUnload == 'L')
     {
-        for(unsigned z = startingHeight; z <= shipPlan1.getHeight(); z++)
+        for (z = startingHeight; z <= shipPlan1.getHeight(); z++)
         {
-            if(shipPlan1.getCargo()[X][Y][z].getWeight() == 0) // ie. no container
+            if (shipPlan1.getCargo()[X][Y][z].getWeight() == 0) // ie. no container
             {
                 //There should be an algorithm that calculates the balance itself
                 return APPROVED;
             }
+        }
     }
-
+}
+balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, int kg, int X, int Y)
+{
+    return tryOperationRec(loadUnload, kg, X, Y, shipPlan1.getHeight());
 }
