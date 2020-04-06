@@ -17,9 +17,10 @@ private:
 public:
     ShipPlan shipPlan1;
     ShipWeightBalanceCalculator(int balanceThreshold, ShipPlan shipPlan1);
-    bool validateArguments(char loadUnload, int kg, int X, int Y, ShipPlan shipPlan1);
-    balanceStatus tryOperationRec(char loadUnload, int kg, int X, int Y, unsigned curHeight);
+    bool validateTryOperationsArguments(char loadUnload, int kg, int X, int Y);
+    balanceStatus checkBalance(int x, int y, unsigned int z, int kg);
     balanceStatus tryOperation(char loadUnload, int kg, int X, int Y);
+
 };
 
 

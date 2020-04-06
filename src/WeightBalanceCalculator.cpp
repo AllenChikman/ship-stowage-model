@@ -8,71 +8,58 @@ ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(int balanceThreshold, S
     status = APPROVED; // for now
 }
 
-bool ShipWeightBalanceCalculator::validateArguments(char loadUnload, int kg, int X, int Y, ShipPlan shipPlan1)
+bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload, int kg, int X, int Y)
 {
+    string reason;
+    bool valid = true;
     if(loadUnload != 'U' && loadUnload != 'L')
     {
-        std :: cerr << "Illegal operation.";
-        return false;
+        reason =  "Illegal operation.";
+        valid = false;
     }
-    if(X>shipPlan1.getWidth() || Y>shipPlan1.getLength())
+    else if(X>shipPlan1.getWidth() || Y>shipPlan1.getLength())
     {
-        std :: cerr << "Illegal container location on ship.";
-        return false;
+        reason =  "Illegal container location on ship.";
+        valid = false;
     }
-    if(kg <= 0)
+    else if(kg <= 0)
     {
-        std :: cerr << "Illegal container weight.";
-        return false;
+        reason =  "Illegal container weight.";
+        valid = false;
     }
-    return true;
+    if(!valid)
+    {
+        std :: cerr << reason;
+    }
+    return valid;
 }
 
-}
-balanceStatus ShipWeightBalanceCalculator::tryOperationRec(char loadUnload, int kg, int X, int Y, unsigned curHeight) {
-    if (!validateArguments(loadUnload, kg, X, Y, shipPlan1)) {
-        return status;
-    }
-    unsigned startingHeight = shipPlan1.getStartingHeight()[X][Y];
-    unsigned z;
-    int curWeight;
-    if (loadUnload == 'U') {
-        z = curHeight;
-        while (startingHeight <= z) {
-            curWeight = shipPlan1.getCargo()[X][Y][z].getWeight();
-            if (curWeight == kg) // ie. the wanted container
-            {
-                //There should be an algorithm that calculates the balance itself
-                return APPROVED;
-            } else if (curWeight > 0) {
-                balanceStatus moveUnload = tryOperationRec('U', curWeight, X, Y, z);
-                balanceStatus moveLoad = tryOperationRec('L', curWeight, X, Y, z);
-                if (moveUnload == APPROVED && moveLoad == APPROVED) {
-                    z--;
-                } else if (moveUnload == X_IMBALANCED && moveLoad == X_IMBALANCED) {
-                    return X_IMBALANCED;
-                } else if (moveUnload == Y_IMBALANCED && moveLoad == Y_IMBALANCED) {
-                    return Y_IMBALANCED;
-                } else {
-                    return X_Y_IMBALANCED;
-                }
-            }
-            z--;
-        }
-    }
-    if (loadUnload == 'L')
-    {
-        for (z = startingHeight; z <= shipPlan1.getHeight(); z++)
-        {
-            if (shipPlan1.getCargo()[X][Y][z].getWeight() == 0) // ie. no container
-            {
-                //There should be an algorithm that calculates the balance itself
-                return APPROVED;
-            }
-        }
-    }
-}
 balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, int kg, int X, int Y)
 {
-    return tryOperationRec(loadUnload, kg, X, Y, shipPlan1.getHeight());
+    if (!validateTryOperationsArguments(loadUnload, kg, X, Y))
+    {
+        return status;
+    }
+    unsigned Z = 0;
+    unsigned startingHeight = shipPlan1.getStartingHeight()[X][Y];
+    int curWeight = shipPlan1.getCargo()[X][Y][Z].getWeight();
+    if (loadUnload == 'U')
+    {
+        Z = shipPlan1.getHeight() - shipPlan1.getCargo()[X][Y].size();
+        return checkBalance(X, Y, Z, -kg);
+    }
+
+    if (loadUnload == 'L')
+    {
+        Z = shipPlan1.getCargo()[X][Y].size();
+        return checkBalance(X, Y, Z, kg);
+    }
+}
+
+
+
+balanceStatus ShipWeightBalanceCalculator::checkBalance(int x, int y, unsigned int z, int kg)
+{
+    //TODO: implement (for exercise 2)
+    return APPROVED;
 }
