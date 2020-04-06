@@ -41,19 +41,19 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, int kg,
         return status;
     }
     unsigned Z = 0;
+    int weight = kg;
     unsigned startingHeight = shipPlan1.getStartingHeight()[X][Y];
-    int curWeight = shipPlan1.getCargo()[X][Y][Z].getWeight();
     if (loadUnload == 'U')
     {
         Z = shipPlan1.getHeight() - shipPlan1.getCargo()[X][Y].size();
-        return checkBalance(X, Y, Z, -kg);
+        weight = -weight;
     }
 
     if (loadUnload == 'L')
     {
-        Z = shipPlan1.getCargo()[X][Y].size();
-        return checkBalance(X, Y, Z, kg);
+        Z = startingHeight + shipPlan1.getCargo()[X][Y].size();
     }
+    return checkBalance(X, Y, Z, weight);
 }
 
 
