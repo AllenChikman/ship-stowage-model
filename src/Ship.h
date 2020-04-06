@@ -20,8 +20,9 @@ private:
 public:
     Container() = default;
     Container(int weight, string destinationPort, string id);
-
-    //TODO: implement getters
+    int getWeight();
+    string getDestinationPort();
+    string getID();
 };
 
 class SeaPortCode {
@@ -43,12 +44,17 @@ class ShipPlan {
 private:
     const unsigned width;      //x
     const unsigned length;     //y
-    const unsigned height;  //z
+    const unsigned height;     //z
     const UIntMat startingHeight;
     CargoMat cargo;
 
 public:
     ShipPlan(unsigned width, unsigned length, unsigned maxHeight,UIntMat startingHeight);
+    unsigned getWidth();
+    unsigned getLength();
+    unsigned  getHeight();
+    UIntMat getStartingHeight();
+    CargoMat getCargo();
 
     ~ShipPlan()= default;
 
@@ -70,6 +76,7 @@ public:
     Ship(const vector<SeaPortCode> &shipRoute, ShipPlan shipPlan);
 
     Ship(const WeightBalance &balanceCalculator);
+    ShipPlan getShipPlan();
 
 
 };
