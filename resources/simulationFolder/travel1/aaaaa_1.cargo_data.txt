@@ -1,0 +1,7 @@
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>
+<container ID - as described by ISO 6346 >, <weight in kg as integer>, <dest port symbol>

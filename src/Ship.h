@@ -18,6 +18,7 @@ private:
     string id;
 
 public:
+    Container() = default;
     Container(int weight, string destinationPort, string id);
 
     //TODO: implement getters
@@ -27,21 +28,22 @@ class SeaPortCode {
     string seaPortCode;
 };
 
-typedef vector<vector<Container>> CargoMat;
+typedef vector<vector<vector<Container>>> CargoMat;
+typedef vector<vector<unsigned>> UIntMat;
 
-class FloorPlan {
+class ShipPlan {
 
 private:
-    int width;
-    int length;
-    //TODO: cargo matrix
-
+    const unsigned width;      //x
+    const unsigned length;     //y
+    const unsigned height;  //z
+    const UIntMat startingHeight;
+    CargoMat cargo;
 
 public:
-    CargoMat cargo;
-    FloorPlan(int width, int length);
+    ShipPlan(unsigned width, unsigned length, unsigned maxHeight,UIntMat startingHeight);
 
-    ~FloorPlan();
+    ~ShipPlan()= default;
 
 };
 
@@ -54,11 +56,11 @@ class Ship {
 
 private:
     vector<SeaPortCode> shipRoute;
-    vector<FloorPlan> shipPlan;
+    ShipPlan shipPlan;
     WeightBalance balanceCalculator;
 
 public:
-    Ship(const vector<SeaPortCode> &shipRoute, const vector<FloorPlan> &shipPlan);
+    Ship(const vector<SeaPortCode> &shipRoute, ShipPlan shipPlan);
 
     Ship(const WeightBalance &balanceCalculator);
 
@@ -80,7 +82,7 @@ private:
 };
 
 namespace Crane {
-    void performLoadingOperations(vector<FloorPlan> &shipPlan, const vector<CraneOperation> &craneOperations);
+    void performLoadingOperations(vector<ShipPlan> &shipPlan, const vector<CraneOperation> &craneOperations);
 
 }
 

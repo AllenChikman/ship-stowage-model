@@ -1,26 +1,27 @@
+#include <utility>
+
 //
 // Created by Allen on 21/03/2020.
 //
 
 #include "Ship.h"
 
-Container::Container(int weight, string destinationPort, string id) {
-
-}
-
-
 
 //TODO: unit-test this c'tor to see elements are well initialized
-FloorPlan::FloorPlan(int width, int length): width(width),length(length) {
+ShipPlan::ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight) : width(width),
+                                                                                               length(length),
+                                                                                               height(height),
+                                                                                               startingHeight(
+                                                                                                       std::move(
+                                                                                                               startingHeight)) {
+    cargo = CargoMat(width, vector<vector<Container>>(length, vector<Container>(height)));
+    int x = 5;
 
-/*    cargo.resize(static_cast<unsigned long long int>(width));
-    for (auto &v : cargo){
-        v.resize(static_cast<unsigned long long int>(length));
-    }*/
 
 }
 
-FloorPlan::~FloorPlan() {}
+//Ship::Ship(const WeightBalance &balanceCalculator) : balanceCalculator(balanceCalculator) {}
+Container::Container(int weight, string destinationPort, string id) : weight(weight), destinationPort(destinationPort),
+                                                                      id(id) {
 
-
-Ship::Ship(const WeightBalance &balanceCalculator) : balanceCalculator(balanceCalculator) {}
+}
