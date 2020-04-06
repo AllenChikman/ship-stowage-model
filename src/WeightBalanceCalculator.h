@@ -14,11 +14,10 @@ class ShipWeightBalanceCalculator{
 private:
     balanceStatus state;
     int balanceThreshold;
-    std :: vector<FloorPlan> shipPlan;
 public:
-    ShipWeightBalanceCalculator(int balanceThreshold, std :: vector<FloorPlan> shipPlan);
+    ShipPlan shipPlan1;
+    ShipWeightBalanceCalculator(int balanceThreshold, ShipPlan shipPlan1);
     balanceStatus tryOperation(char loadUnload, int kg, int X, int Y);
-    std :: vector<FloorPlan> getShipPlan();
 };
 
 
