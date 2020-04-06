@@ -1,0 +1,1 @@
+<L / U / M / R>, <container id>, <floor index>, <X index>, <Y index>, [<floor index>, <X index>, <Y index>]

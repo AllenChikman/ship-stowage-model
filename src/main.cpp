@@ -11,9 +11,10 @@ int main() {
     std::string simPath = R"(C:\Users\Allen\CLionProjects\ship-stowage-model\resources\simulationFolder\travel1)";
     const std::string shipPlanPath = simPath + R"(\shipPlan.txt)";
     const std::string routeFilePath = simPath + R"(\routeFile.txt)";
+
     sim.readShipPlan(shipPlanPath);
     sim.readShipRoute(routeFilePath);
-    //splitByWhiteSpace();
-    //std::cout << "Hello, World!" << std::endl;
+    sim.getInstructionsForCargo(shipPlanPath, shipPlanPath);
+
     return 0;
 }

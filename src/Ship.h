@@ -31,6 +31,13 @@ class SeaPortCode {
 typedef vector<vector<vector<Container>>> CargoMat;
 typedef vector<vector<unsigned>> UIntMat;
 
+
+struct CargoData {
+    string id;
+    unsigned weight;
+    string destPort;
+};
+
 class ShipPlan {
 
 private:

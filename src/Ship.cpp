@@ -15,7 +15,6 @@ ShipPlan::ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat sta
                                                                                                        std::move(
                                                                                                                startingHeight)) {
     cargo = CargoMat(width, vector<vector<Container>>(length, vector<Container>(height)));
-    int x = 5;
 
 
 }
