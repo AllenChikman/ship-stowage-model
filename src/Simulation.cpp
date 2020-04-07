@@ -109,7 +109,7 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec) {
     }
 
     std::string line;
-    // Read the next line from File untill it reaches the end.
+    // Read the next line from File until it reaches the end.
     while (std::getline(in, line)) {
         // Line contains string of length > 0 then save it in vector
         if (!line.empty() && line[0] != '#') {
@@ -143,8 +143,12 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
     return valid;
 }
 
-bool validateShipRouteFile() {
-
+bool validateShipRouteFile(const std::vector<std::string> &vec) {
+    for (const auto &portSymbol : vec){
+        if(!SeaPortCode::isSeaportCode(portSymbol)){
+            return false;
+        }
+    }
     return true;
 }
 
@@ -197,6 +201,13 @@ void Simulation::readShipRoute(const std::string &path) {
 
     std::vector<std::string> vec;
     readToVec(path, vec);
+    validateShipRouteFile(vec);
+
+    vector<SeaPortCode> shipRoute;
+    for(const auto &portSymbol : vec){
+        shipRoute.emplace_back(portSymbol);
+    }
+
 }
 
 void Simulation::getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath) {

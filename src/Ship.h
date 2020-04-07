@@ -1,3 +1,5 @@
+#include <utility>
+
 #ifndef SHIP_STOWAGE_MODEL_SHIP_H
 #define SHIP_STOWAGE_MODEL_SHIP_H
 
@@ -6,28 +8,40 @@
 #include <vector>
 
 using namespace std;
+typedef vector<vector<unsigned>> UIntMat;
 
 class Container {
 private:
-    int weight;
+    unsigned weight;
     string destinationPort;
     string id;
 
 public:
     Container() = default;
-    Container(int weight, string destinationPort, string id);
-    int getWeight();
-    string getDestinationPort();
-    string getID();
-};
 
-class SeaPortCode {
-    string seaPortCode;
+    Container(unsigned weight, const string &destinationPort, const string &id);
+
+    int getWeight() { return weight; }
+
+    string getDestinationPort() { return destinationPort; }
+
+    string getID() { return id; }
 };
 
 typedef vector<vector<vector<Container>>> CargoMat;
-typedef vector<vector<unsigned>> UIntMat;
 
+class SeaPortCode {
+    string seaPortCode;
+
+
+public:
+    SeaPortCode(string str) : seaPortCode(std::move(str)) {
+        transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
+    }
+
+    static bool isSeaportCode(const std::string &portSymbol);
+
+};
 
 struct CargoData {
     string id;
@@ -42,17 +56,23 @@ private:
     const unsigned length;     //y
     const unsigned height;     //z
     const UIntMat startingHeight;
+
     CargoMat cargo;
 
 public:
-    ShipPlan(unsigned width, unsigned length, unsigned maxHeight,UIntMat startingHeight);
-    unsigned getWidth();
-    unsigned getLength();
-    unsigned  getHeight();
-    UIntMat getStartingHeight();
-    CargoMat getCargo();
+    ShipPlan(unsigned width, unsigned length, unsigned maxHeight, UIntMat startingHeight);
 
-    ~ShipPlan()= default;
+    unsigned getWidth() { return width; }
+
+    unsigned getLength() { return length; }
+
+    unsigned getHeight() { return height; }
+
+    UIntMat getStartingHeight() { return startingHeight; }
+
+    CargoMat getCargo() { return cargo; }
+
+    ~ShipPlan() = default;
 
 };
 
@@ -72,36 +92,8 @@ public:
     Ship(const vector<SeaPortCode> &shipRoute, ShipPlan shipPlan);
 
     Ship(const WeightBalance &balanceCalculator);
+
     ShipPlan getShipPlan();
-
-
-};
-
-enum CraneCommand {
-    LOAD, UNLOAD, REJECT
-};
-
-class CraneOperation {
-private:
-    CraneCommand cmd;
-    int containerId;
-    int floorIdx;
-    int rowIdx;
-    int columnIdx;
-
-};
-
-namespace Crane {
-    void performLoadingOperations(vector<ShipPlan> &shipPlan, const vector<CraneOperation> &craneOperations);
-
-}
-
-class Port {
-private:
-    SeaPortCode id;
-    vector<Container> containerData;
-public:
-    Port(string id, const vector<Container> &containerData);
 
 
 };
