@@ -1,6 +1,3 @@
-//
-// Created by orbar on 06/04/2020.
-//
 #include "Ship.h"
 
 #ifndef SHIP_STOWAGE_MODEL_WEIGHTBALANCECALCULATOR_H

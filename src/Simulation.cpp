@@ -1,7 +1,3 @@
-//
-// Created by Allen on 06/04/2020.
-//
-
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -12,10 +8,7 @@
 #include <algorithm>
 #include <string>
 
-CargoData lineToCargoData(const std::string &line) {
-
-
-}
+// Static functions for parsing purposes
 
 unsigned stringToUInt(const std::string &str) {
     return static_cast<unsigned int>(std::stoi(str));
@@ -51,6 +44,13 @@ std::vector<std::string> splitByWhiteSpace(const std::string &line) {
          std::back_inserter(tokens));
     return tokens;
 }
+
+CargoData lineToCargoData(const std::string &line) {
+
+
+}
+
+// Reader functions as to guided format
 
 bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines) {
 
@@ -99,6 +99,9 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec) {
     in.close();
     return true;
 }
+
+// Simulation class method implementation
+
 
 void Simulation::readShipPlan(const std::string &path) {
 

@@ -1,6 +1,3 @@
-//
-// Created by orbar on 06/04/2020.
-//
 #include <iostream>
 #include "WeightBalanceCalculator.h"
 ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(int balanceThreshold, ShipPlan shipPlan1): balanceThreshold(balanceThreshold), shipPlan1(shipPlan1)

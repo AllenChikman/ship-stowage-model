@@ -1,9 +1,4 @@
 #include <utility>
-
-//
-// Created by Allen on 21/03/2020.
-//
-
 #include "Ship.h"
 
 

@@ -1,7 +1,3 @@
-//
-// Created by Allen on 06/04/2020.
-//
-
 #ifndef SHIP_STOWAGE_MODEL_SIMULTAION_H
 #define SHIP_STOWAGE_MODEL_SIMULTAION_H
 
