@@ -8,9 +8,30 @@
 #include <algorithm>
 #include <string>
 
+// prints
+
+void log(const std::string &message, MessageSeverity severity = MessageSeverity::INFO,
+         std::ostream &outputStream = std::cout) {
+    std::string severityStr;
+    switch (severity) {
+        case MessageSeverity::WARNING :
+            severityStr = "Warning";
+            break;
+        case MessageSeverity::ERROR :
+            severityStr = "Error";
+            break;
+        default:
+            severityStr = "Info";
+    }
+
+    outputStream << severityStr << ": " << message << std::endl;
+
+}
+
 // Static functions for parsing purposes
 
 unsigned stringToUInt(const std::string &str) {
+    // TODO: check validity
     return static_cast<unsigned int>(std::stoi(str));
 }
 
@@ -100,36 +121,76 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec) {
     return true;
 }
 
-// Simulation class method implementation
+// File input validators
 
+bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeight,
+                           unsigned x, unsigned y, unsigned numOfFloors) {
+
+    std::ostringstream msg;
+    bool valid = true;
+
+    if (x > width || y > length) {
+        msg << "[" << x << "][" << y << "]" << " coordinate is out of bounds (ship plan size is:" <<
+            "[" << width << "][" << length << "]";
+        valid = false;
+    } else if (numOfFloors >= maximalHeight) {
+        msg << "Number of floors is not smaller then the maximal height "
+            << maximalHeight << " in [" << x << "][" << y << "]";
+        valid = false;
+    }
+
+    if (!valid) { log(msg.str()); }
+    return valid;
+}
+
+bool validateShipRouteFile() {
+
+    return true;
+}
+
+bool validateInstructionsForCargo() {
+
+    return true;
+}
+
+// Simulation class method implementation
 
 void Simulation::readShipPlan(const std::string &path) {
 
-    std::vector<std::vector<std::string>> vecLines;
-    readToVecLine(path, vecLines);
-    auto shipPlanData = vecLines[0];
+    try {
+
+        std::vector<std::vector<std::string>> vecLines;
+        readToVecLine(path, vecLines);
+        auto shipPlanData = vecLines[0];
 
 
-    unsigned maximalHeight = stringToUInt(shipPlanData[0]);
-    unsigned width = stringToUInt(shipPlanData[1]);
-    unsigned length = stringToUInt(shipPlanData[2]);
+        unsigned maximalHeight = stringToUInt(shipPlanData[0]);
+        unsigned width = stringToUInt(shipPlanData[1]);
+        unsigned length = stringToUInt(shipPlanData[2]);
 
-    unsigned y;
-    unsigned x;
-    unsigned startingHeight;
+        unsigned x;
+        unsigned y;
+        unsigned numOfFloors;
 
-    vecLines.erase(vecLines.begin());
-    UIntMat startingHeightsMat(width, vector<unsigned>(length, 0));
+        vecLines.erase(vecLines.begin());
+        UIntMat startingHeightsMat(width, vector<unsigned>(length, 0));
 
-    for (const auto &vecLine : vecLines) {
-        x = stringToUInt(vecLine[0]);
-        y = stringToUInt(vecLine[1]);
-        startingHeight = maximalHeight - stringToUInt(vecLine[2]);
-        startingHeightsMat[x][y] = startingHeight;
+        for (const auto &vecLine : vecLines) {
+            x = stringToUInt(vecLine[0]);
+            y = stringToUInt(vecLine[1]);
+            numOfFloors = stringToUInt(vecLine[2]);
+            if (!validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors)) {
+                continue; //invalid input entry is ignored
+            }
+            startingHeightsMat[x][y] = maximalHeight - numOfFloors;
+        }
+
+        ShipPlan shipPlan(width, length, maximalHeight, startingHeightsMat);
     }
 
-    ShipPlan shipPlan(width, length, maximalHeight , startingHeightsMat);
-
+    catch (const std::exception &e) {
+        log("Failed to read the file: " + path);
+    }
 }
 
 void Simulation::readShipRoute(const std::string &path) {

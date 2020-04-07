@@ -5,7 +5,11 @@
 #include <string>
 #include "Ship.h"
 
-void splitByWhiteSpace();
+enum class MessageSeverity {
+    INFO,
+    WARNING,
+    ERROR
+};
 
 class Simulation {
     std::string rootFolder;
