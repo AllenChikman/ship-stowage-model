@@ -9,6 +9,8 @@ add_executable(ship_stowage_model
         src/StowageAlgorithm.h
         src/Ship.cpp
         src/Ship.h
+        src/Simulation.cpp
+        src/Simulation.h
         src/WeightBalanceCalculator.cpp
         src/WeightBalanceCalculator.h)
 
