@@ -7,8 +7,8 @@
 #include <string>
 
 #include "Utils.h"
-#include "StowageAlgorithm.h"
 #include "Simulation.h"
+#include "StowageAlgorithm.h"
 
 // File input validators
 

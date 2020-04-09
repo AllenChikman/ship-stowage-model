@@ -2,7 +2,6 @@
 #define SHIP_STOWAGE_MODEL_SIMULATION_H
 
 
-
 #include <utility>
 #include <string>
 #include <unordered_map>
@@ -49,7 +48,6 @@ public:
 
 
 };
-
 
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H
