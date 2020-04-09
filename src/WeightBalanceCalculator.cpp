@@ -7,7 +7,7 @@ ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(int balanceThreshold, S
 }
 
 bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload, int kg, int X, int Y) {
-    string reason;
+    std::string reason;
     bool valid = true;
     if (loadUnload != 'U' && loadUnload != 'L') {
         reason = "Illegal operation.";

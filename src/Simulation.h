@@ -1,44 +1,52 @@
+#include <utility>
+
 #include <string>
 #include <unordered_map>
 #include "Ship.h"
 #include "StowageAlgorithm.h"
 
-enum class MessageSeverity {
-    INFO,
-    WARNING,
-    ERROR
-};
 
 class Simulation {
-    std::string rootFolder;
 
-    ShipPlan shipPlan;
-    vector<SeaPortCode> shipRoute;
-    std::unordered_map<SeaPortCode, int> visitedPorts;
+private:
+    const std::string rootFolder;
+    std::string curTravelFolder;
+
+    ShipPlan *shipPlan = nullptr;
+    std::vector<SeaPortCode> shipRoute;
+    std::unordered_map<std::string, int> visitedPorts = {};
+
+
+    std::pair<std::string, std::string> getPortFilePaths
+            (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits);
+
+    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.txt"; }
+
+    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.txt"; }
+
+    void initTravel(const std::string &travelName) {
+        curTravelFolder = rootFolder + '/' + travelName;
+        readShipPlan(getShipPlanFilePath());
+        readShipRoute(getRouteFilePath());
+    }
+
 
 public:
+    explicit Simulation(std::string rootFolder) :
+            rootFolder(std::move(rootFolder)) {}
+
+
+    ~Simulation() { free(shipPlan); }
+
+
     void readShipPlan(const std::string &path);
 
     void readShipRoute(const std::string &path);
 
-    void initSimulation(const std::string &shipPlanPath, const std::string &routePath) {
-        readShipPlan(shipPlanPath);
-        readShipRoute(routePath);
-    }
+    void startTravel(const std::string &travelName);
 
-    void startTravel();
-
-
-    std::pair<std::string, std::string> getPortFilePaths
-            (const string &curPortFileName, const SeaPortCode &port, int numOfVisits);
-
-    std::string getshipPlanFilePath() { return rootFolder + "/shipPlan.txt"; }
-
-    std::string getRouteFilePath() { return rootFolder + "/routeFile.txt"; }
 
 };
 
-unsigned stringToUInt(const std::string &str);
 
-bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
 

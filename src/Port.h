@@ -15,16 +15,16 @@ private:
 };
 
 namespace Crane {
-    void performLoadingOperations(vector <ShipPlan> &shipPlan, const vector <CraneOperation> &craneOperations);
+    void performLoadingOperations(std::vector <ShipPlan> &shipPlan, const std::vector <CraneOperation> &craneOperations);
 
 }
 
 class Port {
 private:
     SeaPortCode id;
-    vector <Container> containerData;
+    std::vector <Container> containerData;
 public:
-    Port(string id, const vector <Container> &containerData);
+    Port(std::string id, const std::vector <Container> &containerData);
 
 
 };

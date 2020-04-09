@@ -1,5 +1,7 @@
+#include <vector>
 #include "StowageAlgorithm.h"
-#include "Simulation.h"
+#include "Utils.h"
+#include "Container.h"
 
 void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath) {
     std::vector<std::vector<std::string>> vecLines;
