@@ -28,7 +28,8 @@ private:
     SeaPortCode id;
     vector <Container> containerData;
 public:
-    Port(string id, const vector <Container> &containerData);
+    Port(SeaPortCode id, const vector <Container> &containerData);
+    SeaPortCode getPortID(){return id;}
 
 
 };

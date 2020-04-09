@@ -14,7 +14,7 @@ ShipPlan::ShipPlan(unsigned width, unsigned length,
 }
 
 //Ship::Ship(const WeightBalance &balanceCalculator) : balanceCalculator(balanceCalculator) {}
-Container::Container(unsigned weight, const string &destinationPort,
+Container::Container(unsigned weight, const SeaPortCode &destinationPort,
                      const string &id) : weight(weight),
                                          destinationPort(destinationPort),
                                          id(id) {
@@ -28,3 +28,9 @@ bool SeaPortCode::isSeaportCode(const std::string &portSymbol) {
 
     return std::regex_match(portSymbol, std::regex("^[A-Za-z]+$"));
 }
+
+Ship::Ship(const vector<SeaPortCode> &shipRoute, ShipPlan shipPlan,
+        WeightBalance &balanceCalculator):shipRoute(shipRoute),
+                                            shipPlan(shipPlan),
+                                            balanceCalculator(balanceCalculator){}
+
