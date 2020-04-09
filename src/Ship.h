@@ -1,9 +1,4 @@
 #include <utility>
-
-#ifndef SHIP_STOWAGE_MODEL_SHIP_H
-#define SHIP_STOWAGE_MODEL_SHIP_H
-
-
 #include <string>
 #include <vector>
 

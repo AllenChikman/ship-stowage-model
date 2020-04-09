@@ -1,7 +1,3 @@
-
-#ifndef SHIP_STOWAGE_MODEL_PORT_H
-#define SHIP_STOWAGE_MODEL_PORT_H
-
 #include "Ship.h"
 
 enum CraneCommand {

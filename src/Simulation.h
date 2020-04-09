@@ -1,9 +1,6 @@
-#ifndef SHIP_STOWAGE_MODEL_SIMULTAION_H
-#define SHIP_STOWAGE_MODEL_SIMULTAION_H
-
-
 #include <string>
 #include "Ship.h"
+#include "StowageAlgorithm.h"
 
 enum class MessageSeverity {
     INFO,
@@ -17,10 +14,17 @@ class Simulation {
     std::string shipPlanPath;
     std::vector<std::string> portFiles;
 
+
+
 public:
     void readShipPlan(const std::string &path);
 
     void readShipRoute(const std::string &path);
+
+    void initSimulation(const std::string &shipPlanPath ,const std::string &routePath){
+        readShipPlan(shipPlanPath);
+        readShipRoute(routePath);
+    }
 
 
 };

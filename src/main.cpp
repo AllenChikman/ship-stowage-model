@@ -14,7 +14,6 @@ int main() {
 
     sim.readShipPlan(shipPlanPath);
     sim.readShipRoute(routeFilePath);
-    sim.getInstructionsForCargo(shipPlanPath, shipPlanPath);
 
     return 0;
 }

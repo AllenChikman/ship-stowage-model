@@ -167,7 +167,6 @@ void Simulation::readShipPlan(const std::string &path) {
         readToVecLine(path, vecLines);
         auto shipPlanData = vecLines[0];
 
-
         unsigned maximalHeight = stringToUInt(shipPlanData[0]);
         unsigned width = stringToUInt(shipPlanData[1]);
         unsigned length = stringToUInt(shipPlanData[2]);
@@ -193,7 +192,7 @@ void Simulation::readShipPlan(const std::string &path) {
     }
 
     catch (const std::exception &e) {
-        log("Failed to read the file: " + path);
+        log("Failed to read the file: " + path, MessageSeverity::ERROR);
     }
 }
 
@@ -201,11 +200,12 @@ void Simulation::readShipRoute(const std::string &path) {
 
     std::vector<std::string> vec;
     readToVec(path, vec);
-    validateShipRouteFile(vec);
 
     vector<SeaPortCode> shipRoute;
-    for(const auto &portSymbol : vec){
-        shipRoute.emplace_back(portSymbol);
+    if(validateShipRouteFile(vec)){
+        for(const auto &portSymbol : vec){
+            shipRoute.emplace_back(portSymbol);
+        }
     }
 
 }
