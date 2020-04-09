@@ -6,23 +6,12 @@
 typedef std::vector<std::vector<unsigned>> UIntMat;
 
 
-    Container(unsigned weight, const string &destinationPort, const string &id);
-
-    int getWeight() { return weight; }
-
-    string getDestinationPort() { return destinationPort; }
-
-    string getID() { return id; }
-};
-
-typedef vector<vector<vector<Container>>> CargoMat;
-
 class SeaPortCode {
-    string seaPortCode;
+    std::string seaPortCode;
 
 
 public:
-    SeaPortCode(string str) : seaPortCode(std::move(str)) {
+    explicit SeaPortCode(std::string str) : seaPortCode(std::move(str)) {
         transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
     }
 
@@ -30,7 +19,7 @@ public:
 
 };
 
-struct ShipCell{
+struct ShipCell {
     unsigned x;
     unsigned y;
     unsigned z;
@@ -44,7 +33,7 @@ private:
     const unsigned height;     //z
     const UIntMat startingHeight;
 
-    vector<ShipCell> vacantCells;
+    std::vector <ShipCell> vacantCells;
     CargoMat cargo;
 
 public:
@@ -54,7 +43,10 @@ public:
               height(height),
               startingHeight(std::move(startingHeight)) {
 
-        cargo = CargoMat(width, std::vector<std::vector<Container>>(length, std::vector<Container>(height, Container(0,"",""))));
+        cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
+                                                                    std::vector<Container>(height,
+                                                                                           Container(0, "",
+                                                                                                     ""))));
     }
 
     ~ShipPlan() = default;
@@ -67,7 +59,7 @@ public:
 
     UIntMat getStartingHeight() { return startingHeight; }
 
-    vector<ShipCell> getVacantCells() {return vacantCells; }
+    std::vector <ShipCell> getVacantCells() { return vacantCells; }
 
     CargoMat getCargo() { return cargo; }
 

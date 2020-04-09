@@ -30,7 +30,6 @@ public:
 
 typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
 
-
 struct CargoData {
     std::string id;
     unsigned weight;

@@ -16,7 +16,7 @@ void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::strin
 
 }
 
-void writeInstruction(ofstream &instructions, char op, Container const &container, unsigned x, unsigned y, unsigned z)
+void writeInstruction(std::ofstream &instructions, char op, Container const &container, unsigned x, unsigned y, unsigned z)
 {
    std::string data[5] = {(const char*)(op), container.getID(), (const char*) x, (const char*)y, (const char*)z};
    for(int i = 0; i<5; i++)
@@ -26,7 +26,7 @@ void writeInstruction(ofstream &instructions, char op, Container const &containe
    }
 }
 
-void Algorithm::operateOnShip(const Container &container,ofstream &instructions,
+void Algorithm::operateOnShip(const Container &container,std::ofstream &instructions,
         Operation op, unsigned x , unsigned y , unsigned z, unsigned unloadContainersToMove)
 {
     switch(op)
@@ -65,10 +65,10 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
     std::vector<CargoData> cargoDataVec;
     organizeCargoDataToList(cargoDataVec, inputPath);
 
-    ofstream instructionsForCargo;
-    instructionsForCargo.open("InstructionsForCargo.txt", ios::out);
+    std::ofstream instructionsForCargo;
+    instructionsForCargo.open("InstructionsForCargo.txt", std::ios::out);
 
-    vector<Container> potentialContainersToMove, containersToLoad;
+    std::vector<Container> potentialContainersToMove, containersToLoad;
     unsigned unloadContainersToMove = 0;
 
     for(unsigned x = 0; x<shipPlan.getLength(); x++)
