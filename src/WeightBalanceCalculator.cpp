@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include "WeightBalanceCalculator.h"
 
@@ -46,3 +47,4 @@ balanceStatus ShipWeightBalanceCalculator::checkBalance(int x, int y, unsigned i
     //TODO: implement (for exercise 2)
     return APPROVED;
 }
+*/

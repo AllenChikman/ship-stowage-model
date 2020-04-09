@@ -1,10 +1,11 @@
-#include <utility>
+#ifndef SHIP_STOWAGE_MODEL_SIMULATION_H
+#define SHIP_STOWAGE_MODEL_SIMULATION_H
 
+
+#include <utility>
 #include <string>
 #include <unordered_map>
 #include "Ship.h"
-#include "StowageAlgorithm.h"
-
 
 class Simulation {
 
@@ -49,4 +50,4 @@ public:
 };
 
 
-
+#endif //SHIP_STOWAGE_MODEL_SIMULATION_H

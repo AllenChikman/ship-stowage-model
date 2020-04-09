@@ -1,3 +1,7 @@
+#ifndef SHIP_STOWAGE_MODEL_SHIP_H
+#define SHIP_STOWAGE_MODEL_SHIP_H
+
+
 #include <utility>
 #include <string>
 #include <vector>
@@ -67,3 +71,4 @@ public:
 
 
 
+#endif //SHIP_STOWAGE_MODEL_SHIP_H

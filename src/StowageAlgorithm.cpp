@@ -1,3 +1,4 @@
+/*
 #include <vector>
 #include <ostream>
 #include "StowageAlgorithm.h"
@@ -104,3 +105,4 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
     }
 }
 
+*/
