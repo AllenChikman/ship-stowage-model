@@ -1,3 +1,6 @@
+#ifndef SHIP_STOWAGE_MODEL_CONTAINER_H
+#define SHIP_STOWAGE_MODEL_CONTAINER_H
+
 #include <utility>
 #include <string>
 #include <vector>
@@ -8,9 +11,13 @@ class SeaPortCode {
 
 public:
     explicit SeaPortCode(std::string str) : seaPortCode(std::move(str)) {
-       // std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
+        // std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
     }
+
     static bool isSeaportCode(const std::string &portSymbol);
+
+    const std::string &toStr() const { return seaPortCode; }
+
 };
 
 class Container {
@@ -46,3 +53,5 @@ struct ShipCell {
     unsigned y;
     unsigned z;
 };
+
+#endif //SHIP_STOWAGE_MODEL_CONTAINER_H

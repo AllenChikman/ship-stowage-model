@@ -1,3 +1,7 @@
+#ifndef SHIP_STOWAGE_MODEL_UTILS_H
+#define SHIP_STOWAGE_MODEL_UTILS_H
+
+
 #include <iostream>
 
 enum class MessageSeverity {
@@ -15,3 +19,6 @@ unsigned stringToUInt(const std::string &str);
 bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
 
 bool readToVec(const std::string &path, std::vector<std::string> &vec);
+
+
+#endif //SHIP_STOWAGE_MODEL_UTILS_H
