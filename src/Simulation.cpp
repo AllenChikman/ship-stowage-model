@@ -80,12 +80,12 @@ bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>
 
     // Check if object is valid
     if (!in) {
-        std::cerr << "Cannot open the File : " << path << std::endl;
+        log("Cannot open the File : ", MessageSeverity::ERROR, std::cerr);
         return false;
     }
 
     std::string line;
-    // Read the next line from File untill it reaches the end.
+    // Read the next line from File until it reaches the end.
     while (std::getline(in, line)) {
         // Line contains string of length > 0 then save it in vector
         if (!line.empty() && line[0] != '#') {
@@ -104,7 +104,7 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec) {
 
     // Check if object is valid
     if (!in) {
-        std::cerr << "Cannot open the File : " << path << std::endl;
+        log("Cannot open the File : ", MessageSeverity::ERROR, std::cerr);
         return false;
     }
 
