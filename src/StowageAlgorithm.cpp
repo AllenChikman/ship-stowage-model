@@ -1,4 +1,7 @@
+#include <vector>
 #include "StowageAlgorithm.h"
+#include "Utils.h"
+#include "Container.h"
 #include <ostream>
 
 

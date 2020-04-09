@@ -1,5 +1,4 @@
-#ifndef SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
-#define SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
+#include <string>
 
 #include <fstream>
 #include "Ship.h"
@@ -19,4 +18,4 @@ public:
 };
 
 
-#endif //SHIP_STOWAGE_MODEL_STOWAGEALGORITHM_H
+

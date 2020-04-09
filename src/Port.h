@@ -1,7 +1,3 @@
-
-#ifndef SHIP_STOWAGE_MODEL_PORT_H
-#define SHIP_STOWAGE_MODEL_PORT_H
-
 #include "Ship.h"
 
 enum CraneCommand {
@@ -19,19 +15,17 @@ private:
 };
 
 namespace Crane {
-    void performLoadingOperations(vector <ShipPlan> &shipPlan, const vector <CraneOperation> &craneOperations);
+    void performLoadingOperations(std::vector <ShipPlan> &shipPlan, const std::vector <CraneOperation> &craneOperations);
 
 }
 
 class Port {
 private:
     SeaPortCode id;
-    vector <Container> containerData;
+    std::vector <Container> containerData;
 public:
-    Port(SeaPortCode id, const vector <Container> &containerData);
+    Port(SeaPortCode id, const std::vector <Container> &containerData);
     SeaPortCode getPortID(){return id;}
 
 
 };
-
-#endif //SHIP_STOWAGE_MODEL_PORT_H

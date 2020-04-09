@@ -12,5 +12,7 @@ add_executable(ship_stowage_model
         src/Simulation.cpp
         src/Simulation.h
         src/WeightBalanceCalculator.cpp
-        src/WeightBalanceCalculator.h src/Port.cpp src/Port.h)
+        src/WeightBalanceCalculator.h
+        src/Port.cpp
+        src/Port.h src/Utils.cpp src/Utils.h src/Container.cpp src/Container.h)
 
