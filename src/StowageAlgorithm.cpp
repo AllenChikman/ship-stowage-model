@@ -1,8 +1,9 @@
-/*
+
 #include <vector>
 #include <ostream>
 #include "StowageAlgorithm.h"
 #include "Utils.h"
+#include "Ship.h"
 
 
 void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::string &inputPath)
@@ -17,15 +18,14 @@ void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::strin
 
 void writeInstruction(std::ofstream &instructions, char op, Container const &container, unsigned x, unsigned y, unsigned z)
 {
-   std::string data[5] = {(const char*)(op), container.getID(), (const char*) x, (const char*)y, (const char*)z};
-   for(int i = 0; i<5; i++)
-   {
-       if(i == 4) { instructions << "<" << data[i] << ">"; }
-       else {  instructions << "<" << data[i] << ">" << ","; }
-   }
+    instructions << "<" <<  op << ">" << ",";
+    instructions << "<" << container.getID() << ">" << ",";
+    instructions << "<" << z << ">" << ",";
+    instructions << "<" << x << ">" << ",";
+    instructions << "<" << y << ">" << "," << std::endl;
 }
 
-void Algorithm::operateOnShip(const Container &container,std::ofstream &instructions,
+void operateOnShip(const Container &container,std::ofstream &instructions, ShipPlan *shipPlan,
         Operation op, unsigned x , unsigned y , unsigned z, unsigned unloadContainersToMove)
 {
     switch(op)
@@ -57,15 +57,17 @@ void Algorithm::operateOnShip(const Container &container,std::ofstream &instruct
             shipPlan->getVacantCells().erase(shipPlan->getVacantCells().begin());
             writeInstruction(instructions, 'U', container, x, y, z);
             break;
+        default:
+           log("For HW2");
     }
 }
 
-void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath) {
+void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan, SeaPortCode *curSeaPortCode) {
     std::vector<CargoData> cargoDataVec;
     organizeCargoDataToList(cargoDataVec, inputPath);
 
     std::ofstream instructionsForCargo;
-    instructionsForCargo.open("InstructionsForCargo.txt", std::ios::out);
+    instructionsForCargo.open(outputPath, std::ios::out);
 
     std::vector<Container> potentialContainersToMove, containersToLoad;
     unsigned unloadContainersToMove = 0;
@@ -76,12 +78,12 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
         {
             for(unsigned z = shipPlan->getHeight() -1; z>=shipPlan->getStartingHeight()[x][y]; z--)
             {
-                if(curSeaPortCode == shipPlan->getCargo()[x][y][z].getDestinationPort())
+                if(curSeaPortCode->toStr() == shipPlan->getCargo()[x][y][z].getDestinationPort().toStr())
                 {
                     if(!potentialContainersToMove.empty()) {unloadContainersToMove = 1;}
-                    operateOnShip(shipPlan->getCargo()[x][y][z], instructionsForCargo, Operation::U,
+                    operateOnShip(shipPlan->getCargo()[x][y][z], instructionsForCargo, shipPlan, Operation::U,
                             x, y, z, unloadContainersToMove);
-                    for(auto c : potentialContainersToMove)
+                    for(auto const &c : potentialContainersToMove)
                     {
                         containersToLoad.push_back(c);
                     }
@@ -101,8 +103,8 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
     }
     for(auto c : containersToLoad)
     {
-        operateOnShip(c, instructionsForCargo, Operation::L);
+        operateOnShip(c, instructionsForCargo, shipPlan, Operation::L);
     }
 }
 
-*/
+

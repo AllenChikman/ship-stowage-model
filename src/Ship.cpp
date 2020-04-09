@@ -16,16 +16,16 @@ bool SeaPortCode::isSeaportCode(const std::string &portSymbol) {
                                             shipPlan(shipPlan),
                                             balanceCalculator(balanceCalculator){}*/
 
-void ShipPlan::printShipPlan()
-{
-    unsigned maxLength = getLength(), maxWidth = getWidth();
-    for(int x=0; x<maxLength; x++)
-    {
-        std::cout << "|";
-        for(int y=0; y<maxWidth; y++)
-        {
-            std::cout << getStartingHeight()[x][y] << "|" ;
-        }
-        std::cout << "\n" << "\n" ;
-    }
-}
+//void ShipPlan::printShipPlan()
+//{
+//    unsigned maxLength = getLength(), maxWidth = getWidth();
+//    for(int x=0; x<maxLength; x++)
+//    {
+//        std::cout << "|";
+//        for(int y=0; y<maxWidth; y++)
+//        {
+//            std::cout << getStartingHeight()[x][y] << "|" ;
+//        }
+//        std::cout << "\n" << "\n" ;
+//    }
+//}

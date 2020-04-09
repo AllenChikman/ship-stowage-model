@@ -105,12 +105,12 @@ void Simulation::startTravel(const std::string &travelName) {
     std::string portStr;
     int numOfVisits;
 
-    for (const SeaPortCode &port : shipRoute) {
+    for (SeaPortCode port : shipRoute) {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath , currOutputPath) = getPortFilePaths(currPortFileName, port, numOfVisits);
-        getInstructionsForCargo(currInputPath , currOutputPath);
+        getInstructionsForCargo(currInputPath , currOutputPath, shipPlan, &port);
         // performInstructionsForCargo(currOutputPath);
     }
 
