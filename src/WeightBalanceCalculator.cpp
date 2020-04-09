@@ -1,10 +1,9 @@
 #include <iostream>
 #include "WeightBalanceCalculator.h"
 
-ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(int balanceThreshold, ShipPlan shipPlan1) : balanceThreshold(
-        balanceThreshold), shipPlan1(shipPlan1) {
-    status = APPROVED; // for now
-}
+//ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(ShipPlan *shipPlan1) : shipPlan1(shipPlan1) {
+//    status = APPROVED; // for now
+//}
 
 bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload, int kg, int X, int Y) {
     std::string reason;
@@ -42,7 +41,6 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, int kg,
     }
     return checkBalance(X, Y, Z, weight);
 }
-
 
 balanceStatus ShipWeightBalanceCalculator::checkBalance(int x, int y, unsigned int z, int kg) {
     //TODO: implement (for exercise 2)

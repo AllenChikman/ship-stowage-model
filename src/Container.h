@@ -3,26 +3,34 @@
 #include <vector>
 
 
+class SeaPortCode {
+    std::string seaPortCode;
+
+public:
+    explicit SeaPortCode(std::string str) : seaPortCode(std::move(str)) {
+       // std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
+    }
+    static bool isSeaportCode(const std::string &portSymbol);
+};
+
 class Container {
 private:
     unsigned weight{};
-    std::string destinationPort;
+    SeaPortCode destinationPort;
     std::string id;
 
 public:
-    Container() = default;
-
-    Container(unsigned weight, std::string destinationPort, std::string id)
+    Container(unsigned weight, SeaPortCode destinationPort, std::string id)
             : weight(weight),
               destinationPort(std::move(destinationPort)),
               id(std::move(id)) {}
 
 
-    int getWeight() { return weight; }
+    unsigned getWeight() { return weight; }
 
-    std::string getDestinationPort() { return destinationPort; }
+    SeaPortCode getDestinationPort() { return destinationPort; }
 
-    std::string getID() { return id; }
+    std::string getID() const { return id; }
 };
 
 typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
@@ -30,5 +38,11 @@ typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
 struct CargoData {
     std::string id;
     unsigned weight;
-    std::string destPort;
+    SeaPortCode destPort;
+};
+
+struct ShipCell {
+    unsigned x;
+    unsigned y;
+    unsigned z;
 };

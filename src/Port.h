@@ -1,4 +1,4 @@
-#include "Ship.h"
+#include "Container.h"
 
 enum CraneCommand {
     LOAD, UNLOAD, REJECT
@@ -14,10 +14,10 @@ private:
 
 };
 
-namespace Crane {
-    void performLoadingOperations(std::vector <ShipPlan> &shipPlan, const std::vector <CraneOperation> &craneOperations);
-
-}
+//namespace Crane {
+//    void performLoadingOperations(std::vector <ShipPlan> &shipPlan, const std::vector <CraneOperation> &craneOperations);
+//
+//}
 
 class Port {
 private:

@@ -1,9 +1,7 @@
 #include <vector>
+#include <ostream>
 #include "StowageAlgorithm.h"
 #include "Utils.h"
-#include "Container.h"
-#include <ostream>
-
 
 
 void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::string &inputPath)
@@ -11,7 +9,7 @@ void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::strin
     std::vector<std::vector<std::string>> vecLines;
     readToVecLine(inputPath, vecLines);
     for (const auto &lineVec : vecLines) {
-        cargoData.push_back({lineVec[0], stringToUInt(lineVec[1]), lineVec[2]});
+        //cargoData.push_back({lineVec[0], stringToUInt(lineVec[1]), lineVec[2]});
     }
 
 }
@@ -33,14 +31,14 @@ void Algorithm::operateOnShip(const Container &container,std::ofstream &instruct
     {
         unsigned int cur;
         case Operation ::U :
-            cur = shipPlan.getHeight() - 1;
+            cur = shipPlan->getHeight() - 1;
                 do
                 {
                     //#TODO: delete container from ShipPlan
                     writeInstruction(instructions, 'U', container, x, y, z);
                     // updating list of vacant cells
                     ShipCell newCell = {x, y ,z};
-                    shipPlan.getVacantCells().push_back(newCell);
+                    shipPlan->getVacantCells().push_back(newCell);
                     if(unloadContainersToMove == 0)
                     {
                         break;
@@ -50,12 +48,12 @@ void Algorithm::operateOnShip(const Container &container,std::ofstream &instruct
             break;
         case Operation ::L:
             // ie, x, y and z are negative
-            x = shipPlan.getVacantCells()[0].x;
-            y = shipPlan.getVacantCells()[0].x;
-            z = shipPlan.getVacantCells()[0].z;
-            shipPlan.getCargo()[x][y][z] = container;
+            x = shipPlan->getVacantCells()[0].x;
+            y = shipPlan->getVacantCells()[0].x;
+            z = shipPlan->getVacantCells()[0].z;
+            shipPlan->getCargo()[x][y][z] = container;
             // updating list of vacant cells
-            shipPlan.getVacantCells().erase(shipPlan.getVacantCells().begin());
+            shipPlan->getVacantCells().erase(shipPlan->getVacantCells().begin());
             writeInstruction(instructions, 'U', container, x, y, z);
             break;
     }
@@ -71,16 +69,16 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
     std::vector<Container> potentialContainersToMove, containersToLoad;
     unsigned unloadContainersToMove = 0;
 
-    for(unsigned x = 0; x<shipPlan.getLength(); x++)
+    for(unsigned x = 0; x<shipPlan->getLength(); x++)
     {
-        for(unsigned y = 0; y<shipPlan.getWidth(); y++)
+        for(unsigned y = 0; y<shipPlan->getWidth(); y++)
         {
-            for(unsigned z = shipPlan.getHeight() -1; z>=shipPlan.getStartingHeight()[x][y]; z--)
+            for(unsigned z = shipPlan->getHeight() -1; z>=shipPlan->getStartingHeight()[x][y]; z--)
             {
-                if(port.getPortID() == shipPlan.getCargo()[x][y][z].getDestinationPort())
+                if(curSeaPortCode == shipPlan->getCargo()[x][y][z].getDestinationPort())
                 {
                     if(!potentialContainersToMove.empty()) {unloadContainersToMove = 1;}
-                    operateOnShip(shipPlan.getCargo()[x][y][z], instructionsForCargo, Operation::U,
+                    operateOnShip(shipPlan->getCargo()[x][y][z], instructionsForCargo, Operation::U,
                             x, y, z, unloadContainersToMove);
                     for(auto c : potentialContainersToMove)
                     {
@@ -90,7 +88,7 @@ void Algorithm::getInstructionsForCargo(const std::string &inputPath, const std:
                 }
                 else
                 {
-                    potentialContainersToMove.push_back(shipPlan.getCargo()[x][y][z]);
+                    potentialContainersToMove.push_back(shipPlan->getCargo()[x][y][z]);
                 }
             }
         }
