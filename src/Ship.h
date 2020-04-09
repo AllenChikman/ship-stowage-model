@@ -34,6 +34,8 @@ public:
         transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
     }
 
+    const string& toStr() const{ return seaPortCode;}
+
     static bool isSeaportCode(const std::string &portSymbol);
 
 };
@@ -57,6 +59,8 @@ private:
 public:
     ShipPlan(unsigned width, unsigned length, unsigned maxHeight, UIntMat startingHeight);
 
+    ~ShipPlan() = default;
+
     unsigned getWidth() { return width; }
 
     unsigned getLength() { return length; }
@@ -67,7 +71,7 @@ public:
 
     CargoMat getCargo() { return cargo; }
 
-    ~ShipPlan() = default;
+
 
 };
 
@@ -94,4 +98,3 @@ public:
 };
 
 
-#endif //SHIP_STOWAGE_MODEL_SHIP_H

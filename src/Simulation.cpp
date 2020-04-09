@@ -5,8 +5,8 @@
 #include <sstream>
 #include <algorithm>
 #include "Simulation.h"
-#include <algorithm>
 #include <string>
+
 
 // prints
 
@@ -144,8 +144,8 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
 }
 
 bool validateShipRouteFile(const std::vector<std::string> &vec) {
-    for (const auto &portSymbol : vec){
-        if(!SeaPortCode::isSeaportCode(portSymbol)){
+    for (const auto &portSymbol : vec) {
+        if (!SeaPortCode::isSeaportCode(portSymbol)) {
             return false;
         }
     }
@@ -188,7 +188,7 @@ void Simulation::readShipPlan(const std::string &path) {
             startingHeightsMat[x][y] = maximalHeight - numOfFloors;
         }
 
-        ShipPlan shipPlan(width, length, maximalHeight, startingHeightsMat);
+        ShipPlan my_shipPlan = ShipPlan(width, length, maximalHeight, startingHeightsMat);
     }
 
     catch (const std::exception &e) {
@@ -202,13 +202,41 @@ void Simulation::readShipRoute(const std::string &path) {
     readToVec(path, vec);
 
     vector<SeaPortCode> shipRoute;
-    if(validateShipRouteFile(vec)){
-        for(const auto &portSymbol : vec){
+    if (validateShipRouteFile(vec)) {
+        for (const auto &portSymbol : vec) {
             shipRoute.emplace_back(portSymbol);
         }
     }
 
 }
+
+void Simulation::run() {
+
+    std::string currPortFileName;
+    std::string currInputPath;
+    std::string currOutputPath;
+    int numOfVisits;
+
+    for (const SeaPortCode &port : shipRoute) {
+        numOfVisits = (visitedPorts.find(port) == visitedPorts.end()) ? 0 : visitedPorts[port];
+        visitedPorts[port] = ++numOfVisits;
+        std::tie(currInputPath , currOutputPath) = getPortFilePaths(currPortFileName, port, numOfVisits);
+        getInstructionsForCargo(currInputPath , currOutputPath);
+        // performInstructionsForCargo(currOutputPath);
+    }
+
+}
+
+std::pair<std::string, std::string> Simulation::getPortFilePaths
+        (const string &curPortFileName, const SeaPortCode &port, int numOfVisits) {
+
+    std::string fileName = port.toStr() + "_" + std::to_string(numOfVisits);
+    std::string inputPath = rootFolder + fileName + ".cargo_data";
+    std::string outputPath = rootFolder + fileName + ".out_cargo_data";
+    return std::make_pair(inputPath, outputPath);
+
+}
+
 
 
 
