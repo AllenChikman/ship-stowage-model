@@ -22,9 +22,10 @@ public:
 
     void readShipRoute(const std::string &path);
 
-    void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath);
 
 };
+unsigned stringToUInt(const std::string &str);
+bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
 
 
 #endif //SHIP_STOWAGE_MODEL_SIMULTAION_H
