@@ -66,11 +66,6 @@ std::vector<std::string> splitByWhiteSpace(const std::string &line) {
     return tokens;
 }
 
-CargoData lineToCargoData(const std::string &line) {
-
-
-}
-
 // Reader functions as to guided format
 
 bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines) {
@@ -152,11 +147,6 @@ bool validateShipRouteFile(const std::vector<std::string> &vec) {
     return true;
 }
 
-bool validateInstructionsForCargo() {
-
-    return true;
-}
-
 // Simulation class method implementation
 
 void Simulation::readShipPlan(const std::string &path) {
@@ -210,7 +200,7 @@ void Simulation::readShipRoute(const std::string &path) {
 
 }
 
-void Simulation::run() {
+void Simulation::startTravel() {
 
     std::string currPortFileName;
     std::string currInputPath;

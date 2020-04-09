@@ -26,7 +26,7 @@ public:
         readShipRoute(routePath);
     }
 
-    void run();
+    void startTravel();
 
 
     std::pair<std::string, std::string> getPortFilePaths
