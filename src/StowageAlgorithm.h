@@ -14,8 +14,8 @@ enum Operation{
 //void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath){}
 class ShipPlan;
 
-void operateOnShip(const Container &container, std::ofstream &instructions, ShipPlan *shipPlan, Operation op = Operation::U,
-                   unsigned x = 0, unsigned y = 0, unsigned z = 0, unsigned unloadContainersToMove = 0);
+void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan, Operation op = Operation::U,
+                    unsigned x = 0, unsigned y = 0, unsigned z = 0);
 
 void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan, SeaPortCode *curSeaPortCode);
 

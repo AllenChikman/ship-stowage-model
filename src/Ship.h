@@ -14,23 +14,26 @@ class ShipPlan {
 private:
     const unsigned width;      //x
     const unsigned length;     //y
-    const unsigned height;     //z
-    const UIntMat startingHeight;
+    const unsigned height;    //z
 
-    std::vector <ShipCell> vacantCells;
+    UIntMat startingHeight;
+    UIntMat freeCells;
     CargoMat cargo;
 
 public:
-    ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight)
+    ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight1)
             : width(width),
               length(length),
-              height(height),
-              startingHeight(std::move(startingHeight)) {
+              height(height){
 
         cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
                                                                     std::vector<Container>(height,
                                                                                            Container(0, SeaPortCode(""), ""
-                                                                                           ))));
+                                                                                         ))));
+        startingHeight = std::move(startingHeight1);
+        freeCells = startingHeight;
+
+
     }
 
     ~ShipPlan() = default;
@@ -43,9 +46,9 @@ public:
 
     UIntMat getStartingHeight() { return startingHeight; }
 
-    std::vector <ShipCell> getVacantCells() { return vacantCells; }
+    UIntMat& getFreeCells() { return freeCells; }
 
-    CargoMat getCargo() { return cargo; }
+    CargoMat& getCargo() { return cargo; }
 
 
 };

@@ -1,10 +1,11 @@
 
+#include <Algorithm>
 #include <vector>
 #include <ostream>
+#include <string>
 #include "StowageAlgorithm.h"
 #include "Utils.h"
 #include "Ship.h"
-
 
 void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::string &inputPath) {
     std::vector<std::vector<std::string>> vecLines;
@@ -15,42 +16,53 @@ void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::strin
 
 }
 
-void
-writeInstruction(std::ofstream &instructions, char op, Container const &container, unsigned x, unsigned y, unsigned z) {
+void dumpInstruction(std::ofstream &instructions, char op, Container const &container, unsigned x, unsigned y, unsigned z) {
     instructions << "<" << op << ">" << ",";
     instructions << "<" << container.getID() << ">" << ",";
     instructions << "<" << z << ">" << ",";
     instructions << "<" << x << ">" << ",";
-    instructions << "<" << y << ">" << "," << std::endl;
+    instructions << "<" << y << ">" << std::endl;
 }
 
-void operateOnShip(const Container &container, std::ofstream &instructions, ShipPlan *shipPlan,
-                   Operation op, unsigned x, unsigned y, unsigned z, unsigned unloadContainersToMove) {
+void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
+                    Operation op, unsigned x, unsigned y, unsigned z)  {
+
+    unsigned  newFreeCell;
+    auto &containerMat = shipPlan->getCargo();
+    bool freeCellFound = false;
+
     switch (op) {
-        unsigned int cur;
         case Operation::U :
-            cur = shipPlan->getHeight() - 1;
-            do {
-                //#TODO: delete container from ShipPlan
-                writeInstruction(instructions, 'U', container, x, y, z);
-                // updating list of vacant cells
-                ShipCell newCell = {x, y, z};
-                shipPlan->getVacantCells().push_back(newCell);
-                if (unloadContainersToMove == 0) {
-                    break;
-                }
-                cur--;
-            } while (cur >= z);
+            //#TODO: delete container from ShipPlan - for Crane
+            newFreeCell = shipPlan->getFreeCells()[x][y];
+            shipPlan->getFreeCells()[x][y] = std::max(shipPlan->getStartingHeight()[x][y], std::min(newFreeCell, z));
+            dumpInstruction(outputFile, 'U', shipPlan->getCargo()[x][y][z], x, y, z);
+
             break;
         case Operation::L:
-            // ie, x, y and z are negative
-            x = shipPlan->getVacantCells()[0].x;
-            y = shipPlan->getVacantCells()[0].x;
-            z = shipPlan->getVacantCells()[0].z;
-            shipPlan->getCargo()[x][y][z] = container;
-            // updating list of vacant cells
-            shipPlan->getVacantCells().erase(shipPlan->getVacantCells().begin());
-            writeInstruction(instructions, 'U', container, x, y, z);
+            // choosing a free cell in a naive way
+            for(int i=0;i<shipPlan->getLength();i++)
+            {
+                for(int j=0; j<shipPlan->getWidth();j++)
+                {
+                    if(shipPlan->getFreeCells()[i][j]<shipPlan->getHeight())
+                    {
+                        x = i;
+                        y = j;
+                        z = shipPlan->getFreeCells()[i][j];
+                        //updating free cell matrix
+                        shipPlan->getFreeCells()[i][j]++;
+                        freeCellFound = true;
+                        break;
+                    }
+                }
+                if(freeCellFound)
+                {
+                    break;
+                }
+            }
+            dumpInstruction(outputFile, 'L', container, x, y, z);
+            shipPlan->getCargo()[x][y][z] = container;  //needs to be moved to Crane
             break;
         default:
             log("For HW2");
@@ -62,36 +74,48 @@ void getInstructionsForCargo(const std::string &inputPath, const std::string &ou
     std::vector<CargoData> cargoDataVec;
     organizeCargoDataToList(cargoDataVec, inputPath);
 
-    std::ofstream instructionsForCargo;
-    instructionsForCargo.open(outputPath, std::ios::out);
+    std::ofstream outputFile;
+    outputFile.open(outputPath, std::ios::out);
+    std::vector<Container> containersToLoad;
 
-    std::vector<Container> potentialContainersToMove, containersToLoad;
-    unsigned unloadContainersToMove = 0;
+    const auto startingHeightMat = shipPlan->getStartingHeight();
+    auto cargoMat = shipPlan->getCargo();
 
-    for (unsigned x = 0; x < shipPlan->getLength(); x++) {
-        for (unsigned y = 0; y < shipPlan->getWidth(); y++) {
-            for (unsigned z = shipPlan->getHeight() - 1; z >= shipPlan->getStartingHeight()[x][y]; z--) {
-                if (curSeaPortCode->toStr() == shipPlan->getCargo()[x][y][z].getDestinationPort().toStr()) {
-                    if (!potentialContainersToMove.empty()) { unloadContainersToMove = 1; }
-                    operateOnShip(shipPlan->getCargo()[x][y][z], instructionsForCargo, shipPlan, Operation::U,
-                                  x, y, z, unloadContainersToMove);
-                    for (auto const &c : potentialContainersToMove) {
-                        containersToLoad.push_back(c);
+    bool unloadContainersToMove = false;
+    const unsigned length = shipPlan->getLength();
+    const unsigned width = shipPlan->getWidth();
+    const unsigned height = shipPlan->getHeight();
+    const auto &seaPortCodeStr = curSeaPortCode->toStr();
+
+
+    for (unsigned x = 0; x < length; x++) {
+        for (unsigned y = 0; y < width; y++) {
+            for (unsigned z = startingHeightMat[x][y]; z < height; z++) {
+                if (seaPortCodeStr != cargoMat[x][y][z].getDestinationPort().toStr()) {
+                    if (unloadContainersToMove) {
+                        if(cargoMat[x][y][z].getDestinationPort().toStr() != "") {
+
+                            updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, Operation::U, x, y, z);
+                            containersToLoad.insert(containersToLoad.begin(), cargoMat[x][y][z]);
+
+                        }
                     }
-                    potentialContainersToMove.clear();
-                } else {
-                    potentialContainersToMove.push_back(shipPlan->getCargo()[x][y][z]);
+                    continue;
                 }
+                unloadContainersToMove = true;
+                updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, Operation::U, x, y, z);
             }
+            unloadContainersToMove = false;
         }
     }
     for (const auto &newCargo : cargoDataVec) {
         Container newContainer(newCargo.weight, newCargo.destPort, newCargo.id);
         containersToLoad.push_back(newContainer);
     }
-    for (auto c : containersToLoad) {
-        operateOnShip(c, instructionsForCargo, shipPlan, Operation::L);
+    for (const auto &c : containersToLoad) {
+        updateShipPlan(c, outputFile, shipPlan, Operation::L);
     }
+
+
+
 }
-
-
