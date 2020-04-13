@@ -35,9 +35,11 @@ public:
 
     unsigned getWeight() { return weight; }
 
-    SeaPortCode getDestinationPort() { return destinationPort; }
+    SeaPortCode getDestinationPort() const { return destinationPort; }
 
     std::string getID() const { return id; }
+
+    bool hasWrongID() {return false; }   //#TODO implement this func
 };
 
 typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
@@ -46,12 +48,6 @@ struct CargoData {
     std::string id;
     unsigned weight;
     SeaPortCode destPort;
-};
-
-struct ShipCell {
-    unsigned x;
-    unsigned y;
-    unsigned z;
 };
 
 #endif //SHIP_STOWAGE_MODEL_CONTAINER_H

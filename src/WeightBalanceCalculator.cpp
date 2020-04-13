@@ -3,6 +3,7 @@
 #include "WeightBalanceCalculator.h"
 #include "Ship.h"
 
+
 ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(ShipPlan *shipPlan1) : shipPlan1(shipPlan1) {
     status = APPROVED; // for now
 }

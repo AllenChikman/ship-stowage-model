@@ -6,7 +6,54 @@
 #include "StowageAlgorithm.h"
 #include "Utils.h"
 #include "Ship.h"
+#include "WeightBalanceCalculator.h"
 
+bool isShipFull(ShipPlan *shipPlan)
+{
+    bool shipVacant = false;
+    unsigned length = shipPlan->getLength();
+    unsigned width = shipPlan->getWidth();
+    unsigned maxHeight = shipPlan->getHeight();
+
+    for(unsigned x = 0; x<length; x++)
+    {
+        for(unsigned y = 0; x<width; y++)
+        {
+            if(shipPlan->getFreeCells()[x][y] < maxHeight)
+            {
+                shipVacant = true;
+                break;
+            }
+
+        }
+        if(shipVacant)
+        {
+            break;
+        }
+    }
+    return !shipVacant;
+
+}
+
+bool containerHasIllegalDestPort(std::vector<Port> shipRoute, Container const &container)
+{
+    bool legalDestPort = false;
+    for(auto &port : shipRoute)
+    {
+        if(container.getDestinationPort().toStr() == port.getPortID().toStr())
+        {
+            legalDestPort = true;
+            break;
+        }
+    }
+    return !legalDestPort;
+}
+
+bool isBalanced()
+{
+//#TODO: implement
+    return false;
+}
 void organizeCargoDataToList(std::vector<CargoData> &cargoData, const std::string &inputPath) {
     std::vector<std::vector<std::string>> vecLines;
     readToVecLine(inputPath, vecLines);
@@ -91,14 +138,10 @@ void getInstructionsForCargo(const std::string &inputPath, const std::string &ou
     for (unsigned x = 0; x < length; x++) {
         for (unsigned y = 0; y < width; y++) {
             for (unsigned z = startingHeightMat[x][y]; z < height; z++) {
-                if (seaPortCodeStr != cargoMat[x][y][z].getDestinationPort().toStr()) {
-                    if (unloadContainersToMove) {
-                        if(cargoMat[x][y][z].getDestinationPort().toStr() != "") {
-
-                            updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, Operation::U, x, y, z);
-                            containersToLoad.insert(containersToLoad.begin(), cargoMat[x][y][z]);
-
-                        }
+                if (seaPortCodeStr !=    cargoMat[x][y][z].getDestinationPort().toStr()) {
+                    if(unloadContainersToMove && cargoMat[x][y][z].getDestinationPort().toStr() != "") {
+                        updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, Operation::U, x, y, z);
+                        containersToLoad.insert(containersToLoad.begin(), cargoMat[x][y][z]);
                     }
                     continue;
                 }
