@@ -13,28 +13,35 @@
 // File input validators
 
 bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeight,
-                           unsigned x, unsigned y, unsigned numOfFloors) {
+                           unsigned x, unsigned y, unsigned numOfFloors)
+{
 
     std::ostringstream msg;
     bool valid = true;
 
-    if (x > width || y > length) {
+    if (x > width || y > length)
+    {
         msg << "[" << x << "][" << y << "]" << " coordinate is out of bounds (ship plan size is:" <<
             "[" << width << "][" << length << "]";
         valid = false;
-    } else if (numOfFloors >= maximalHeight) {
+    }
+    else if (numOfFloors >= maximalHeight)
+    {
         msg << "Number of floors is not smaller then the maximal height "
             << maximalHeight << " in [" << x << "][" << y << "]";
         valid = false;
     }
 
-    if (!valid) { log(msg.str() , MessageSeverity:: WARNING); }
+    if (!valid) { log(msg.str(), MessageSeverity::WARNING); }
     return valid;
 }
 
-bool validateShipRouteFile(const std::vector<std::string> &vec) {
-    for (const auto &portSymbol : vec) {
-        if (!SeaPortCode::isSeaportCode(portSymbol)) {
+bool validateShipRouteFile(const std::vector<std::string> &vec)
+{
+    for (const auto &portSymbol : vec)
+    {
+        if (!SeaPortCode::isSeaportCode(portSymbol))
+        {
             return false;
         }
     }
@@ -43,9 +50,11 @@ bool validateShipRouteFile(const std::vector<std::string> &vec) {
 
 // Simulation class method implementation
 
-void Simulation::readShipPlan(const std::string &path) {
+void Simulation::readShipPlan(const std::string &path)
+{
 
-    try {
+    try
+    {
 
         std::vector<std::vector<std::string>> vecLines;
         readToVecLine(path, vecLines);
@@ -62,11 +71,13 @@ void Simulation::readShipPlan(const std::string &path) {
         vecLines.erase(vecLines.begin());
         UIntMat startingHeightsMat(width, std::vector<unsigned>(length, 0));
 
-        for (const auto &vecLine : vecLines) {
+        for (const auto &vecLine : vecLines)
+        {
             x = stringToUInt(vecLine[0]);
             y = stringToUInt(vecLine[1]);
             numOfFloors = stringToUInt(vecLine[2]);
-            if (!validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors)) {
+            if (!validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
+            {
                 continue; //invalid input entry is ignored
             }
             startingHeightsMat[x][y] = maximalHeight - numOfFloors;
@@ -75,19 +86,23 @@ void Simulation::readShipPlan(const std::string &path) {
         shipPlan = new ShipPlan(width, length, maximalHeight, startingHeightsMat);
     }
 
-    catch (const std::exception &e) {
+    catch (const std::exception &e)
+    {
         log("Failed to read the file: " + path, MessageSeverity::ERROR);
     }
 }
 
-void Simulation::readShipRoute(const std::string &path) {
+void Simulation::readShipRoute(const std::string &path)
+{
 
     std::vector<std::string> vec;
     readToVec(path, vec);
 
     std::vector<SeaPortCode> routeVec;
-    if (validateShipRouteFile(vec)) {
-        for (const auto &portSymbol : vec) {
+    if (validateShipRouteFile(vec))
+    {
+        for (const auto &portSymbol : vec)
+        {
             routeVec.emplace_back(portSymbol);
         }
     }
@@ -95,7 +110,8 @@ void Simulation::readShipRoute(const std::string &path) {
     shipRoute = routeVec;
 }
 
-void Simulation::startTravel(const std::string &travelName) {
+void Simulation::startTravel(const std::string &travelName)
+{
 
     initTravel(travelName);
 
@@ -105,19 +121,21 @@ void Simulation::startTravel(const std::string &travelName) {
     std::string portStr;
     int numOfVisits;
 
-    for (SeaPortCode port : shipRoute) {
+    for (SeaPortCode port : shipRoute)
+    {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
-        std::tie(currInputPath , currOutputPath) = getPortFilePaths(currPortFileName, port, numOfVisits);
-        getInstructionsForCargo(currInputPath , currOutputPath, shipPlan, &port);
+        std::tie(currInputPath, currOutputPath) = getPortFilePaths(currPortFileName, port, numOfVisits);
+        getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, &port);
         // performInstructionsForCargo(currOutputPath);
     }
 
 }
 
 std::pair<std::string, std::string> Simulation::getPortFilePaths
-        (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits) {
+        (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits)
+{
 
     std::string fileName = port.toStr() + "_" + std::to_string(numOfVisits);
     std::string inputPath = curTravelFolder + '/' + fileName + ".cargo_data";

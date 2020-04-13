@@ -1,3 +1,4 @@
+
 #ifndef SHIP_STOWAGE_MODEL_CONTAINER_H
 #define SHIP_STOWAGE_MODEL_CONTAINER_H
 
@@ -6,11 +7,13 @@
 #include <vector>
 
 
-class SeaPortCode {
+class SeaPortCode
+{
     std::string seaPortCode;
 
 public:
-    explicit SeaPortCode(std::string str) : seaPortCode(std::move(str)) {
+    explicit SeaPortCode(std::string str) : seaPortCode(std::move(str))
+    {
         // std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
     }
 
@@ -20,7 +23,8 @@ public:
 
 };
 
-class Container {
+class Container
+{
 private:
     unsigned weight{};
     SeaPortCode destinationPort;
@@ -39,15 +43,16 @@ public:
 
     std::string getID() const { return id; }
 
-    bool hasWrongID() {return false; }   //#TODO implement this func
+    bool hasWrongID() { return false; }   //#TODO implement this func
 };
 
 typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
 
-struct CargoData {
+struct CargoData
+{
     std::string id;
     unsigned weight;
     SeaPortCode destPort;
 };
 
-#endif //SHIP_STOWAGE_MODEL_CONTAINER_H
+#endif //SHIP_STOWAGE_MODEL_CONTAINER_H*/

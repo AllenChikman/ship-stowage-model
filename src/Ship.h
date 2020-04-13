@@ -9,7 +9,8 @@
 
 typedef std::vector<std::vector<unsigned>> UIntMat;
 
-class ShipPlan {
+class ShipPlan
+{
 
 private:
     const unsigned width;      //x
@@ -24,12 +25,14 @@ public:
     ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight1)
             : width(width),
               length(length),
-              height(height){
+              height(height)
+    {
 
         cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
                                                                     std::vector<Container>(height,
-                                                                                           Container(0, SeaPortCode(""), ""
-                                                                                         ))));
+                                                                                           Container(0, SeaPortCode(""),
+                                                                                                     ""
+                                                                                           ))));
         startingHeight = std::move(startingHeight1);
         freeCells = startingHeight;
 
@@ -46,9 +49,9 @@ public:
 
     UIntMat getStartingHeight() { return startingHeight; }
 
-    UIntMat& getFreeCells() { return freeCells; }
+    UIntMat &getFreeCells() { return freeCells; }
 
-    CargoMat& getCargo() { return cargo; }
+    CargoMat &getCargo() { return cargo; }
 
 
 };

@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include "Ship.h"
 
-class Simulation {
+class Simulation
+{
 
 private:
     const std::string rootFolder;
@@ -21,11 +22,13 @@ private:
     std::pair<std::string, std::string> getPortFilePaths
             (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits);
 
-    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.txt"; }
+    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
 
-    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.txt"; }
 
-    void initTravel(const std::string &travelName) {
+    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; }
+
+    void initTravel(const std::string &travelName)
+    {
         curTravelFolder = rootFolder + '/' + travelName;
         readShipPlan(getShipPlanFilePath());
         readShipRoute(getRouteFilePath());

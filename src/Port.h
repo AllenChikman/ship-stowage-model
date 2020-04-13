@@ -4,11 +4,13 @@
 
 #include "Container.h"
 
-enum CraneCommand {
+enum CraneCommand
+{
     LOAD, UNLOAD, REJECT
 };
 
-class CraneOperation {
+class CraneOperation
+{
 private:
     CraneCommand cmd;
     int containerId;
@@ -18,21 +20,5 @@ private:
 
 };
 
-//namespace Crane {
-//    void performLoadingOperations(std::vector <ShipPlan> &shipPlan, const std::vector <CraneOperation> &craneOperations);
-//
-//}
-
-class Port {
-private:
-    SeaPortCode id;
-    std::vector<Container> containerData;
-public:
-    Port(SeaPortCode id, const std::vector<Container> &containerData);
-
-    SeaPortCode getPortID() { return id; }
-
-
-};
 
 #endif //SHIP_STOWAGE_MODEL_PORT_H

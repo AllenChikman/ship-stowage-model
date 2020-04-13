@@ -4,7 +4,8 @@
 
 #include <iostream>
 
-enum class MessageSeverity {
+enum class MessageSeverity
+{
     INFO,
     WARNING,
     ERROR

@@ -1,8 +1,10 @@
 #include "Container.h"
 #include <regex>
 
-bool SeaPortCode::isSeaportCode(const std::string &portSymbol) {
-    if (portSymbol.size() != 5) {
+bool SeaPortCode::isSeaportCode(const std::string &portSymbol)
+{
+    if (portSymbol.size() != 5)
+    {
         return false;
     }
 
