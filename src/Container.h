@@ -12,10 +12,7 @@ class SeaPortCode
     std::string seaPortCode;
 
 public:
-    explicit SeaPortCode(std::string str) : seaPortCode(std::move(str))
-    {
-        // std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
-    }
+    explicit SeaPortCode(std::string str);
 
     static bool isSeaportCode(const std::string &portSymbol);
 
