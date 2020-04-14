@@ -14,13 +14,13 @@ private:
 public:
     ShipPlan *shipPlan1;
 
-    ShipWeightBalanceCalculator(ShipPlan *shipPlan1);
+    explicit ShipWeightBalanceCalculator(ShipPlan *shipPlan1);
 
-    bool validateTryOperationsArguments(char loadUnload, int kg, int X, int Y);
+    bool validateTryOperationsArguments(char loadUnload, unsigned kg, unsigned X, unsigned Y);
 
-    balanceStatus checkBalance(int x, int y, unsigned int z, int kg);
+    balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg);
 
-    balanceStatus tryOperation(char loadUnload, int kg, int X, int Y);
+    balanceStatus tryOperation(char loadUnload, unsigned kg, unsigned X, unsigned Y);
 
 };
 

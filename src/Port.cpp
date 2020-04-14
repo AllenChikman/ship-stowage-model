@@ -22,7 +22,7 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
 {
 
     unsigned newFreeCell;
-    auto &containerMat = shipPlan->getCargo();
+    // auto &containerMat = shipPlan->getCargo(); //TODO: Or- this line has no use
     bool freeCellFound = false;
 
     switch (op)

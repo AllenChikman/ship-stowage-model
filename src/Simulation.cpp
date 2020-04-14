@@ -51,13 +51,16 @@ bool validateShipRouteFile(const std::vector<std::string> &vec)
 
 // Simulation private class method implementation
 
-std::pair<std::string, std::string> Simulation::getPortFilePaths
-        (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits)
+std::pair<std::string, std::string> Simulation::getPortFilePaths(const SeaPortCode &port, int numOfVisits)
 {
+    const std::string &inputFileName = port.toStr(true);
+    const std::string &outputFileName = port.toStr();
 
-    std::string fileName = port.toStr() + "_" + std::to_string(numOfVisits);
-    std::string inputPath = curTravelFolder + '/' + fileName + ".cargo_data";
-    std::string outputPath = curTravelFolder + "/output/" + fileName + ".out_cargo_data";
+    const std::string middlePart = "_" + std::to_string(numOfVisits);
+
+    std::string inputPath = curTravelFolder + '/' + inputFileName + middlePart + ".cargo_data";
+    std::string outputPath = curTravelFolder + "/output/" + outputFileName + middlePart + ".out_cargo_data";
+
     return std::make_pair(inputPath, outputPath);
 
 }
@@ -164,7 +167,7 @@ bool Simulation::startTravel(const std::string &travelDir)
 {
     if (!initTravel(travelDir))
     {
-        log("Failed to init the travel - Ignoring this travel simulation " , MessageSeverity::ERROR);
+        log("Failed to init the travel - Ignoring this travel simulation ", MessageSeverity::ERROR);
         return false;
     }
 
@@ -179,7 +182,7 @@ bool Simulation::startTravel(const std::string &travelDir)
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
-        std::tie(currInputPath, currOutputPath) = getPortFilePaths(currPortFileName, port, numOfVisits);
+        std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
         try
         {
             getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, &port);
@@ -198,7 +201,8 @@ void Simulation::runAlgorithm()
     putDirListToVec(rootFolder, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
     {
-        if(startTravel(travelFolder)){
+        if (startTravel(travelFolder))
+        {
             log("Travel Finished Successfully!!!");
         }
     }

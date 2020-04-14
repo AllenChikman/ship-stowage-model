@@ -19,8 +19,7 @@ private:
     std::unordered_map<std::string, int> visitedPorts = {};
 
 
-    std::pair<std::string, std::string> getPortFilePaths
-            (const std::string &curPortFileName, const SeaPortCode &port, int numOfVisits);
+    std::pair<std::string, std::string> getPortFilePaths(const SeaPortCode &port, int numOfVisits);
 
     std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
 

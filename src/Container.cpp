@@ -5,6 +5,7 @@
 
 SeaPortCode::SeaPortCode(std::string str)
 {
+    origStrName = str;
     seaPortCode = std::move(str);
     std::transform(seaPortCode.begin(), seaPortCode.end(), seaPortCode.begin(), ::toupper);
 }

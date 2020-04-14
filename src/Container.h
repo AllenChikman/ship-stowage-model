@@ -9,13 +9,14 @@
 class SeaPortCode
 {
     std::string seaPortCode;
+    std::string origStrName; // for opening user's files
 
 public:
     explicit SeaPortCode(std::string str);
 
     static bool isValidCode(const std::string &portSymbol);
 
-    const std::string &toStr() const { return seaPortCode; }
+    const std::string &toStr(bool getOrigName = false) const { return (getOrigName) ? origStrName : seaPortCode; }
 
 };
 
