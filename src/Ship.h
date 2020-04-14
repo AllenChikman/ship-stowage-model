@@ -30,9 +30,9 @@ public:
 
         cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
                                                                     std::vector<Container>(height,
-                                                                                           Container(0, SeaPortCode(""),
-                                                                                                     ""
-                                                                                           ))));
+                                                                                           Container(
+                                                                                                   "", 0,
+                                                                                                   SeaPortCode("")))));
         startingHeight = std::move(startingHeight1);
         freeCells = startingHeight;
 

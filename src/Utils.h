@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+const std::string CSV_DELIM =  ", ";;
+
 enum class MessageSeverity
 {
     INFO,
@@ -20,6 +22,5 @@ unsigned stringToUInt(const std::string &str);
 bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
 
 bool readToVec(const std::string &path, std::vector<std::string> &vec);
-
 
 #endif //SHIP_STOWAGE_MODEL_UTILS_H

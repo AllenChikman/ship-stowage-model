@@ -6,19 +6,12 @@
 
 enum CraneCommand
 {
-    LOAD, UNLOAD, REJECT
+    LOAD, UNLOAD, REJECT, MOVE
 };
 
-class CraneOperation
-{
-private:
-    CraneCommand cmd;
-    int containerId;
-    int floorIdx;
-    int rowIdx;
-    int columnIdx;
+class ShipPlan;
 
-};
-
+void updateShipPlan(const Container &container, std::ofstream &outputFile,
+                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, unsigned x = 0, unsigned y = 0, unsigned z = 0);
 
 #endif //SHIP_STOWAGE_MODEL_PORT_H

@@ -52,10 +52,8 @@ bool validateShipRouteFile(const std::vector<std::string> &vec)
 
 void Simulation::readShipPlan(const std::string &path)
 {
-
     try
     {
-
         std::vector<std::vector<std::string>> vecLines;
         readToVecLine(path, vecLines);
         auto shipPlanData = vecLines[0];

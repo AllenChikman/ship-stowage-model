@@ -26,12 +26,12 @@ public:
 class Container
 {
 private:
+    std::string id;
     unsigned weight{};
     SeaPortCode destinationPort;
-    std::string id;
 
 public:
-    Container(unsigned weight, SeaPortCode destinationPort, std::string id)
+    Container(std::string id, unsigned weight, SeaPortCode destinationPort)
             : weight(weight),
               destinationPort(std::move(destinationPort)),
               id(std::move(id)) {}
@@ -47,12 +47,5 @@ public:
 };
 
 typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
-
-struct CargoData
-{
-    std::string id;
-    unsigned weight;
-    SeaPortCode destPort;
-};
 
 #endif //SHIP_STOWAGE_MODEL_CONTAINER_H*/
