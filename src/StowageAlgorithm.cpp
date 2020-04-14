@@ -53,76 +53,95 @@ bool isBalanced()
     return false;
 }
 
-void parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath)
+bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath)
 {
-    std::vector<std::vector<std::string>> vecLines;
-    readToVecLine(inputPath, vecLines);
-    for (const auto &lineVec : vecLines)
+    try
     {
-        ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
+        std::vector<std::vector<std::string>> vecLines;
+        if (!readToVecLine(inputPath, vecLines)) { throw std::runtime_error(""); }
+        for (const auto &lineVec : vecLines)
+        {
+            ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
+        }
+        return true;
+    }
+
+    catch (const std::runtime_error &e)
+    {
+        return false;
     }
 
 }
 
 
-void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
+bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
                              SeaPortCode *curSeaPortCode)
 {
-    std::vector<Container> containerVec;
-    parseInputToContainersVec(containerVec, inputPath);
 
-    std::ofstream outputFile;
-    outputFile.open(outputPath, std::ios::out);
-    std::vector<Container> containersToLoad;
-
-    const auto startingHeightMat = shipPlan->getStartingHeight();
-    auto cargoMat = shipPlan->getCargo();
-
-    const unsigned length = shipPlan->getLength();
-    const unsigned width = shipPlan->getWidth();
-    const unsigned height = shipPlan->getHeight();
-    const auto &seaPortCodeStr = curSeaPortCode->toStr();
-
-
-    for (unsigned x = 0; x < length; x++)
+    try
     {
-        for (unsigned y = 0; y < width; y++)
+        std::vector<Container> containerVec;
+        if (!parseInputToContainersVec(containerVec, inputPath)) { return false; };
+
+        std::ofstream outputFile;
+        outputFile.open(outputPath, std::ios::out);
+        std::vector<Container> containersToLoad;
+
+        const auto startingHeightMat = shipPlan->getStartingHeight();
+        auto cargoMat = shipPlan->getCargo();
+
+        const unsigned length = shipPlan->getLength();
+        const unsigned width = shipPlan->getWidth();
+        const unsigned height = shipPlan->getHeight();
+        const auto &seaPortCodeStr = curSeaPortCode->toStr();
+
+
+        for (unsigned x = 0; x < length; x++)
         {
-            unsigned z = startingHeightMat[x][y];
-            unsigned startingIdx = height;
-
-            // 1st step: finding a container to load to current port
-            while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty()) //#TODO
+            for (unsigned y = 0; y < width; y++)
             {
-                if (seaPortCodeStr == cargoMat[x][y][z].getDestinationPort().toStr())
-                {
-                    startingIdx = z;
-                }
-                z++;
-            }
-            z = startingIdx;
+                unsigned z = startingHeightMat[x][y];
+                unsigned startingIdx = height;
 
-            // 2nd step: unloading all containers above and marking the ones to be reloaded
-            while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty())
-            {
-                auto curContainer = cargoMat[x][y][z];
-                if (seaPortCodeStr != curContainer.getDestinationPort().toStr())
+                // 1st step: finding a container to load to current port
+                while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty()) //#TODO
                 {
-                    containersToLoad.push_back(cargoMat[x][y][z]);
+                    if (seaPortCodeStr == cargoMat[x][y][z].getDestinationPort().toStr())
+                    {
+                        startingIdx = z;
+                    }
+                    z++;
                 }
-                updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, CraneCommand::UNLOAD, x, y, z);
-                z++;
+                z = startingIdx;
+
+                // 2nd step: unloading all containers above and marking the ones to be reloaded
+                while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty())
+                {
+                    auto curContainer = cargoMat[x][y][z];
+                    if (seaPortCodeStr != curContainer.getDestinationPort().toStr())
+                    {
+                        containersToLoad.push_back(cargoMat[x][y][z]);
+                    }
+                    updateShipPlan(cargoMat[x][y][z], outputFile, shipPlan, CraneCommand::UNLOAD, x, y, z);
+                    z++;
+                }
             }
         }
-    }
-    for (const auto &container : containerVec)
-    {
-        containersToLoad.push_back(container);
-    }
-    for (const auto &curContainerToLoad : containersToLoad)
-    {
-        updateShipPlan(curContainerToLoad, outputFile, shipPlan, CraneCommand::LOAD);
+        for (const auto &container : containerVec)
+        {
+            containersToLoad.push_back(container);
+        }
+        for (const auto &curContainerToLoad : containersToLoad)
+        {
+            updateShipPlan(curContainerToLoad, outputFile, shipPlan, CraneCommand::LOAD);
+        }
+
+        return true;
     }
 
+    catch (const std::exception &e)
+    {
+        return false;
+    }
 
 }

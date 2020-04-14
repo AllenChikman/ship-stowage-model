@@ -8,7 +8,7 @@
 #include "Port.h"
 
 
-void getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
+bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
                              SeaPortCode *curSeaPortCode);
 
 

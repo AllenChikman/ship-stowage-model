@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iterator>
+#include <filesystem>
 #include "Utils.h"
 
 
@@ -129,4 +130,24 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec)
     }
     in.close();
     return true;
+}
+
+// filesystem functions
+
+void createDirIfNotExists(const std::string &path)
+{
+
+    if (!std::filesystem::exists(path))
+    {
+        std::filesystem::create_directory(path);
+    }
+
+}
+
+void putDirListToVec(const std::string &curPath, std::vector<std::string> &dirVec)
+{
+    for (const auto &entry : std::filesystem::directory_iterator(curPath))
+    {
+        dirVec.push_back(entry.path().string());
+    }
 }

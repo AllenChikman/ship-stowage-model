@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-const std::string CSV_DELIM =  ", ";;
+const std::string CSV_DELIM = ", ";; // NOLINT(cert-err58-cpp)
 
 enum class MessageSeverity
 {
@@ -22,5 +22,9 @@ unsigned stringToUInt(const std::string &str);
 bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
 
 bool readToVec(const std::string &path, std::vector<std::string> &vec);
+
+void createDirIfNotExists(const std::string &path);
+
+void putDirListToVec(const std::string &curPath, std::vector<std::string> &dirVec);
 
 #endif //SHIP_STOWAGE_MODEL_UTILS_H

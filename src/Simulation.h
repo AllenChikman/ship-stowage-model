@@ -27,12 +27,11 @@ private:
 
     std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; }
 
-    void initTravel(const std::string &travelName)
-    {
-        curTravelFolder = rootFolder + '/' + travelName;
-        readShipPlan(getShipPlanFilePath());
-        readShipRoute(getRouteFilePath());
-    }
+
+    void createOutputDirectory();
+
+
+    bool initTravel(const std::string &travelName);
 
 
 public:
@@ -43,11 +42,13 @@ public:
     ~Simulation() { free(shipPlan); }
 
 
-    void readShipPlan(const std::string &path);
+    bool readShipPlan(const std::string &path);
 
-    void readShipRoute(const std::string &path);
+    bool readShipRoute(const std::string &path);
 
     void startTravel(const std::string &travelName);
+
+    void runAlgorithm();
 
 
 };
