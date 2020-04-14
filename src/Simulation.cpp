@@ -40,7 +40,7 @@ bool validateShipRouteFile(const std::vector<std::string> &vec)
 {
     for (const auto &portSymbol : vec)
     {
-        if (!SeaPortCode::isSeaportCode(portSymbol))
+        if (!SeaPortCode::isValidCode(portSymbol))
         {
             return false;
         }

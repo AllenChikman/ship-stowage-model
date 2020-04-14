@@ -14,7 +14,7 @@ class SeaPortCode
 public:
     explicit SeaPortCode(std::string str);
 
-    static bool isSeaportCode(const std::string &portSymbol);
+    static bool isValidCode(const std::string &portSymbol);
 
     const std::string &toStr() const { return seaPortCode; }
 
