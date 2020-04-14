@@ -46,7 +46,7 @@ public:
 
     bool readShipRoute(const std::string &path);
 
-    void startTravel(const std::string &travelName);
+    bool startTravel(const std::string &travelName);
 
     void runAlgorithm();
 

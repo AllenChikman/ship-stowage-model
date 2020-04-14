@@ -29,6 +29,11 @@ void log(const std::string &message, MessageSeverity severity, std::ostream &out
 
 }
 
+void logStartingDecorator(std::ostream &outputStream)
+{
+    outputStream << std::endl;
+    outputStream << "---------------------------------------------------------------------" << std::endl;
+}
 
 // Static functions for parsing purposes
 
@@ -40,7 +45,6 @@ unsigned stringToUInt(const std::string &str)
 
 void strCleanWhitespaces(std::string &str)
 {
-
     str.erase(std::remove_if(str.begin(),
                              str.end(),
                              [](unsigned char x) { return std::isspace(x); }),
@@ -113,7 +117,7 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec)
     // Check if object is valid
     if (!in)
     {
-        log("Cannot open the File : " + path, MessageSeverity::ERROR, std::cerr);
+        log("Cannot open the File : " + path, MessageSeverity::ERROR);
         return false;
     }
 

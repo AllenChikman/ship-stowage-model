@@ -13,6 +13,7 @@ enum class MessageSeverity
     ERROR
 };
 
+void logStartingDecorator(std::ostream &outputStream = std::cout);
 
 void log(const std::string &message, MessageSeverity severity = MessageSeverity::INFO,
          std::ostream &outputStream = std::cout);

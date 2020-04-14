@@ -69,20 +69,19 @@ void Simulation::createOutputDirectory()
 
 bool Simulation::initTravel(const std::string &travelDir)
 {
-    try
-    {
-        visitedPorts = {};
-        curTravelFolder = travelDir;
-        readShipPlan(getShipPlanFilePath());
-        readShipRoute(getRouteFilePath());
-        createOutputDirectory();
-        return true;
-    }
-    catch (const std::exception &e)
-    {
-        log("Failed to init the travel (travelFolder: " + travelDir + ")", MessageSeverity::ERROR);
-        return false;
-    }
+    logStartingDecorator();
+    log("Initializing travel...");
+
+    visitedPorts = {};
+    curTravelFolder = travelDir;
+    log("Travel Root Folder is: " + curTravelFolder);
+    createOutputDirectory();
+    log("Output Folder is: " + curTravelFolder + "/output");
+
+    bool isSuccessful = true;
+    isSuccessful &= readShipPlan(getShipPlanFilePath());
+    isSuccessful &= readShipRoute(getRouteFilePath());
+    return isSuccessful;
 }
 
 // Simulation public class method implementation
@@ -127,7 +126,7 @@ bool Simulation::readShipPlan(const std::string &path)
 
     catch (const std::runtime_error &e)
     {
-        log("Failed to read the file: " + path, MessageSeverity::ERROR);
+        log("Failed to read the ship plan", MessageSeverity::ERROR);
         return false;
     }
 }
@@ -147,20 +146,27 @@ bool Simulation::readShipRoute(const std::string &path)
                 routeVec.emplace_back(portSymbol);
             }
         }
-
+        else
+        {
+            throw std::runtime_error("");
+        }
         shipRoute = routeVec;
         return true;
     }
     catch (const std::runtime_error &e)
     {
-        log("Failed to read the file: " + path, MessageSeverity::ERROR);
+        log("Failed to read the ship route", MessageSeverity::ERROR);
         return false;
     }
 }
 
-void Simulation::startTravel(const std::string &travelDir)
+bool Simulation::startTravel(const std::string &travelDir)
 {
-    if (!initTravel(travelDir)) { return; }
+    if (!initTravel(travelDir))
+    {
+        log("Failed to init the travel - Ignoring this travel simulation " , MessageSeverity::ERROR);
+        return false;
+    }
 
     std::string currPortFileName;
     std::string currInputPath;
@@ -180,10 +186,10 @@ void Simulation::startTravel(const std::string &travelDir)
         }
         catch (const std::exception &e)
         {
-            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::ERROR);
+            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
     }
-
+    return true;
 }
 
 void Simulation::runAlgorithm()
@@ -192,7 +198,9 @@ void Simulation::runAlgorithm()
     putDirListToVec(rootFolder, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
     {
-        startTravel(travelFolder);
+        if(startTravel(travelFolder)){
+            log("Travel Finished Successfully!!!");
+        }
     }
 
 }
