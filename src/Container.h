@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 class SeaPortCode
 {
     std::string seaPortCode;
@@ -24,14 +23,14 @@ class Container
 {
 private:
     std::string id;
-    unsigned weight{};
+    unsigned weight;
     SeaPortCode destinationPort;
 
 public:
     Container(std::string id, unsigned weight, SeaPortCode destinationPort)
-            : weight(weight),
-              destinationPort(std::move(destinationPort)),
-              id(std::move(id)) {}
+            : id(std::move(id)),
+                 weight(weight),
+                 destinationPort(std::move(destinationPort)) {}
 
 
     unsigned getWeight() { return weight; }

@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-const std::string CSV_DELIM = ", ";; // NOLINT(cert-err58-cpp)
+const std::string CSV_DELIM = ", "; // NOLINT(cert-err58-cpp)
 
 enum class MessageSeverity
 {
