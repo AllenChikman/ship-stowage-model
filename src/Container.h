@@ -29,8 +29,8 @@ private:
 public:
     Container(std::string id, unsigned weight, SeaPortCode destinationPort)
             : id(std::move(id)),
-                 weight(weight),
-                 destinationPort(std::move(destinationPort)) {}
+              weight(weight),
+              destinationPort(std::move(destinationPort)) {}
 
 
     unsigned getWeight() { return weight; }
