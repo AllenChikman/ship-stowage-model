@@ -2,7 +2,7 @@
 #include <iostream>
 #include "WeightBalanceCalculator.h"
 #include "Ship.h"
-
+#include "Utils.h"
 
 ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(ShipPlan *shipPlan1) : shipPlan1(shipPlan1)
 {
@@ -30,7 +30,7 @@ bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload
     }
     if (!valid)
     {
-        std::cerr << reason;
+        log(reason, MessageSeverity::ERROR);
     }
     return valid;
 }

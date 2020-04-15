@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "Container.h"
+//#include "WeightBalanceCalculator.h"
 
 typedef std::vector<std::vector<unsigned>> UIntMat;
 
@@ -20,6 +21,7 @@ private:
     UIntMat startingHeight;
     UIntMat freeCells;
     CargoMat cargo;
+    //ShipWeightBalanceCalculator balanceCalculator;
 
 public:
     ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight1)
@@ -53,6 +55,7 @@ public:
 
     CargoMat &getCargo() { return cargo; }
 
+    bool isContainerEmpty(unsigned x, unsigned y, unsigned z);
 
 };
 

@@ -33,7 +33,7 @@ bool isShipFull(ShipPlan *shipPlan)
 
 }
 
-bool containerHasIllegalDestPort(std::vector<SeaPortCode> shipRoute, Container const &container)
+bool containerHasIllegalDestPort(const std::vector<SeaPortCode>& shipRoute, Container const &container)
 {
     bool legalDestPort = false;
     for (auto &port : shipRoute)
@@ -73,7 +73,6 @@ bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std:
 
 }
 
-
 bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
                              SeaPortCode *curSeaPortCode)
 {
@@ -104,7 +103,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 unsigned startingIdx = height;
 
                 // 1st step: finding a container to load to current port
-                while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty()) //#TODO
+                while (z < height && !shipPlan->isContainerEmpty(x,y,z))
                 {
                     if (seaPortCodeStr == cargoMat[x][y][z].getDestinationPort().toStr())
                     {
@@ -115,7 +114,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 z = startingIdx;
 
                 // 2nd step: unloading all containers above and marking the ones to be reloaded
-                while (z < height && !cargoMat[x][y][z].getDestinationPort().toStr().empty())
+                while (z < height && !shipPlan->isContainerEmpty(x,y,z))
                 {
                     auto curContainer = cargoMat[x][y][z];
                     if (seaPortCodeStr != curContainer.getDestinationPort().toStr())
