@@ -16,30 +16,31 @@ private:
 
     ShipPlan *shipPlan = nullptr;
     std::vector<SeaPortCode> shipRoute;
-    std::unordered_map<std::string, int> visitedPorts = {};
+    std::unordered_map<std::string, unsigned> visitedPorts = {};
+    std::unordered_map<std::string, unsigned> routeMap = {};
 
+    bool isLastPortVisit(const std::string &portStr)
+    {
+        return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
+    }
 
     std::pair<std::string, std::string> getPortFilePaths(const SeaPortCode &port, int numOfVisits);
 
     std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
 
-
     std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; }
-
 
     void createOutputDirectory();
 
+    void updateRouteMap();
 
     bool initTravel(const std::string &travelName);
-
 
 public:
     explicit Simulation(std::string rootFolder) :
             rootFolder(std::move(rootFolder)) {}
 
-
     ~Simulation() { free(shipPlan); }
-
 
     bool readShipPlan(const std::string &path);
 
@@ -49,8 +50,6 @@ public:
 
     void runAlgorithm();
 
-
 };
-
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

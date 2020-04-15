@@ -26,11 +26,9 @@ struct UIntMat
             : mat(std::vector<std::vector<unsigned>>(n, vec)) {}
 
     std::vector<unsigned> &operator[](std::size_t idx) { return mat[idx]; }
-
     const std::vector<unsigned> &operator[](std::size_t idx) const { return mat[idx]; }
 
     unsigned &operator[](XYCord cord) { return mat[cord.x][cord.y]; }
-
     const unsigned &operator[](XYCord cord) const { return mat[cord.x][cord.y]; }
 
 };

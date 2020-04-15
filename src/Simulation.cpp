@@ -43,12 +43,12 @@ bool validateShipRouteFile(const std::vector<std::string> &vec)
     {
         if (!SeaPortCode::isValidCode(portSymbol))
         {
-            log("SeaPortCode: " + portSymbol + " is invalid!");
+            log("SeaPortCode: " + portSymbol + " is invalid!", MessageSeverity::ERROR);
             return false;
         }
         if (portSymbol == prevSymbol)
         {
-            log("SeaPortCode: " + portSymbol + "appears twice in a row!");
+            log("SeaPortCode: " + portSymbol + " appears twice in a row!", MessageSeverity::ERROR);
             return false;
         }
         prevSymbol = portSymbol;
@@ -76,6 +76,14 @@ std::pair<std::string, std::string> Simulation::getPortFilePaths(const SeaPortCo
 void Simulation::createOutputDirectory()
 {
     createDirIfNotExists(curTravelFolder + "/output");
+}
+
+void Simulation::updateRouteMap()
+{
+    for (const auto &port : shipRoute){
+        const std::string &portStr = port.toStr();
+        routeMap[portStr] = (routeMap.find(portStr) == routeMap.end()) ? 1 : routeMap[portStr] + 1;
+    }
 }
 
 bool Simulation::initTravel(const std::string &travelDir)
@@ -163,6 +171,7 @@ bool Simulation::readShipRoute(const std::string &path)
             throw std::runtime_error("");
         }
         shipRoute = routeVec;
+        updateRouteMap();
         return true;
     }
     catch (const std::runtime_error &e)
@@ -184,7 +193,8 @@ bool Simulation::startTravel(const std::string &travelDir)
     std::string currInputPath;
     std::string currOutputPath;
     std::string portStr;
-    int numOfVisits;
+    unsigned numOfVisits;
+    bool lastPortVisit;
 
     for (const SeaPortCode &port : shipRoute)
     {
@@ -194,7 +204,8 @@ bool Simulation::startTravel(const std::string &travelDir)
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
         try
         {
-            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute);
+            lastPortVisit = isLastPortVisit(portStr);
+            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute , lastPortVisit);
         }
         catch (const std::exception &e)
         {
@@ -217,3 +228,5 @@ void Simulation::runAlgorithm()
     }
 
 }
+
+
