@@ -1,0 +1,6 @@
+* Unload everything in the last port
+* Create more travel input folders and expected output folder
+* write testers that verifies the results (test also error handling!!)
+* Create an XYCord struct to avoid nested for loops
+* decouple the algorithm and the simulator
+* Write simulation result file
