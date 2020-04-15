@@ -185,7 +185,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         checkIfLoadPossible(shipPlan, containersToLoad, &outputFile, shipRoute);
         return true;
     }
-    
+
     catch (const std::exception &e) {
         return false;
     }
