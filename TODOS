@@ -10,8 +10,6 @@ Or:
 
 Allen:
 
-1* Use boost optional for containers
-
 1* "Additional cargo_data files that were not in use (not in route or too many files for port) would
    be ignored but a proper warning message will be printed to screen."
 

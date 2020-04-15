@@ -3,6 +3,7 @@
 #include "Simulation.h"
 #include "Utils.h"
 
+
 int main()
 {
     Simulation sim(R"(../resources/simulationFolder)");
