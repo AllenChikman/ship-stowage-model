@@ -1,6 +1,8 @@
+#include <vector>
 #include <iostream>
 #include "Simulation.h"
 #include "Utils.h"
+
 
 int main()
 {
@@ -8,5 +10,3 @@ int main()
     sim.runAlgorithm();
     return EXIT_SUCCESS;
 }
-
-
