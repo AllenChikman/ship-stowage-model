@@ -10,8 +10,13 @@ Or:
 
 Allen:
 
+1* Use boost optional for containers
+
 1* "Additional cargo_data files that were not in use (not in route or too many files for port) would
    be ignored but a proper warning message will be printed to screen."
+
+* The same port may  appear more than once, but not in two consecutive lines.
+
 2* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
   expected to unload only (and go for maintenance) at the last stop. In case last stop does
   have a “Containers awaiting at port” file, a proper warning should be printed to screen and
@@ -24,9 +29,11 @@ Allen:
    missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
    have a file ).
 
-4* Use boost optional for containers
+
 5* Create an XYCord struct to avoid nested for loops
 111* Change starting heights mat to proper vector
+
+* What to in case of reject? is the algortihm is interactive
 
 Together:
 3* Write simulation result file

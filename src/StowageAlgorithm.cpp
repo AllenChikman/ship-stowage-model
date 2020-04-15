@@ -6,21 +6,26 @@
 #include "Ship.h"
 #include "WeightBalanceCalculator.h"
 
-bool isShipFull(ShipPlan *shipPlan) {
+bool isShipFull(ShipPlan *shipPlan)
+{
     bool shipVacant = false;
     unsigned length = shipPlan->getLength();
     unsigned width = shipPlan->getWidth();
     unsigned maxHeight = shipPlan->getHeight();
 
-    for (unsigned x = 0; x < length; x++) {
-        for (unsigned y = 0; y < width; y++) {
-            if (shipPlan->getFirstAvailableCellMat()[x][y] < maxHeight) {
+    for (unsigned x = 0; x < length; x++)
+    {
+        for (unsigned y = 0; y < width; y++)
+        {
+            if (shipPlan->getFirstAvailableCellMat()[x][y] < maxHeight)
+            {
                 shipVacant = true;
                 break;
             }
 
         }
-        if (shipVacant) {
+        if (shipVacant)
+        {
             break;
         }
     }
@@ -28,10 +33,13 @@ bool isShipFull(ShipPlan *shipPlan) {
 
 }
 
-bool containerHasIllegalDestPort(const std::vector<SeaPortCode> &shipRoute, const Container &container) {
+bool containerHasIllegalDestPort(const std::vector<SeaPortCode> &shipRoute, const Container &container)
+{
     bool legalDestPort = false;
-    for (auto &port : shipRoute) {
-        if (container.getDestinationPort().toStr() == port.toStr()) {
+    for (auto &port : shipRoute)
+    {
+        if (container.getDestinationPort().toStr() == port.toStr())
+        {
             legalDestPort = true;
             break;
         }
@@ -39,41 +47,50 @@ bool containerHasIllegalDestPort(const std::vector<SeaPortCode> &shipRoute, cons
     return !legalDestPort;
 }
 
-bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, unsigned x, unsigned y) {
+bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, unsigned x, unsigned y)
+{
     balanceStatus status = shipPlan->getBalanceCalculator().tryOperation(shipPlan, op, container.getWeight(), x, y);
     return status == balanceStatus::APPROVED;
 }
 
-bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const std::vector<SeaPortCode> &shipRoute) {
+bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const std::vector<SeaPortCode> &shipRoute)
+{
     bool correctContainer = !container.hasWrongID();
     bool legalDestPort = !containerHasIllegalDestPort(shipRoute, container);
     bool legalOp = correctContainer && legalDestPort;
-    if (op == 'L') {
+    if (op == 'L')
+    {
         legalOp &= !isShipFull(shipPlan);
     }
     return !legalOp;
 }
 
-bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath) {
-    try {
+bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath)
+{
+    try
+    {
         std::vector<std::vector<std::string>> vecLines;
         if (!readToVecLine(inputPath, vecLines)) { throw std::runtime_error(""); }
-        for (const auto &lineVec : vecLines) {
+        for (const auto &lineVec : vecLines)
+        {
             ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
         }
         return true;
     }
 
-    catch (const std::runtime_error &e) {
+    catch (const std::runtime_error &e)
+    {
         return false;
     }
 
 }
 
 bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
-                             const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute) {
+                             const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute)
+{
 
-    try {
+    try
+    {
         std::vector<Container> containerVec;
         if (!parseInputToContainersVec(containerVec, inputPath)) { return false; };
 
@@ -91,14 +108,19 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         bool shipUnbalanced = false;
         CraneCommand cmd;
 
-        for (unsigned x = 0; x < length; x++) {
-            for (unsigned y = 0; y < width; y++) {
+        for (unsigned x = 0; x < length; x++)
+        {
+            for (unsigned y = 0; y < width; y++)
+            {
                 unsigned z = startingHeightMat[x][y];
                 unsigned startingIdx = height;
 
                 // 1st step: Finding a container to load to current port
-                while (z < height && cargoMat[x][y][z]) {
-                    if (seaPortCodeStr == cargoMat[x][y][z]->getDestinationPort().toStr()) {
+                while (z < height && cargoMat[x][y][z])
+                {
+                    const Container &curContainer = *cargoMat[x][y][z];
+                    if (curContainer.isBelongsToPort(curSeaPortCode))
+                    {
                         startingIdx = z;
                     }
                     z++;
@@ -106,9 +128,11 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 z = startingIdx;
 
                 // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-                while (z < height && cargoMat[x][y][z]) {
-                    Container curContainer = *cargoMat[x][y][z];
-                    if (seaPortCodeStr != curContainer.getDestinationPort().toStr()) {
+                while (z < height && cargoMat[x][y][z])
+                {
+                    const Container &curContainer = *cargoMat[x][y][z];
+                    if (curContainer.isBelongsToPort(curSeaPortCode))
+                    {
                         containersToLoad.push_back(curContainer);
                     }
                     containersToUnload.insert(containersToUnload.begin(), *cargoMat[x][y][z]);
@@ -116,19 +140,20 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 }
 
                 // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-                for (const auto &container: containersToUnload) {
-                    if(!isBalanced(shipPlan, 'U', container, x, y))
+                for (const auto &container: containersToUnload)
+                {
+                    if (!isBalanced(shipPlan, 'U', container, x, y))
                     {
                         shipUnbalanced = true;
                     }
                     // Checking if the operation should be rejected
                     if (rejectContainer(shipPlan, 'U', container, shipRoute) || shipUnbalanced)
                     {
-                        cmd = CraneCommand :: REJECT;
+                        cmd = CraneCommand::REJECT;
                     }
                     else
                     {
-                        cmd = CraneCommand ::UNLOAD;
+                        cmd = CraneCommand::UNLOAD;
                     }
                     updateShipPlan(container, outputFile, shipPlan, cmd, x, y);
                 }
@@ -136,25 +161,29 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 shipUnbalanced = false;
             }
         }
-        for (const auto &container : containerVec) {
+        for (const auto &container : containerVec)
+        {
             containersToLoad.push_back(container);
         }
-        for (const auto &curContainerToLoad : containersToLoad) {
+        for (const auto &curContainerToLoad : containersToLoad)
+        {
             shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad, 0, 0); //optional
-            if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced) {
-                cmd = CraneCommand :: REJECT;
+            if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced)
+            {
+                cmd = CraneCommand::REJECT;
             }
             else
             {
-                cmd = CraneCommand :: LOAD;
+                cmd = CraneCommand::LOAD;
             }
-            updateShipPlan(curContainerToLoad, outputFile, shipPlan, CraneCommand::LOAD);
+            updateShipPlan(curContainerToLoad, outputFile, shipPlan, cmd);
         }
 
         return true;
     }
 
-    catch (const std::exception &e) {
+    catch (const std::exception &e)
+    {
         return false;
     }
 
