@@ -123,7 +123,8 @@ bool Simulation::readShipPlan(const std::string &path)
             startingHeightsMat[x][y] = maximalHeight - numOfFloors;
         }
 
-        shipPlan = new ShipPlan(width, length, maximalHeight, startingHeightsMat);
+        shipPlan = new ShipPlan(width, length, maximalHeight, startingHeightsMat,
+                                ShipWeightBalanceCalculator(APPROVED));
         return true;
     }
 

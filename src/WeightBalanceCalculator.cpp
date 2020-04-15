@@ -4,12 +4,7 @@
 #include "Ship.h"
 #include "Utils.h"
 
-ShipWeightBalanceCalculator::ShipWeightBalanceCalculator(ShipPlan *shipPlan1) : shipPlan1(shipPlan1)
-{
-    status = APPROVED; // for now
-}
-
-bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload, unsigned kg, unsigned X, unsigned Y)
+bool ShipWeightBalanceCalculator::validateTryOperationsArguments(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y)
 {
     std::string reason;
     bool valid = true;
@@ -18,7 +13,7 @@ bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload
         reason = "Illegal operation.";
         valid = false;
     }
-    else if (X > shipPlan1->getWidth() || Y > shipPlan1->getLength())
+    else if (X > shipPlan->getWidth() || Y > shipPlan->getLength())
     {
         reason = "Illegal container location on ship.";
         valid = false;
@@ -35,29 +30,7 @@ bool ShipWeightBalanceCalculator::validateTryOperationsArguments(char loadUnload
     return valid;
 }
 
-balanceStatus ShipWeightBalanceCalculator::tryOperation(char loadUnload, unsigned kg, unsigned X, unsigned Y)
-{
-    if (!validateTryOperationsArguments(loadUnload, kg, X, Y))
-    {
-        return status;
-    }
-    unsigned Z = 0;
-    unsigned weight = kg;
-    unsigned startingHeight = shipPlan1->getStartingHeight()[X][Y];
-    if (loadUnload == 'U')
-    {
-        Z = static_cast<unsigned int>(shipPlan1->getHeight() - shipPlan1->getCargo()[X][Y].size());
-        // weight = -weight; //TODO: Or - what did you mean by this line
-    }
-
-    if (loadUnload == 'L')
-    {
-        Z = static_cast<unsigned int>(startingHeight + shipPlan1->getCargo()[X][Y].size());
-    }
-    return checkBalance(X, Y, Z, weight);
-}
-
-balanceStatus ShipWeightBalanceCalculator::checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg)
+balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char loadUnload)
 {
 
     (void) x;
@@ -66,5 +39,25 @@ balanceStatus ShipWeightBalanceCalculator::checkBalance(unsigned x, unsigned y, 
     (void) kg;
     //TODO: implement (for exercise 2)
     return APPROVED;
+}
+
+balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y)
+{
+    if (!validateTryOperationsArguments(shipPlan, loadUnload, kg, X, Y))
+    {
+        return status;
+    }
+    unsigned Z = 0;
+    unsigned startingHeight = shipPlan->getStartingHeight()[X][Y];
+    if (loadUnload == 'U')
+    {
+        Z = static_cast<unsigned int>();
+    }
+
+    if (loadUnload == 'L')
+    {
+        Z = static_cast<unsigned int>(shipPlan->getFreeCells()[X][Y]);
+    }
+    return checkBalance(X, Y, Z, kg, loadUnload);
 }
 

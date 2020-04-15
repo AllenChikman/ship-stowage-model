@@ -47,10 +47,9 @@ bool containerHasIllegalDestPort(const std::vector<SeaPortCode>& shipRoute, Cont
     return !legalDestPort;
 }
 
-bool isBalanced()
+bool isBalanced(ShipPlan *shipPlan)
 {
-//#TODO: implement
-    return false;
+    return shipPlan->getBalanceCalculator().getStatus() == balanceStatus :: APPROVED;
 }
 
 bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath)

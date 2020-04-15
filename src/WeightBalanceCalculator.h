@@ -12,15 +12,18 @@ class ShipWeightBalanceCalculator {
 private:
     balanceStatus status;
 public:
-    ShipPlan *shipPlan1;
 
-    explicit ShipWeightBalanceCalculator(ShipPlan *shipPlan1);
+    explicit ShipWeightBalanceCalculator(balanceStatus status1):status(status1){}
 
-    bool validateTryOperationsArguments(char loadUnload, unsigned kg, unsigned X, unsigned Y);
+    static bool validateTryOperationsArguments(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y);
 
-    balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg);
+    //balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char loadUnload);
 
-    balanceStatus tryOperation(char loadUnload, unsigned kg, unsigned X, unsigned Y);
+    balanceStatus tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y);
+
+    balanceStatus getStatus (){return status;}
+
+    void setStatus(balanceStatus newStatus){ status = newStatus;}
 
 };
 

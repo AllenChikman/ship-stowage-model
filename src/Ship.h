@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "Container.h"
-//#include "WeightBalanceCalculator.h"
+#include "WeightBalanceCalculator.h"
 
 typedef std::vector<std::vector<unsigned>> UIntMat;
 
@@ -21,14 +21,14 @@ private:
     UIntMat startingHeight;
     UIntMat freeCells;
     CargoMat cargo;
-    //ShipWeightBalanceCalculator balanceCalculator;
+    ShipWeightBalanceCalculator balanceCalculator;
 
 public:
-    ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight1)
+    ShipPlan(unsigned width, unsigned length, unsigned height, UIntMat startingHeight1,
+             ShipWeightBalanceCalculator balanceCalculator)
             : width(width),
               length(length),
-              height(height)
-    {
+              height(height), balanceCalculator(balanceCalculator) {
 
         cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
                                                                     std::vector<Container>(height,
@@ -37,8 +37,6 @@ public:
                                                                                                    SeaPortCode("")))));
         startingHeight = std::move(startingHeight1);
         freeCells = startingHeight;
-
-
     }
 
     ~ShipPlan() = default;
@@ -56,6 +54,8 @@ public:
     CargoMat &getCargo() { return cargo; }
 
     bool isContainerEmpty(unsigned x, unsigned y, unsigned z);
+
+    ShipWeightBalanceCalculator getBalanceCalculator() {return balanceCalculator;}
 
 };
 

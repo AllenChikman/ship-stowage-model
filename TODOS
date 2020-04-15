@@ -1,10 +1,15 @@
 * Unload everything in the last port
 * Create more travel input folders and expected output folder
-* write testers that verifies the results (test also error handling!!)
+* write testers that verify the results (test also error handling!!)
 * Create an XYCord struct to avoid nested for loops
 * decouple the algorithm and the simulator
 * Write simulation result file
 * Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
+* Add 'Reject' case to the instruction getter
+* Add an abstract "Algorithm" class and set the naive algorithms to inherit from it
+* Implement checking if a container has wrong id
+* Use boost optional for containers
+* Change starting heights mat to proper vector
 
 * "Additional cargo_data files that were not in use (not in route or too many files for port) would
    be ignored but a proper warning message will be printed to screen."
