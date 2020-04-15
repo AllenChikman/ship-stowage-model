@@ -59,25 +59,4 @@ public:
 
 };
 
-/*
-class Ship {
-
-private:
-    Ship(const std::vector<SeaPortCode> &shipRoute, ShipPlan shipPlan, WeightBalance &balanceCalculator);
-
-    std::vector<SeaPortCode> shipRoute;
-    std::vector<SeaPortCode> shipRoute;
-    ShipPlan shipPlan;
-    WeightBalance balanceCalculator;
-
-public:
-    Ship(const std::vector<SeaPortCode> &shipRoute, ShipPlan shipPlan, const WeightBalance &balanceCalculator);
-
-    ShipPlan getShipPlan(){return shipPlan;}
-
-
-};*/
-
-
-
 #endif //SHIP_STOWAGE_MODEL_SHIP_H
