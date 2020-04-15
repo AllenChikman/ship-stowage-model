@@ -19,4 +19,3 @@ add_executable(ship_stowage_model
         src/Utils.h
         src/Container.cpp
         src/Container.h)
-

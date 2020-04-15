@@ -28,13 +28,12 @@ public:
              ShipWeightBalanceCalculator balanceCalculator)
             : width(width),
               length(length),
-              height(height), balanceCalculator(balanceCalculator) {
+              height(height), balanceCalculator(balanceCalculator)
+    {
 
-        cargo = CargoMat(width, std::vector<std::vector<Container>>(length,
-                                                                    std::vector<Container>(height,
-                                                                                           Container(
-                                                                                                   "", 0,
-                                                                                                   SeaPortCode("")))));
+        cargo = CargoMat(width, std::vector<std::vector<std::optional<Container>>>
+                (length, std::vector<std::optional<Container>>(height, std::nullopt)));
+
         startingHeight = std::move(startingHeight1);
         freeCells = startingHeight;
     }
@@ -53,9 +52,7 @@ public:
 
     CargoMat &getCargo() { return cargo; }
 
-    bool isContainerEmpty(unsigned x, unsigned y, unsigned z);
-
-    ShipWeightBalanceCalculator getBalanceCalculator() {return balanceCalculator;}
+    ShipWeightBalanceCalculator getBalanceCalculator() { return balanceCalculator; }
 
 };
 

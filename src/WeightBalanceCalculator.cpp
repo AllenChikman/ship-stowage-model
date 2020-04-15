@@ -51,7 +51,7 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char
     unsigned startingHeight = shipPlan->getStartingHeight()[X][Y];
     if (loadUnload == 'U')
     {
-        Z = static_cast<unsigned int>();
+        // Z = static_cast<unsigned int>(); TODO:or - what should be here?
     }
 
     if (loadUnload == 'L')

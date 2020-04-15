@@ -5,6 +5,7 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <optional>
 
 class SeaPortCode
 {
@@ -43,6 +44,6 @@ public:
     bool hasWrongID() { return false; }   //#TODO implement this func
 };
 
-typedef std::vector<std::vector<std::vector<Container>>> CargoMat;
+typedef std::vector<std::vector<std::vector<std::optional<Container>>>> CargoMat;
 
 #endif //SHIP_STOWAGE_MODEL_CONTAINER_H*/

@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-void dumpInstruction(std::ofstream &outputStream, char op, Container const &container,
+void dumpInstruction(std::ofstream &outputStream, char op, const Container &container,
                      unsigned x, unsigned y, unsigned z)
 {
     auto id = container.getID();
@@ -24,6 +24,7 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
     unsigned newFreeCell;
     // auto &containerMat = shipPlan->getCargo(); //TODO: Or- this line has no use
     bool freeCellFound = false;
+    const auto cargoMat = shipPlan->getCargo();
 
     switch (op)
     {
@@ -31,7 +32,8 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
             //#TODO: delete container from ShipPlan - for Crane
             newFreeCell = shipPlan->getFreeCells()[x][y];
             shipPlan->getFreeCells()[x][y] = std::max(shipPlan->getStartingHeight()[x][y], std::min(newFreeCell, z));
-            dumpInstruction(outputFile, 'U', shipPlan->getCargo()[x][y][z], x, y, z);
+
+            dumpInstruction(outputFile, 'U', *cargoMat[x][y][z], x, y, z);
 
             break;
         case CraneCommand::LOAD:
