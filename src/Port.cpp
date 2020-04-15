@@ -25,7 +25,8 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
     switch (op)
     {
         case CraneCommand::UNLOAD:
-            //#TODO: delete container from ShipPlan - for Crane
+            auto availableCell = shipPlan->getFirstAvailableCellMat()[xyUpdateCord];
+            cargoMat[xyUpdateCord.x][xyUpdateCord.y][availableCell -1] = std::nullopt;
             shipPlan->getFirstAvailableCellMat()[xyUpdateCord]--;
             dumpInstruction(outputFile, 'U', container, xyUpdateCord);
             break;

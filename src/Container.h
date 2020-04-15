@@ -46,6 +46,5 @@ public:
     bool hasWrongID() const { return false; }   //#TODO implement this func
 };
 
-typedef std::vector<std::vector<std::vector<std::optional<Container>>>> CargoMat;
 
 #endif //SHIP_STOWAGE_MODEL_CONTAINER_H*/

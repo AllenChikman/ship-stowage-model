@@ -17,6 +17,13 @@ struct XYCord
     unsigned y;
 };
 
+struct XYZCord
+{
+    unsigned x;
+    unsigned y;
+    unsigned z;
+};
+
 
 struct UIntMat
 {
@@ -26,10 +33,30 @@ struct UIntMat
             : mat(std::vector<std::vector<unsigned>>(n, vec)) {}
 
     std::vector<unsigned> &operator[](std::size_t idx) { return mat[idx]; }
+
     const std::vector<unsigned> &operator[](std::size_t idx) const { return mat[idx]; }
 
     unsigned &operator[](XYCord cord) { return mat[cord.x][cord.y]; }
+
     const unsigned &operator[](XYCord cord) const { return mat[cord.x][cord.y]; }
+
+};
+
+struct CargoMat
+{
+    std::vector<std::vector<std::vector<std::optional<Container>>>> tripMat;
+
+/*    explicit CargoMat(unsigned long long int n, const std::vector<unsigned> &vec)
+            : mat(std::vector<std::vector<unsigned>>(n, vec)) {}
+
+    std::vector<unsigned> &operator[](std::size_t idx) { return tripMat[idx]; }
+
+    const std::vector<unsigned> &operator[](std::size_t idx) const { return tripMat[idx]; }*/
+
+    std::optional<Container> &operator[](XYCord cord) { return tripMat[cord.x][cord.y]; }
+
+    const std::optional<Container> &operator[](XYCord cord) const { return tripMat[cord.x][cord.y]; }
+
 
 };
 
