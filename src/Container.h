@@ -41,7 +41,7 @@ public:
 
     std::string getID() const { return id; }
 
-    bool isBelongsToPort(const SeaPortCode &portCode) const { return destinationPort.toStr() == portCode.toStr(); }
+    bool isBelongToPort(const SeaPortCode &portCode) const { return destinationPort.toStr() == portCode.toStr(); }
 
     bool hasWrongID() const { return false; }   //#TODO implement this func
 };
