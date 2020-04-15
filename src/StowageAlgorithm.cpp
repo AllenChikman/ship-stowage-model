@@ -125,8 +125,7 @@ std::vector<Container> collectingPotentialContainersToLoad(bool lastPort, std::v
     return containersToUnload;
 }
 
-void checkIfUnloadPossible(ShipPlan *shipPlan,
-                           std::vector<Container> &containersToUnload, const std::vector<SeaPortCode> &shipRoute,
+void checkIfUnloadPossible(ShipPlan *shipPlan, std::vector<Container> &containersToUnload, const std::vector<SeaPortCode> &shipRoute,
                            unsigned x, unsigned y, std::ofstream *outputFile)
 {
     bool shipUnbalanced = false;
@@ -162,51 +161,6 @@ void checkIfLoadPossible(ShipPlan *shipPlan, std::vector<Container> &containersT
     }
 }
 
-
-//bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
-//                             const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute)
-//{
-//    try {
-//        std::vector<Container> containerVec;
-//        if (!parseInputToContainersVec(containerVec, inputPath)) { return false; };
-//
-//        std::ofstream outputFile;
-//        outputFile.open(outputPath, std::ios::out);
-//        std::vector<Container> containersToUnload, containersToLoad;
-//
-//        const auto startingHeightMat = shipPlan->getStartingHeight();
-//        auto cargoMat = shipPlan->getCargo();
-//
-//        const unsigned length = shipPlan->getLength();
-//        const unsigned width = shipPlan->getWidth();
-//        const unsigned height = shipPlan->getHeight();
-//        const auto &seaPortCodeStr = curSeaPortCode.toStr();
-//        bool shipUnbalanced = false;
-//        CraneCommand cmd;
-//
-//        for (unsigned x = 0; x < length; x++) {
-//            for (unsigned y = 0; y < width; y++) {
-//
-//
-//                // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-//
-//                containersToUnload.clear();
-//                shipUnbalanced = false;
-//            }
-//        }
-//        for (const auto &container : containerVec) {
-//            containersToLoad.push_back(container);
-//        }
-//        for (const auto &curContainerToLoad : containersToLoad) {
-//            shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad, 0, 0); //optional
-//            if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced) {
-//                cmd = CraneCommand::REJECT;
-//            } else {
-//                cmd = CraneCommand::LOAD;
-//            }
-//            updateShipPlan(curContainerToLoad, outputFile, shipPlan, cmd);
-//        }
-//    }
 bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
                                      const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute) {
 
@@ -233,7 +187,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                     for (unsigned y = 0; y < width; y++) {
                         //1st step: Finding minimum container position on ship that needs to be unloaded
                         if (lastPort) {
-                            z = (availableCells[x][y] > startingHeightMat[x][y]) ? availableCells[x][y] : 0;
+                            z = startingHeightMat[x][y];
                         } else {
                             z = findMinContainerPosToUnload(startingHeightMat, cargoMat, curSeaPortCode, height, x, y);
                         }
