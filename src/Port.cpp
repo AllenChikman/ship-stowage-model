@@ -5,58 +5,49 @@
 #include <fstream>
 
 
-void dumpInstruction(std::ofstream &outputStream, char op, const Container &container,
-                     unsigned x, unsigned y)
+void dumpInstruction(std::ofstream &outputStream, char op, const Container &container, XYCord cord)
 {
     auto id = container.getID();
     outputStream << op << CSV_DELIM
                  << id << CSV_DELIM
-                 << x << CSV_DELIM
-                 << y << std::endl;
+                 << cord.x << CSV_DELIM
+                 << cord.y << std::endl;
 }
 
 
 void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
-                    CraneCommand op, unsigned x, unsigned y)
+                    CraneCommand op, XYCord xyUpdateCord)
 {
     unsigned z = 0;
-    bool freeCellFound = false;
     const auto cargoMat = shipPlan->getCargo();
+    const auto shipXYCords = shipPlan->getShipXYCordsVec();
 
     switch (op)
     {
         case CraneCommand::UNLOAD:
             //#TODO: delete container from ShipPlan - for Crane
-            shipPlan->getFirstAvailableCellMat()[x][y]--;
-            dumpInstruction(outputFile, 'U', container, x, y);
+            shipPlan->getFirstAvailableCellMat()[xyUpdateCord]--;
+            dumpInstruction(outputFile, 'U', container, xyUpdateCord);
             break;
         case CraneCommand::LOAD:
+
             // choosing a free cell in a naive way
-            for (unsigned i = 0; i < shipPlan->getLength(); i++)
+            for (XYCord cord: shipXYCords)
             {
-                for (unsigned j = 0; j < shipPlan->getWidth(); j++)
+                if (shipPlan->getFirstAvailableCellMat()[cord] < shipPlan->getHeight())
                 {
-                    if (shipPlan->getFirstAvailableCellMat()[i][j] < shipPlan->getHeight())
-                    {
-                        x = i;
-                        y = j;
-                       z = shipPlan->getFirstAvailableCellMat()[i][j];
-                        //updating free cell matrix
-                        shipPlan->getFirstAvailableCellMat()[i][j]++;
-                        freeCellFound = true;
-                        break;
-                    }
-                }
-                if (freeCellFound)
-                {
+                    xyUpdateCord = {cord.x , cord.y};
+                    z = shipPlan->getFirstAvailableCellMat()[cord];
+                    //updating free cell matrix
+                    shipPlan->getFirstAvailableCellMat()[cord]++;
                     break;
                 }
             }
-            dumpInstruction(outputFile, 'L', container, x, y);
-            shipPlan->getCargo()[x][y][z] = container;  //needs to be moved to Crane
+            dumpInstruction(outputFile, 'L', container, xyUpdateCord);
+            shipPlan->getCargo()[xyUpdateCord.x][xyUpdateCord.y][z] = container;  //needs to be moved to Crane
             break;
         case CraneCommand::REJECT:
-            dumpInstruction(outputFile, 'R', container, x, y);
+            dumpInstruction(outputFile, 'R', container, xyUpdateCord);
             break;
         default:
             log("For HW2");

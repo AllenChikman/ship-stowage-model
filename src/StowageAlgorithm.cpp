@@ -155,7 +155,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                     {
                         cmd = CraneCommand::UNLOAD;
                     }
-                    updateShipPlan(container, outputFile, shipPlan, cmd, x, y);
+                    updateShipPlan(container, outputFile, shipPlan, cmd, XYCord{x, y});
                 }
                 containersToUnload.clear();
                 shipUnbalanced = false;

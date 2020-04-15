@@ -3,6 +3,7 @@
 
 
 #include "Container.h"
+#include "Ship.h"
 
 enum CraneCommand
 {
@@ -12,6 +13,6 @@ enum CraneCommand
 class ShipPlan;
 
 void updateShipPlan(const Container &container, std::ofstream &outputFile,
-                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, unsigned x = 0, unsigned y = 0);
+                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, XYCord xyUpdateCord = {0, 0});
 
 #endif //SHIP_STOWAGE_MODEL_PORT_H
