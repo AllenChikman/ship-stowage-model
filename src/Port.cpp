@@ -19,7 +19,7 @@ void dumpInstruction(std::ofstream &outputStream, char op, const Container &cont
 void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
                     CraneCommand op, unsigned x, unsigned y)
 {
-
+    unsigned z = 0;
     bool freeCellFound = false;
     const auto cargoMat = shipPlan->getCargo();
 
@@ -29,7 +29,6 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
             //#TODO: delete container from ShipPlan - for Crane
             shipPlan->getFirstAvailableCellMat()[x][y]--;
             dumpInstruction(outputFile, 'U', container, x, y);
-
             break;
         case CraneCommand::LOAD:
             // choosing a free cell in a naive way

@@ -97,7 +97,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 unsigned startingIdx = height;
 
                 // 1st step: Finding a container to load to current port
-                while (z < height && cargoMat[x][ y][ z]) {
+                while (z < height && cargoMat[x][y][z]) {
                     if (seaPortCodeStr == cargoMat[x][y][z]->getDestinationPort().toStr()) {
                         startingIdx = z;
                     }
@@ -106,12 +106,12 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
                 z = startingIdx;
 
                 // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-                while (z < height && cargoMat[x][ y][ z]) {
+                while (z < height && cargoMat[x][y][z]) {
                     Container curContainer = *cargoMat[x][y][z];
                     if (seaPortCodeStr != curContainer.getDestinationPort().toStr()) {
                         containersToLoad.push_back(curContainer);
                     }
-                    containersToUnload.insert(containersToUnload.begin(), cargoMat[x][y][z]);
+                    containersToUnload.insert(containersToUnload.begin(), *cargoMat[x][y][z]);
                     z++;
                 }
 
@@ -141,7 +141,7 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         }
         for (const auto &curContainerToLoad : containersToLoad) {
             shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad, 0, 0); //optional
-            if (rejectContainer(shipPlan, 'U', curContainerToLoad, shipRoute) || shipUnbalanced) {
+            if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced) {
                 cmd = CraneCommand :: REJECT;
             }
             else
