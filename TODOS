@@ -1,32 +1,42 @@
-* Unload everything in the last port
-* Create more travel input folders and expected output folder
-* write testers that verify the results (test also error handling!!)
-* Create an XYCord struct to avoid nested for loops
-* decouple the algorithm and the simulator
-* Write simulation result file
-* Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
-* Add 'Reject' case to the instruction getter
-* Add an abstract "Algorithm" class and set the naive algorithms to inherit from it
-* Implement checking if a container has wrong id
-* Use boost optional for containers
-* Change starting heights mat to proper vector
+Or:
+1* Add 'Reject' case to the instruction getter
+2* Unload everything in the last port
+3* Implement checking if a container has wrong id
+4* Create more travel input folders and expected output folder
+5* write testers that verify the results (test also error handling!!)
 
-* "Additional cargo_data files that were not in use (not in route or too many files for port) would
+Allen:
+
+1* "Additional cargo_data files that were not in use (not in route or too many files for port) would
    be ignored but a proper warning message will be printed to screen."
-
-
-* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
+2* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
   expected to unload only (and go for maintenance) at the last stop. In case last stop does
   have a “Containers awaiting at port” file, a proper warning should be printed to screen and
   the file shall be ignored.
-
-
-  *In case the number of “Containers awaiting at port” files for port P is less than the number of
+3* In case the number of “Containers awaiting at port” files for port P is less than the number of
    times P appears in the route file (not counting last stop, if this port is the last stop of the
    route): It shall be considered that in the last visits (==number of “missing files”) of the ship to
    port P, no cargo is to be loaded onto it, and cargo is only to be unloaded at destination P for
    those visits - if applicable. A proper warning should be printed to screen for a corresponding
    missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
    have a file ).
+
+4* Use boost optional for containers
+5* Create an XYCord struct to avoid nested for loops
+111* Change starting heights mat to proper vector
+
+Together:
+3* Write simulation result file
+4* Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
+5* Add an abstract "Algorithm" class and set the naive algorithms to inherit from it
+6* decouple the algorithm and the simulator
+
+
+
+
+
+
+
+
 
 
