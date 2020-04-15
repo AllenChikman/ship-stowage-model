@@ -70,6 +70,80 @@ bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std:
 
 }
 
+unsigned findMinContainerPosToUnload(const UIntMat& startingHeightMat, CargoMat cargoMat,
+                                     const std::string &seaPortCodeStr, const unsigned height, unsigned x, unsigned y)
+{
+    unsigned z = startingHeightMat[x][y];
+    unsigned startingIdx = height;
+
+    // 1st step: Finding a container to load to current port
+    while (z < height && cargoMat[x][y][z]) {
+        if (seaPortCodeStr == cargoMat[x][y][z]->getDestinationPort().toStr()) {
+            startingIdx = z;
+            break;
+        }
+        z++;
+    }
+    return startingIdx;
+
+}
+
+std::vector<Container> collectingPotentialContainersToLoad(std::vector<Container> &containersToLoad, CargoMat cargoMat,
+        const std::string &seaPortCodeStr, const unsigned height, unsigned x, unsigned y, unsigned z)
+{
+    std::vector<Container> containersToUnload;
+    while (z < height && cargoMat[x][y][z]) {
+        Container curContainer = *cargoMat[x][y][z];
+        if (seaPortCodeStr != curContainer.getDestinationPort().toStr()) {
+            containersToLoad.push_back(curContainer);
+        }
+        containersToUnload.insert(containersToUnload.begin(), *cargoMat[x][y][z]);
+        z++;
+    }
+    return containersToUnload;
+}
+
+void checkIfUnloadPossible(ShipPlan *shipPlan, std::vector<Container> &containersToUnload,
+                           const std::vector<SeaPortCode> &shipRoute, unsigned x, unsigned y, std::ofstream *outputFile)
+{
+    bool shipUnbalanced = false;
+    CraneCommand cmd;
+    for (const auto &container: containersToUnload) {
+        if(!isBalanced(shipPlan, 'U', container, x, y))
+        {
+            shipUnbalanced = true;
+        }
+        // Checking if the operation should be rejected
+        if (rejectContainer(shipPlan, 'U', container, shipRoute) || shipUnbalanced)
+        {
+            cmd = CraneCommand :: REJECT;
+        }
+        else
+        {
+            cmd = CraneCommand ::UNLOAD;
+        }
+        updateShipPlan(container, *outputFile, shipPlan, cmd, x, y);
+    }
+}
+
+void checkIfLoadPossible(ShipPlan *shipPlan, std::vector<Container> &containersToLoad,
+                         std::ofstream *outputFile, const std::vector<SeaPortCode> &shipRoute)
+{
+    bool shipUnbalanced = false;
+    CraneCommand cmd;
+    for (const auto &curContainerToLoad : containersToLoad) {
+        shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad, 0, 0); //optional
+        if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced) {
+            cmd = CraneCommand :: REJECT;
+        }
+        else
+        {
+            cmd = CraneCommand :: LOAD;
+        }
+        updateShipPlan(curContainerToLoad, *outputFile, shipPlan, cmd);
+    }
+}
+
 bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
                              const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute) {
 
@@ -88,72 +162,30 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         const unsigned width = shipPlan->getWidth();
         const unsigned height = shipPlan->getHeight();
         const auto &seaPortCodeStr = curSeaPortCode.toStr();
-        bool shipUnbalanced = false;
-        CraneCommand cmd;
+
+        unsigned z;
 
         for (unsigned x = 0; x < length; x++) {
             for (unsigned y = 0; y < width; y++) {
-                unsigned z = startingHeightMat[x][y];
-                unsigned startingIdx = height;
 
-                // 1st step: Finding a container to load to current port
-                while (z < height && cargoMat[x][y][z]) {
-                    if (seaPortCodeStr == cargoMat[x][y][z]->getDestinationPort().toStr()) {
-                        startingIdx = z;
-                    }
-                    z++;
-                }
-                z = startingIdx;
+                //1st step: Finding minimum container position on ship that needs to be unloaded
+                z =  findMinContainerPosToUnload(startingHeightMat, cargoMat, seaPortCodeStr, height, x, y);
 
                 // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-                while (z < height && cargoMat[x][y][z]) {
-                    Container curContainer = *cargoMat[x][y][z];
-                    if (seaPortCodeStr != curContainer.getDestinationPort().toStr()) {
-                        containersToLoad.push_back(curContainer);
-                    }
-                    containersToUnload.insert(containersToUnload.begin(), *cargoMat[x][y][z]);
-                    z++;
-                }
+                containersToUnload = collectingPotentialContainersToLoad(containersToLoad, cargoMat, seaPortCodeStr, height, x, y, z);
 
                 // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-                for (const auto &container: containersToUnload) {
-                    if(!isBalanced(shipPlan, 'U', container, x, y))
-                    {
-                        shipUnbalanced = true;
-                    }
-                    // Checking if the operation should be rejected
-                    if (rejectContainer(shipPlan, 'U', container, shipRoute) || shipUnbalanced)
-                    {
-                        cmd = CraneCommand :: REJECT;
-                    }
-                    else
-                    {
-                        cmd = CraneCommand ::UNLOAD;
-                    }
-                    updateShipPlan(container, outputFile, shipPlan, cmd, x, y);
-                }
+                checkIfUnloadPossible(shipPlan, containersToUnload, shipRoute, x, y, &outputFile);
                 containersToUnload.clear();
-                shipUnbalanced = false;
             }
         }
         for (const auto &container : containerVec) {
             containersToLoad.push_back(container);
         }
-        for (const auto &curContainerToLoad : containersToLoad) {
-            shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad, 0, 0); //optional
-            if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced) {
-                cmd = CraneCommand :: REJECT;
-            }
-            else
-            {
-                cmd = CraneCommand :: LOAD;
-            }
-            updateShipPlan(curContainerToLoad, outputFile, shipPlan, CraneCommand::LOAD);
-        }
-
+        checkIfLoadPossible(shipPlan, containersToLoad, &outputFile, shipRoute);
         return true;
     }
-
+    
     catch (const std::exception &e) {
         return false;
     }
