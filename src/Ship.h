@@ -19,7 +19,7 @@ private:
     const unsigned height;    //z
 
     UIntMat startingHeight;
-    UIntMat freeCells;
+    UIntMat firstCellAvailable;
     CargoMat cargo;
     ShipWeightBalanceCalculator balanceCalculator;
 
@@ -35,7 +35,7 @@ public:
                 (length, std::vector<std::optional<Container>>(height, std::nullopt)));
 
         startingHeight = std::move(startingHeight1);
-        freeCells = startingHeight;
+        firstCellAvailable = startingHeight;
     }
 
     ~ShipPlan() = default;
@@ -48,7 +48,7 @@ public:
 
     UIntMat getStartingHeight() { return startingHeight; }
 
-    UIntMat &getFreeCells() { return freeCells; }
+    UIntMat &getFirstAvailableCellMat() { return firstCellAvailable; }
 
     CargoMat &getCargo() { return cargo; }
 

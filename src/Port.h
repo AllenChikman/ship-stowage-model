@@ -12,6 +12,6 @@ enum CraneCommand
 class ShipPlan;
 
 void updateShipPlan(const Container &container, std::ofstream &outputFile,
-                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, unsigned x = 0, unsigned y = 0, unsigned z = 0);
+                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, unsigned x = 0, unsigned y = 0);
 
 #endif //SHIP_STOWAGE_MODEL_PORT_H

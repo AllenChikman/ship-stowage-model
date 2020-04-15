@@ -9,7 +9,7 @@
 
 
 bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
-                             SeaPortCode *curSeaPortCode);
+                             const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute);
 
 
 #endif //SHIP_STOWAGE_MODEL_STOWAGE_ALGORITHM_H

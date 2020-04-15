@@ -178,7 +178,7 @@ bool Simulation::startTravel(const std::string &travelDir)
     std::string portStr;
     int numOfVisits;
 
-    for (SeaPortCode port : shipRoute)
+    for (const SeaPortCode &port : shipRoute)
     {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
@@ -186,7 +186,7 @@ bool Simulation::startTravel(const std::string &travelDir)
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
         try
         {
-            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, &port);
+            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute);
         }
         catch (const std::exception &e)
         {

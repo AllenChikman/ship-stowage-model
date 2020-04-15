@@ -6,23 +6,20 @@
 
 
 void dumpInstruction(std::ofstream &outputStream, char op, const Container &container,
-                     unsigned x, unsigned y, unsigned z)
+                     unsigned x, unsigned y)
 {
     auto id = container.getID();
     outputStream << op << CSV_DELIM
                  << id << CSV_DELIM
-                 << z << CSV_DELIM
                  << x << CSV_DELIM
                  << y << std::endl;
 }
 
 
 void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
-                    CraneCommand op, unsigned x, unsigned y, unsigned z)
+                    CraneCommand op, unsigned x, unsigned y)
 {
 
-    unsigned newFreeCell;
-    // auto &containerMat = shipPlan->getCargo(); //TODO: Or- this line has no use
     bool freeCellFound = false;
     const auto cargoMat = shipPlan->getCargo();
 
@@ -30,10 +27,8 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
     {
         case CraneCommand::UNLOAD:
             //#TODO: delete container from ShipPlan - for Crane
-            newFreeCell = shipPlan->getFreeCells()[x][y];
-            shipPlan->getFreeCells()[x][y] = std::max(shipPlan->getStartingHeight()[x][y], std::min(newFreeCell, z));
-
-            dumpInstruction(outputFile, 'U', *cargoMat[x][y][z], x, y, z);
+            shipPlan->getFirstAvailableCellMat()[x][y]--;
+            dumpInstruction(outputFile, 'U', container, x, y);
 
             break;
         case CraneCommand::LOAD:
@@ -42,13 +37,13 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
             {
                 for (unsigned j = 0; j < shipPlan->getWidth(); j++)
                 {
-                    if (shipPlan->getFreeCells()[i][j] < shipPlan->getHeight())
+                    if (shipPlan->getFirstAvailableCellMat()[i][j] < shipPlan->getHeight())
                     {
                         x = i;
                         y = j;
-                        z = shipPlan->getFreeCells()[i][j];
+                       z = shipPlan->getFirstAvailableCellMat()[i][j];
                         //updating free cell matrix
-                        shipPlan->getFreeCells()[i][j]++;
+                        shipPlan->getFirstAvailableCellMat()[i][j]++;
                         freeCellFound = true;
                         break;
                     }
@@ -58,8 +53,11 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
                     break;
                 }
             }
-            dumpInstruction(outputFile, 'L', container, x, y, z);
+            dumpInstruction(outputFile, 'L', container, x, y);
             shipPlan->getCargo()[x][y][z] = container;  //needs to be moved to Crane
+            break;
+        case CraneCommand::REJECT:
+            dumpInstruction(outputFile, 'R', container, x, y);
             break;
         default:
             log("For HW2");

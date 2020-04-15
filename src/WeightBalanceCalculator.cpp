@@ -13,7 +13,7 @@ bool ShipWeightBalanceCalculator::validateTryOperationsArguments(ShipPlan *shipP
         reason = "Illegal operation.";
         valid = false;
     }
-    else if (X > shipPlan->getWidth() || Y > shipPlan->getLength())
+    else if (X > shipPlan->getLength() || Y > shipPlan->getWidth())
     {
         reason = "Illegal container location on ship.";
         valid = false;
@@ -48,15 +48,15 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char
         return status;
     }
     unsigned Z = 0;
-    unsigned startingHeight = shipPlan->getStartingHeight()[X][Y];
     if (loadUnload == 'U')
     {
-        // Z = static_cast<unsigned int>(); TODO:or - what should be here?
+        // assuming we always call this func when we have something to unload
+        Z = shipPlan->getFirstAvailableCellMat()[X][Y] - 1;
     }
 
     if (loadUnload == 'L')
     {
-        Z = static_cast<unsigned int>(shipPlan->getFreeCells()[X][Y]);
+        Z = shipPlan->getFirstAvailableCellMat()[X][Y];
     }
     return checkBalance(X, Y, Z, kg, loadUnload);
 }

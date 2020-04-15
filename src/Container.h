@@ -35,13 +35,13 @@ public:
               destinationPort(std::move(destinationPort)) {}
 
 
-    unsigned getWeight() { return weight; }
+    unsigned getWeight() const { return weight; }
 
     SeaPortCode getDestinationPort() const { return destinationPort; }
 
     std::string getID() const { return id; }
 
-    bool hasWrongID() { return false; }   //#TODO implement this func
+    bool hasWrongID() const { return false; }   //#TODO implement this func
 };
 
 typedef std::vector<std::vector<std::vector<std::optional<Container>>>> CargoMat;
