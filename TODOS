@@ -4,3 +4,4 @@
 * Create an XYCord struct to avoid nested for loops
 * decouple the algorithm and the simulator
 * Write simulation result file
+* Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
