@@ -5,3 +5,23 @@
 * decouple the algorithm and the simulator
 * Write simulation result file
 * Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
+
+* "Additional cargo_data files that were not in use (not in route or too many files for port) would
+   be ignored but a proper warning message will be printed to screen."
+
+
+* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
+  expected to unload only (and go for maintenance) at the last stop. In case last stop does
+  have a “Containers awaiting at port” file, a proper warning should be printed to screen and
+  the file shall be ignored.
+
+
+  *In case the number of “Containers awaiting at port” files for port P is less than the number of
+   times P appears in the route file (not counting last stop, if this port is the last stop of the
+   route): It shall be considered that in the last visits (==number of “missing files”) of the ship to
+   port P, no cargo is to be loaded onto it, and cargo is only to be unloaded at destination P for
+   those visits - if applicable. A proper warning should be printed to screen for a corresponding
+   missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
+   have a file ).
+
+
