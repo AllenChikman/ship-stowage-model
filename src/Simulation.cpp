@@ -38,12 +38,20 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
 
 bool validateShipRouteFile(const std::vector<std::string> &vec)
 {
+    std::string prevSymbol;
     for (const auto &portSymbol : vec)
     {
         if (!SeaPortCode::isValidCode(portSymbol))
         {
+            log("SeaPortCode: " + portSymbol + " is invalid!");
             return false;
         }
+        if (portSymbol == prevSymbol)
+        {
+            log("SeaPortCode: " + portSymbol + "appears twice in a row!");
+            return false;
+        }
+        prevSymbol = portSymbol;
     }
     return true;
 }

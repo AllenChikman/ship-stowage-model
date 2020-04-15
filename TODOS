@@ -19,6 +19,7 @@ Allen:
   expected to unload only (and go for maintenance) at the last stop. In case last stop does
   have a “Containers awaiting at port” file, a proper warning should be printed to screen and
   the file shall be ignored.
+
 3* In case the number of “Containers awaiting at port” files for port P is less than the number of
    times P appears in the route file (not counting last stop, if this port is the last stop of the
    route): It shall be considered that in the last visits (==number of “missing files”) of the ship to

@@ -37,6 +37,7 @@ balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char
     (void) y;
     (void) z;
     (void) kg;
+    (void) loadUnload;
     //TODO: implement (for exercise 2)
     return APPROVED;
 }
