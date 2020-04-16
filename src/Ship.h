@@ -42,7 +42,6 @@ struct UIntMat
 
 };
 
-//typedef std::vector<std::vector<std::vector<std::optional<Container>>>> CargoMat;
 struct CargoMat
 {
     std::vector<std::vector<std::vector<std::optional<Container>>>> tripMat;
@@ -52,7 +51,6 @@ struct CargoMat
                               (width, std::vector<std::vector<std::optional<Container>>>
                                       (length, std::vector<std::optional<Container>>
                                               (height, std::nullopt)))) {}
-
 
     std::vector<std::vector<std::optional<Container>>> &operator[](std::size_t idx) { return tripMat[idx]; }
 
@@ -66,7 +64,7 @@ struct CargoMat
 
     const std::optional<Container> &operator[](XYZCord cord) const { return tripMat[cord.x][cord.y][cord.z]; }
 
-};
+};*/
 
 
 class ShipPlan
