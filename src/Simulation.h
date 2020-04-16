@@ -5,6 +5,7 @@
 #include <utility>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "Ship.h"
 
 class Simulation
@@ -18,6 +19,7 @@ private:
     std::vector<SeaPortCode> shipRoute;
     std::unordered_map<std::string, unsigned> visitedPorts = {};
     std::unordered_map<std::string, unsigned> routeMap = {};
+    std::unordered_set<std::string> cargoFilesSet = {};
 
     bool isLastPortVisit(const std::string &portStr)
     {
@@ -33,6 +35,10 @@ private:
     void createOutputDirectory();
 
     void updateRouteMap();
+
+    void updateRouteFileSet();
+
+    void WarnOnUnusedCargoFiles();
 
     bool initTravel(const std::string &travelName);
 

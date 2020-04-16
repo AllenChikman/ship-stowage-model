@@ -148,10 +148,13 @@ void createDirIfNotExists(const std::string &path)
 
 }
 
-void putDirListToVec(const std::string &curPath, std::vector<std::string> &dirVec)
+void putDirFileListToVec(const std::string &curPath, std::vector<std::string> &dirFileVec, const std::string &extent)
 {
     for (const auto &entry : std::filesystem::directory_iterator(curPath))
     {
-        dirVec.push_back(entry.path().string());
+        const std::string path = entry.path().string();
+        if (!extent.empty() && path.find(extent) == std::string::npos) { continue; }
+        dirFileVec.push_back(path);
     }
 }
+

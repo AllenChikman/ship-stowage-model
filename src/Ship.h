@@ -24,7 +24,6 @@ struct XYZCord
     unsigned z;
 };
 
-
 struct UIntMat
 {
     std::vector<std::vector<unsigned>> mat;
@@ -65,7 +64,6 @@ struct CargoMat
     const std::optional<Container> &operator[](XYZCord cord) const { return tripMat[cord.x][cord.y][cord.z]; }
 
 };
-
 
 class ShipPlan
 {

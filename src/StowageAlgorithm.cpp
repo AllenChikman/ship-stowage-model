@@ -33,7 +33,7 @@ bool isContainerDestPortInRoute(const std::vector<SeaPortCode> &shipRoute, const
     return false;
 }
 
-bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord cord = {0,0})
+bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
     balanceStatus status = shipPlan->getBalanceCalculator().tryOperation(shipPlan, op, container.getWeight(), cord);
     return status == balanceStatus::APPROVED;
@@ -90,10 +90,10 @@ unsigned findMinContainerPosToUnload(const UIntMat &startingHeightMat, const Car
     return ShipMaxHeight;
 }
 
-std::vector<Container>
-collectingPotentialContainersToLoad(bool lastPort, std::vector<Container> &containersToLoad, CargoMat cargoMat,
-                                    const std::string &seaPortCodeStr, const unsigned ShipMaxHeight, XYCord xyCord,
-                                    unsigned z)
+std::vector<Container> collectingPotentialContainersToLoad(bool lastPort,
+                                                           std::vector<Container> &containersToLoad,
+                                                           CargoMat cargoMat, const std::string &seaPortCodeStr,
+                                                           const unsigned ShipMaxHeight, XYCord xyCord, unsigned z)
 {
     std::vector<Container> containersToUnload;
     while (z < ShipMaxHeight && cargoMat[xyCord][z])
@@ -173,8 +173,6 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         auto availableCells = shipPlan->getFirstAvailableCellMat();
         auto cargoMat = shipPlan->getCargo();
 
-        const unsigned length = shipPlan->getLength();
-        const unsigned width = shipPlan->getWidth();
         const unsigned height = shipPlan->getHeight();
         const auto &seaPortCodeStr = curSeaPortCode.toStr();
         const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
