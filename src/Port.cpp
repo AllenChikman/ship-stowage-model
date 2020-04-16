@@ -19,13 +19,14 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
                     CraneCommand op, XYCord xyUpdateCord)
 {
     unsigned z = 0;
-    const auto cargoMat = shipPlan->getCargo();
+    auto cargoMat = shipPlan->getCargo();
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
+    unsigned availableCell;
 
     switch (op)
     {
         case CraneCommand::UNLOAD:
-            auto availableCell = shipPlan->getFirstAvailableCellMat()[xyUpdateCord];
+            availableCell = shipPlan->getFirstAvailableCellMat()[xyUpdateCord];
             cargoMat[xyUpdateCord.x][xyUpdateCord.y][availableCell -1] = std::nullopt;
             shipPlan->getFirstAvailableCellMat()[xyUpdateCord]--;
             dumpInstruction(outputFile, 'U', container, xyUpdateCord);
