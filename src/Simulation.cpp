@@ -80,7 +80,8 @@ void Simulation::createOutputDirectory()
 
 void Simulation::updateRouteMap()
 {
-    for (const auto &port : shipRoute){
+    for (const auto &port : shipRoute)
+    {
         const std::string &portStr = port.toStr();
         routeMap[portStr] = (routeMap.find(portStr) == routeMap.end()) ? 1 : routeMap[portStr] + 1;
     }
@@ -125,7 +126,7 @@ bool Simulation::readShipPlan(const std::string &path)
         unsigned numOfFloors;
 
         vecLines.erase(vecLines.begin());
-        UIntMat startingHeightsMat(width,length);
+        UIntMat startingHeightsMat(width, length);
 
         for (const auto &vecLine : vecLines)
         {
@@ -205,7 +206,7 @@ bool Simulation::startTravel(const std::string &travelDir)
         try
         {
             lastPortVisit = isLastPortVisit(portStr);
-            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute , lastPortVisit);
+            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit);
         }
         catch (const std::exception &e)
         {

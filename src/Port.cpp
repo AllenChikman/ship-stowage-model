@@ -18,35 +18,37 @@ void dumpInstruction(std::ofstream &outputStream, char op, const Container &cont
 void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
                     CraneCommand op, XYCord xyUpdateCord)
 {
-    unsigned z = 0;
     auto cargoMat = shipPlan->getCargo();
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
+    const unsigned shipHeight = shipPlan->getHeight();
     unsigned availableCell;
+    unsigned heightToLoad = 0;
 
     switch (op)
     {
         case CraneCommand::UNLOAD:
             availableCell = shipPlan->getFirstAvailableCellMat()[xyUpdateCord];
-            cargoMat[xyUpdateCord.x][xyUpdateCord.y][availableCell -1] = std::nullopt;
+            cargoMat[xyUpdateCord][availableCell -1] = std::nullopt;
             shipPlan->getFirstAvailableCellMat()[xyUpdateCord]--;
             dumpInstruction(outputFile, 'U', container, xyUpdateCord);
             break;
+
         case CraneCommand::LOAD:
 
             // choosing a free cell in a naive way
             for (XYCord cord: shipXYCords)
             {
-                if (shipPlan->getFirstAvailableCellMat()[cord] < shipPlan->getHeight())
+                if (shipPlan->getFirstAvailableCellMat()[cord] < shipHeight)
                 {
                     xyUpdateCord = {cord.x , cord.y};
-                    z = shipPlan->getFirstAvailableCellMat()[cord];
+                    heightToLoad = shipPlan->getFirstAvailableCellMat()[cord];
                     //updating free cell matrix
                     shipPlan->getFirstAvailableCellMat()[cord]++;
                     break;
                 }
             }
             dumpInstruction(outputFile, 'L', container, xyUpdateCord);
-            shipPlan->getCargo()[xyUpdateCord.x][xyUpdateCord.y][z] = container;  //needs to be moved to Crane
+            cargoMat[xyUpdateCord][heightToLoad] = container;  //needs to be moved to Crane
             break;
         case CraneCommand::REJECT:
             dumpInstruction(outputFile, 'R', container, xyUpdateCord);

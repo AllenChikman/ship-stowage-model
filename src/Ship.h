@@ -64,7 +64,7 @@ struct CargoMat
 
     const std::optional<Container> &operator[](XYZCord cord) const { return tripMat[cord.x][cord.y][cord.z]; }
 
-};*/
+};
 
 
 class ShipPlan
@@ -81,7 +81,7 @@ private:
     CargoMat cargo;
     ShipWeightBalanceCalculator balanceCalculator;
 
-    void fillshipXYCords()
+    void fillShipXYCords()
     {
         for (unsigned i = 0; i < width; ++i)
         {
@@ -104,7 +104,7 @@ public:
               firstCellAvailable(startingHeight),
               cargo(width, length, height)
     {
-        fillshipXYCords();
+        fillShipXYCords();
     }
 
     ~ShipPlan() = default;

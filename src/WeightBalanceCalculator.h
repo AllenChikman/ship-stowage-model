@@ -3,6 +3,7 @@
 
 
 class ShipPlan;
+struct XYCord;
 
 enum balanceStatus {
     APPROVED, X_IMBALANCED, Y_IMBALANCED, X_Y_IMBALANCED
@@ -15,11 +16,7 @@ public:
 
     explicit ShipWeightBalanceCalculator(balanceStatus status1):status(status1){}
 
-    static bool validateTryOperationsArguments(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y);
-
-    //balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char loadUnload);
-
-    balanceStatus tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y);
+    balanceStatus tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, XYCord cord);
 
     balanceStatus getStatus (){return status;}
 

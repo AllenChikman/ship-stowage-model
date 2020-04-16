@@ -27,7 +27,6 @@ Allen:
    have a file ).
 
 
-5* Create an XYCord struct to avoid nested for loops
 111* Change starting heights mat to proper vector
 
 * What to in case of reject? is the algortihm is interactive

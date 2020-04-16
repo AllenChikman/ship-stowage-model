@@ -4,7 +4,8 @@
 #include "Ship.h"
 #include "Utils.h"
 
-bool ShipWeightBalanceCalculator::validateTryOperationsArguments(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y)
+bool validateTryOperationsArgs(ShipPlan *shipPlan, char loadUnload, unsigned kg,
+                                                            XYCord cord)
 {
     std::string reason;
     bool valid = true;
@@ -13,7 +14,7 @@ bool ShipWeightBalanceCalculator::validateTryOperationsArguments(ShipPlan *shipP
         reason = "Illegal operation.";
         valid = false;
     }
-    else if (X > shipPlan->getLength() || Y > shipPlan->getWidth())
+    else if (cord.x > shipPlan->getLength() || cord.y > shipPlan->getWidth())
     {
         reason = "Illegal container location on ship.";
         valid = false;
@@ -42,9 +43,9 @@ balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char
     return APPROVED;
 }
 
-balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, unsigned X, unsigned Y)
+balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, XYCord cord)
 {
-    if (!validateTryOperationsArguments(shipPlan, loadUnload, kg, X, Y))
+    if (!validateTryOperationsArgs(shipPlan, loadUnload, kg, cord))
     {
         return status;
     }
@@ -52,13 +53,13 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char
     if (loadUnload == 'U')
     {
         // assuming we always call this func when we have something to unload
-        Z = shipPlan->getFirstAvailableCellMat()[X][Y] - 1;
+        Z = shipPlan->getFirstAvailableCellMat()[cord] - 1;
     }
 
     if (loadUnload == 'L')
     {
-        Z = shipPlan->getFirstAvailableCellMat()[X][Y];
+        Z = shipPlan->getFirstAvailableCellMat()[cord];
     }
-    return checkBalance(X, Y, Z, kg, loadUnload);
+    return checkBalance(cord.x, cord.y, Z, kg, loadUnload);
 }
 
