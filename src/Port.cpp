@@ -19,7 +19,7 @@ void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipP
                     CraneCommand op, XYCord xyUpdateCord)
 {
     unsigned z = 0;
-    const auto cargoMat = shipPlan->getCargo();
+    auto cargoMat = shipPlan->getCargo();
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
 
     switch (op)

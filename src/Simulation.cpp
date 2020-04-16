@@ -125,7 +125,7 @@ bool Simulation::readShipPlan(const std::string &path)
         unsigned numOfFloors;
 
         vecLines.erase(vecLines.begin());
-        UIntMat startingHeightsMat(width, std::vector<unsigned>(length, 0));
+        UIntMat startingHeightsMat(width,length);
 
         for (const auto &vecLine : vecLines)
         {

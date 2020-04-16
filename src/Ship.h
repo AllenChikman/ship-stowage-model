@@ -29,8 +29,8 @@ struct UIntMat
 {
     std::vector<std::vector<unsigned>> mat;
 
-    explicit UIntMat(unsigned long long int n, const std::vector<unsigned> &vec)
-            : mat(std::vector<std::vector<unsigned>>(n, vec)) {}
+    explicit UIntMat(unsigned width, unsigned length)
+            : mat(std::vector<std::vector<unsigned>>(width, std::vector<unsigned>(length))) {}
 
     std::vector<unsigned> &operator[](std::size_t idx) { return mat[idx]; }
 
@@ -42,21 +42,29 @@ struct UIntMat
 
 };
 
+//typedef std::vector<std::vector<std::vector<std::optional<Container>>>> CargoMat;
 struct CargoMat
 {
     std::vector<std::vector<std::vector<std::optional<Container>>>> tripMat;
 
-/*    explicit CargoMat(unsigned long long int n, const std::vector<unsigned> &vec)
-            : mat(std::vector<std::vector<unsigned>>(n, vec)) {}
+    explicit CargoMat(unsigned width, unsigned length, unsigned height)
+            : tripMat(std::vector<std::vector<std::vector<std::optional<Container>>>>
+                              (width, std::vector<std::vector<std::optional<Container>>>
+                                      (length, std::vector<std::optional<Container>>
+                                              (height, std::nullopt)))) {}
 
-    std::vector<unsigned> &operator[](std::size_t idx) { return tripMat[idx]; }
 
-    const std::vector<unsigned> &operator[](std::size_t idx) const { return tripMat[idx]; }*/
+    std::vector<std::vector<std::optional<Container>>> &operator[](std::size_t idx) { return tripMat[idx]; }
 
-    std::optional<Container> &operator[](XYCord cord) { return tripMat[cord.x][cord.y]; }
+    const std::vector<std::vector<std::optional<Container>>> &operator[](std::size_t idx) const { return tripMat[idx]; }
 
-    const std::optional<Container> &operator[](XYCord cord) const { return tripMat[cord.x][cord.y]; }
+    std::vector<std::optional<Container>> &operator[](XYCord cord) { return tripMat[cord.x][cord.y]; }
 
+    const std::vector<std::optional<Container>> &operator[](XYCord cord) const { return tripMat[cord.x][cord.y]; }
+
+    std::optional<Container> &operator[](XYZCord cord) { return tripMat[cord.x][cord.y][cord.z]; }
+
+    const std::optional<Container> &operator[](XYZCord cord) const { return tripMat[cord.x][cord.y][cord.z]; }
 
 };
 
@@ -75,6 +83,17 @@ private:
     CargoMat cargo;
     ShipWeightBalanceCalculator balanceCalculator;
 
+    void fillshipXYCords()
+    {
+        for (unsigned i = 0; i < width; ++i)
+        {
+            for (unsigned j = 0; j < height; ++j)
+            {
+                shipXYCords.push_back(XYCord{i, j});
+            }
+        }
+    }
+
 public:
     ShipPlan(unsigned width, unsigned length, unsigned height, const UIntMat &startingHeight,
              ShipWeightBalanceCalculator balanceCalculator)
@@ -85,16 +104,9 @@ public:
               balanceCalculator(balanceCalculator),
               startingHeight(startingHeight),
               firstCellAvailable(startingHeight),
-              cargo(CargoMat(width, std::vector<std::vector<std::optional<Container>>>
-                      (length, std::vector<std::optional<Container>>(height, std::nullopt))))
+              cargo(width, length, height)
     {
-        for (unsigned i = 0; i < width; ++i)
-        {
-            for (unsigned j = 0; j < height; ++j)
-            {
-                shipXYCords.push_back(XYCord{i, j});
-            }
-        }
+        fillshipXYCords();
     }
 
     ~ShipPlan() = default;
