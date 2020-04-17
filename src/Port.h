@@ -18,7 +18,7 @@ enum Command
 
 char getCraneCmdChar(Command cmd);
 
-void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Container &container, Command cmd = UNLOAD,
+void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Container &container, Command cmd,
                     XYCord xyCord = {0, 0});
 
 }

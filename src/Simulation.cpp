@@ -9,6 +9,7 @@
 #include "Utils.h"
 #include "Simulation.h"
 #include "StowageAlgorithm.h"
+#include "filesystem"
 
 
 // Simulation private class method implementation
@@ -225,8 +226,21 @@ bool Simulation::startTravel(const string &travelDir)
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
-        cargoFilesSet.erase(currInputPath);
-
+        string pathToPop;
+        for (const auto &path : cargoFilesSet)
+        {
+            std::filesystem::path p1 = path;
+            std::filesystem::path p2 = currInputPath;
+            if (std::filesystem::equivalent(p1, p2))
+            {
+                pathToPop = path;
+                break;
+            }
+        }
+        if (!pathToPop.empty())
+        {
+            cargoFilesSet.erase(pathToPop);
+        }
         try
         {
             lastPortVisit = isLastPortVisit(portStr);

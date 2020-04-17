@@ -39,7 +39,7 @@ bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord 
 bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const vector<SeaPortCode> &shipRoute)
 {
     const bool validID = container.isValidID();
-    const bool legalDestPort = !isContainerDestPortInRoute(shipRoute, container);
+    const bool legalDestPort = isContainerDestPortInRoute(shipRoute, container);
     const bool legalLoading = !((op == 'L') && isShipFull(shipPlan));
 
     if (!validID) { log("Invalid container ID", MessageSeverity::WARNING); }
@@ -49,7 +49,7 @@ bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, co
     const bool res = validID && legalDestPort && legalLoading;
 
     if (!res) {{ log("Container " + container.getID() + " Rejected!", MessageSeverity::WARNING); }}
-    return res;
+    return !res;
 }
 
 bool parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
@@ -86,12 +86,14 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     return ShipMaxHeight;
 }
 
-vector<Container> collectingPotentialContainersToLoad(bool lastPort,
-                                                           vector<Container> &containersToLoad,
-                                                           CargoMat cargoMat, const string &seaPortCodeStr,
-                                                           const unsigned ShipMaxHeight, XYCord xyCord, unsigned z)
+void fillVecsToLoadUnload(bool lastPort,
+                          vector<Container> &containersToUnload,
+                          vector<Container> &containersToLoad,
+                          CargoMat &cargoMat,
+                          const string &seaPortCodeStr,
+                          const unsigned ShipMaxHeight,
+                          XYCord xyCord, unsigned z)
 {
-    vector<Container> containersToUnload;
     while (z < ShipMaxHeight && cargoMat[xyCord][z])
     {
         Container curContainer = *cargoMat[xyCord][z];
@@ -102,10 +104,9 @@ vector<Container> collectingPotentialContainersToLoad(bool lastPort,
         containersToUnload.insert(containersToUnload.begin(), *cargoMat[xyCord][z]);
         z++;
     }
-    return containersToUnload;
 }
 
-void checkIfUnloadPossible(ShipPlan *shipPlan, vector<Container> &containersToUnload,
+void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
                            const vector<SeaPortCode> &shipRoute,
                            XYCord xyCord, std::ofstream &outputFile)
 {
@@ -131,7 +132,7 @@ void checkIfUnloadPossible(ShipPlan *shipPlan, vector<Container> &containersToUn
     }
 }
 
-void checkIfLoadPossible(ShipPlan *shipPlan, vector<Container> &containersToLoad,
+void Loading(ShipPlan *shipPlan, vector<Container> &containersToLoad,
                          std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute)
 {
     for (const auto &curContainerToLoad : containersToLoad)
@@ -158,12 +159,13 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
 
     try
     {
-        vector<Container> containerVec;
-        if (!parseInputToContainersVec(containerVec, inputPath)) { return false; };
+        vector<Container> portContainers;
+        if (!parseInputToContainersVec(portContainers, inputPath)) { return false; };
 
         std::ofstream outputFile;
         outputFile.open(outputPath, std::ios::out);
-        vector<Container> containersToUnload, containersToLoad;
+        vector<Container> containersToLoad;
+        vector<Container> containersToUnload;
 
         UIntMat &availableCells = shipPlan->getUpperCellsMat();
         CargoMat &cargoMat = shipPlan->getCargo();
@@ -172,36 +174,32 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
         const auto &seaPortCodeStr = curSeaPortCode.toStr();
         const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
 
-        unsigned z;
-        for (XYCord cord : shipXYCordVec)
+        unsigned z = 0;
+        for (const XYCord cord : shipXYCordVec)
         {
             //1st step: Finding minimum container position on ship that needs to be unloaded
-            if (isLastPortVisit)
-            {
-                z = (availableCells[cord] > 0) ? availableCells[cord] - 1 : 0;
-            }
-            else
+            if (!isLastPortVisit)
             {
                 z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, height, cord);
             }
             // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-            containersToUnload = collectingPotentialContainersToLoad(isLastPortVisit, containersToLoad, cargoMat,
-                                                                     seaPortCodeStr, height, cord, z);
+            fillVecsToLoadUnload(isLastPortVisit, containersToUnload, containersToLoad, cargoMat,
+                                 seaPortCodeStr, height, cord, z);
 
             // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-            checkIfUnloadPossible(shipPlan, containersToUnload, shipRoute, cord, outputFile);
+            Unloading(shipPlan, containersToUnload, shipRoute, cord, outputFile);
             containersToUnload.clear();
         }
-        if (isLastPortVisit && !containerVec.empty())
+        if (isLastPortVisit && !portContainers.empty())
         {
-            log("Last port. Cargo won't be loaded to Ship.", MessageSeverity::WARNING); //#TODO:change severity
+            log("Last port. Cargo won't be loaded to Ship.", MessageSeverity::WARNING);
             return true;
         }
-        for (const auto &container : containerVec)
+        for (const auto &container : portContainers)
         {
             containersToLoad.push_back(container);
         }
-        checkIfLoadPossible(shipPlan, containersToLoad, outputFile, shipRoute);
+        Loading(shipPlan, containersToLoad, outputFile, shipRoute);
         return true;
     }
 

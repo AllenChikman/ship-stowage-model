@@ -1,11 +1,10 @@
 Or:
-1* Add 'Reject' case to the instruction getter
-2* Unload everything in the last port
 3* Implement checking if a container has wrong id
 4* Count amount of operations per travel
 5* Accredit Crane with actual ship operations
 6* Add a shipPlan copy to class Algorithm
-7* Create more travel input folders and expected output folder
+7
+* Create more travel input folders and expected output folder
 8* write testers that verify the results (test also error handling!!)
 
 9* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is

@@ -88,7 +88,7 @@ void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Contain
         default:
             log("For HW2");
     }
-    dumpInstruction(outputFile, Command::REJECT, container, xyCord);
+    dumpInstruction(outputFile, cmd, container, xyCord);
 }
 
 }
