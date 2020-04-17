@@ -244,6 +244,7 @@ bool Simulation::startTravel(const string &travelDir)
         try
         {
             lastPortVisit = isLastPortVisit(portStr);
+            //TODO: Allen - if cargoFilesSet has currInputPath print warning message
             getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit);
         }
         catch (const std::exception &e)

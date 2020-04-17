@@ -1,20 +1,16 @@
 Or:
 3* Implement checking if a container has wrong id
+
 4* Count amount of operations per travel
 5* Accredit Crane with actual ship operations
 6* Add a shipPlan copy to class Algorithm
-7
+
+
 * Create more travel input folders and expected output folder
 8* write testers that verify the results (test also error handling!!)
 
-9* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
-  expected to unload only (and go for maintenance) at the last stop. In case last stop does
-  have a “Containers awaiting at port” file, a proper warning should be printed to screen and
-  the file shall be ignored.
 
 Allen:
-
-
 
 1* In case the number of “Containers awaiting at port” files for port P is less than the number of
    times P appears in the route file (not counting last stop, if this port is the last stop of the
@@ -23,6 +19,11 @@ Allen:
    those visits - if applicable. A proper warning should be printed to screen for a corresponding
    missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
    have a file ).
+
+2* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
+  expected to unload only (and go for maintenance) at the last stop. In case last stop does
+  have a “Containers awaiting at port” file, a proper warning should be printed to screen and
+  the file shall be ignored.
 
 
 * What to in case of reject? is the algortihm is interactive

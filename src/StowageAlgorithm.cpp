@@ -46,10 +46,10 @@ bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, co
     if (!legalDestPort) { log("Container destination port is not in route", MessageSeverity::WARNING); }
     if (!legalLoading) { log("Ship full - unable to load container", MessageSeverity::WARNING); }
 
-    const bool res = validID && legalDestPort && legalLoading;
+    const bool isInvalid = !validID || !legalDestPort || !legalLoading;
 
-    if (!res) {{ log("Container " + container.getID() + " Rejected!", MessageSeverity::WARNING); }}
-    return !res;
+    if (isInvalid) {{ log("Container " + container.getID() + " Rejected!", MessageSeverity::WARNING); }}
+    return isInvalid;
 }
 
 bool parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
@@ -107,8 +107,8 @@ void fillVecsToLoadUnload(bool lastPort,
 }
 
 void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
-                           const vector<SeaPortCode> &shipRoute,
-                           XYCord xyCord, std::ofstream &outputFile)
+               const vector<SeaPortCode> &shipRoute,
+               XYCord xyCord, std::ofstream &outputFile)
 {
     bool shipUnbalanced = false;
     Crane::Command cmd;
@@ -133,7 +133,7 @@ void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
 }
 
 void Loading(ShipPlan *shipPlan, vector<Container> &containersToLoad,
-                         std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute)
+             std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute)
 {
     for (const auto &curContainerToLoad : containersToLoad)
     {
@@ -160,7 +160,12 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
     try
     {
         vector<Container> portContainers;
-        if (!parseInputToContainersVec(portContainers, inputPath)) { return false; };
+        if (!isLastPortVisit)
+        {
+            if (!parseInputToContainersVec(portContainers, inputPath)) { return false; };
+
+        }
+
 
         std::ofstream outputFile;
         outputFile.open(outputPath, std::ios::out);
@@ -190,11 +195,7 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
             Unloading(shipPlan, containersToUnload, shipRoute, cord, outputFile);
             containersToUnload.clear();
         }
-        if (isLastPortVisit && !portContainers.empty())
-        {
-            log("Last port. Cargo won't be loaded to Ship.", MessageSeverity::WARNING);
-            return true;
-        }
+
         for (const auto &container : portContainers)
         {
             containersToLoad.push_back(container);
