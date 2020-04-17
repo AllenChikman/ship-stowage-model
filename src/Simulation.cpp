@@ -236,16 +236,15 @@ bool Simulation::startTravel(const string &travelDir)
         return false;
     }
 
-    string currPortFileName;
     string currInputPath;
     string currOutputPath;
     string portStr;
     unsigned numOfVisits;
     bool lastPortVisit;
 
+    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
 
-    //TODO: Allen - pass routeStack
-    for (const SeaPortCode &port : shipRoute)
+    for (const SeaPortCode &port : routeTravelStack)
     {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
@@ -264,10 +263,12 @@ bool Simulation::startTravel(const string &travelDir)
                 MessageSeverity::WARNING);
         }
 
-        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, cargoFileExists))
+        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack, cargoFileExists))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
+
+        routeTravelStack.pop_back();
     }
 
     WarnOnUnusedCargoFiles();
