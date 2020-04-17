@@ -1,3 +1,8 @@
-U, 20GP, 0, 0
-L, 24GP, 0, 0
-L, 25GP, 0, 1
+U, 23GP, 1, 0
+L, 25GP, 1, 0
+L, 26GP, 2, 0
+L, 27GP, 2, 1
+R, 28, -1, -1 Warning: Invalid container ID
+L, 28GP, 2, 1
+L, 29GP, 2, 1
+R, 30GP, -1, -1 Warning: Ship full - unable to load container
