@@ -98,10 +98,10 @@ public:
             : width(width),
               length(length),
               maxHeight(maximalHeight),
-              cargo(width, length, maximalHeight),
               shipXYCords(std::vector<XYCord>(0)),
-              balanceCalculator(balanceCalculator),
-              upperCellsMat(width, length)
+              cargo(width, length, maximalHeight),
+              upperCellsMat(width, length),
+              balanceCalculator(balanceCalculator)
     {
         fillShipXYCords();
     }
