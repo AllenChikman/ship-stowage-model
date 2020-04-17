@@ -252,12 +252,19 @@ bool Simulation::startTravel(const string &travelDir)
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
         lastPortVisit = isLastPortVisit(portStr);
-        if (popRouteFileSet(currInputPath) && lastPortVisit)
+        const bool cargoFileExists = popRouteFileSet(currInputPath);
+        if (cargoFileExists && lastPortVisit)
         {
             log("Last visited port should not have a file for it", MessageSeverity::WARNING);
         }
 
-        if(!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit))
+        if (!cargoFileExists && !lastPortVisit)
+        {
+            log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
+                MessageSeverity::WARNING);
+        }
+
+        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, cargoFileExists))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }

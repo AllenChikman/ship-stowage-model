@@ -22,14 +22,8 @@ Allen:
    missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
    have a file ).
 
-2* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
-  expected to unload only (and go for maintenance) at the last stop. In case last stop does
-  have a “Containers awaiting at port” file, a proper warning should be printed to screen and
-  the file shall be ignored.
 
 
-5* Create an XYCord struct to avoid nested for loops
-111* Change starting heights mat to proper vector
 
 * What to in case of reject? is the algortihm is interactive
 
