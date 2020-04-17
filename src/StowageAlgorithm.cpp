@@ -159,7 +159,7 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
     try
     {
         vector<Container> portContainers;
-        if (!ignoreInputFile)
+        if (ignoreInputFile)
         {
             if (!parseInputToContainersVec(portContainers, inputPath)) { return false; };
         }

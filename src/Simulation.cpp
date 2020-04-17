@@ -52,7 +52,6 @@ void Simulation::updateRouteFileSet()
     }
 }
 
-
 bool Simulation::popRouteFileSet(const string &currInputPath)
 {
     string pathToPop;
@@ -99,7 +98,6 @@ bool Simulation::initTravel(const string &travelDir)
     isSuccessful &= readShipRoute(getRouteFilePath());
     return isSuccessful;
 }
-
 
 
 // File input validators
