@@ -257,11 +257,7 @@ bool Simulation::startTravel(const string &travelDir)
             log("Last visited port should not have a file for it", MessageSeverity::WARNING);
         }
 
-        try
-        {
-            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit);
-        }
-        catch (const std::exception &e)
+        if(!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
