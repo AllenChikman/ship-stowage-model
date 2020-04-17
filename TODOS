@@ -1,4 +1,6 @@
 Or:
+
+
 3* Implement checking if a container has wrong id
 
 4* Count amount of operations per travel
@@ -25,6 +27,9 @@ Allen:
   have a “Containers awaiting at port” file, a proper warning should be printed to screen and
   the file shall be ignored.
 
+
+5* Create an XYCord struct to avoid nested for loops
+111* Change starting heights mat to proper vector
 
 * What to in case of reject? is the algortihm is interactive
 
