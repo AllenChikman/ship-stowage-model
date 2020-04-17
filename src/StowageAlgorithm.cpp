@@ -21,11 +21,11 @@ bool isShipFull(ShipPlan *shipPlan)
 
 }
 
-bool isContainerDestPortInRoute(const vector<SeaPortCode> &shipRoute, const Container &container)
+bool isContainerDestPortInRoute(const vector<SeaPortCode> &shipRoute, const Container &container, const SeaPortCode &curSeaPortCode)
 {
     for (auto &port : shipRoute)
     {
-        if (container.isBelongToPort(port)) { return true; }
+        if (container.isBelongToPort(port) && (port.toStr() != curSeaPortCode.toStr())) { return true; }
     }
     return false;
 }
@@ -36,10 +36,11 @@ bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord 
     return status == balanceStatus::APPROVED;
 }
 
-bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const vector<SeaPortCode> &shipRoute)
+bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container,
+        const vector<SeaPortCode> &shipRoute, const SeaPortCode &curSeaPortCode)
 {
     const bool validID = container.isValidID();
-    const bool legalDestPort = isContainerDestPortInRoute(shipRoute, container);
+    const bool legalDestPort = isContainerDestPortInRoute(shipRoute, container, curSeaPortCode);
     const bool legalLoading = !((op == 'L') && isShipFull(shipPlan));
 
     if (!validID) { log("Invalid container ID", MessageSeverity::WARNING); }
@@ -106,7 +107,7 @@ void fillVecsToLoadUnload(bool lastPort,vector<Container> &containersToUnload,
 
 void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
                const vector<SeaPortCode> &shipRoute,
-               XYCord xyCord, std::ofstream &outputFile)
+               XYCord xyCord, std::ofstream &outputFile, const SeaPortCode &curSeaPortCode)
 {
     bool shipUnbalanced = false;
     Crane::Command cmd;
@@ -118,7 +119,7 @@ void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
             shipUnbalanced = true;
         }
 // Checking if the operation should be rejected
-        if (rejectContainer(shipPlan, 'U', container, shipRoute) || shipUnbalanced)
+        if (rejectContainer(shipPlan, 'U', container, shipRoute, curSeaPortCode) || shipUnbalanced)
         {
             cmd = Crane::Command::REJECT;
         }
@@ -131,14 +132,14 @@ void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
 }
 
 void Loading(ShipPlan *shipPlan, vector<Container> &containersToLoad,
-             std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute)
+             std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute, const SeaPortCode &curSeaPortCode)
 {
     for (const auto &curContainerToLoad : containersToLoad)
     {
         bool shipUnbalanced;
         Crane::Command cmd;
         shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad); //optional
-        if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute) || shipUnbalanced)
+        if (rejectContainer(shipPlan, 'L', curContainerToLoad, shipRoute, curSeaPortCode) || shipUnbalanced)
         {
             cmd = Crane::Command::REJECT;
         }
@@ -190,7 +191,7 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
                                  seaPortCodeStr, height, cord, z);
 
             // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-            Unloading(shipPlan, containersToUnload, shipRoute, cord, outputFile);
+            Unloading(shipPlan, containersToUnload, shipRoute, cord, outputFile, curSeaPortCode);
             containersToUnload.clear();
         }
 
@@ -198,7 +199,7 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
         {
             containersToLoad.push_back(container);
         }
-        Loading(shipPlan, containersToLoad, outputFile, shipRoute);
+        Loading(shipPlan, containersToLoad, outputFile, shipRoute, curSeaPortCode);
         return true;
     }
 
