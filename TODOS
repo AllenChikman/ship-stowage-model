@@ -1,4 +1,6 @@
 Or:
+
+
 3* Implement checking if a container has wrong id
 4* Count amount of operations per travel
 5* Accredit Crane with actual ship operations
@@ -24,6 +26,9 @@ Allen:
    missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
    have a file ).
 
+
+5* Create an XYCord struct to avoid nested for loops
+111* Change starting heights mat to proper vector
 
 * What to in case of reject? is the algortihm is interactive
 

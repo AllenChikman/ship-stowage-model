@@ -86,13 +86,11 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     return ShipMaxHeight;
 }
 
-void fillVecsToLoadUnload(bool lastPort,
-                          vector<Container> &containersToUnload,
+void fillVecsToLoadUnload(bool lastPort,vector<Container> &containersToUnload,
                           vector<Container> &containersToLoad,
                           CargoMat &cargoMat,
                           const string &seaPortCodeStr,
-                          const unsigned ShipMaxHeight,
-                          XYCord xyCord, unsigned z)
+                          const unsigned ShipMaxHeight,XYCord xyCord, unsigned z)
 {
     while (z < ShipMaxHeight && cargoMat[xyCord][z])
     {

@@ -26,15 +26,16 @@ char getCraneCmdChar(Command cmd)
 
 }
 
-void dumpInstruction(std::ofstream &outputStream, Command cmd, const Container &container, XYCord cord)
+void dumpInstruction(std::ofstream &outputStream, Command cmd, const Container &container, XYCord xyCord)
 {
     auto id = container.getID();
     char op = getCraneCmdChar(cmd);
-
+    int x = (cmd == Command ::REJECT) ? -1 : (int)xyCord.x;
+    int y = (cmd == Command ::REJECT) ? -1 : (int)xyCord.y;
     outputStream << op << CSV_DELIM
                  << id << CSV_DELIM
-                 << cord.x << CSV_DELIM
-                 << cord.y << std::endl;
+                 << x << CSV_DELIM
+                 << y << std::endl;
 }
 
 
