@@ -40,7 +40,7 @@ bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container,
         const vector<SeaPortCode> &shipRoute, const SeaPortCode &curSeaPortCode)
 {
     const bool validID = container.isValidID();
-    const bool legalDestPort = isContainerDestPortInRoute(shipRoute, container, curSeaPortCode);
+    const bool legalDestPort = (op != 'L') || isContainerDestPortInRoute(shipRoute, container, curSeaPortCode);
     const bool legalLoading = !((op == 'L') && isShipFull(shipPlan));
 
     if (!validID) { log("Invalid container ID", MessageSeverity::WARNING); }

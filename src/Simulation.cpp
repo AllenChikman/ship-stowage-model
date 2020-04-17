@@ -52,6 +52,28 @@ void Simulation::updateRouteFileSet()
     }
 }
 
+
+bool Simulation::popRouteFileSet(const string &currInputPath)
+{
+    string pathToPop;
+    std::filesystem::path p2 = currInputPath;
+    for (const auto &path : cargoFilesSet)
+    {
+        std::filesystem::path p1 = path;
+        if (std::filesystem::equivalent(p1, p2))
+        {
+            pathToPop = path;
+            break;
+        }
+    }
+    if (!pathToPop.empty())
+    {
+        cargoFilesSet.erase(pathToPop);
+        return true;
+    }
+    return false;
+}
+
 void Simulation::WarnOnUnusedCargoFiles()
 {
     for (const auto &file : cargoFilesSet)
@@ -77,6 +99,7 @@ bool Simulation::initTravel(const string &travelDir)
     isSuccessful &= readShipRoute(getRouteFilePath());
     return isSuccessful;
 }
+
 
 
 // File input validators
@@ -220,34 +243,21 @@ bool Simulation::startTravel(const string &travelDir)
     unsigned numOfVisits;
     bool lastPortVisit;
 
+
+    //TODO: Allen - pass routeStack
     for (const SeaPortCode &port : shipRoute)
     {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
-        string pathToPop;
-        for (const auto &path : cargoFilesSet)
+        lastPortVisit = isLastPortVisit(portStr);
+        if (popRouteFileSet(currInputPath) && lastPortVisit)
         {
-            std::filesystem::path p1 = path;
-            std::filesystem::path p2 = currInputPath;
-            if (std::filesystem::equivalent(p1, p2))
-            {
-                pathToPop = path;
-                break;
-            }
+            log("Last visited port should not have a file for it", MessageSeverity::WARNING);
         }
-        if (!pathToPop.empty())
-        {
-            cargoFilesSet.erase(pathToPop);
-        }
-        try
-        {
-            lastPortVisit = isLastPortVisit(portStr);
-            //TODO: Allen - if cargoFilesSet has currInputPath print warning message
-            getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit);
-        }
-        catch (const std::exception &e)
+
+        if(!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
