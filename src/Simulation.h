@@ -23,7 +23,8 @@ private:
 
     bool isLastPortVisit(const std::string &portStr)
     {
-        return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
+        return routeMap[portStr] == visitedPorts[portStr]
+               && portStr == shipRoute.back().toStr();
     }
 
     std::pair<std::string, std::string> getPortFilePaths(const SeaPortCode &port, int numOfVisits);
@@ -37,6 +38,8 @@ private:
     void updateRouteMap();
 
     void updateRouteFileSet();
+
+    bool popRouteFileSet(const string &currInputPath);
 
     void WarnOnUnusedCargoFiles();
 
