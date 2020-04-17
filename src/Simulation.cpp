@@ -236,31 +236,39 @@ bool Simulation::startTravel(const string &travelDir)
         return false;
     }
 
-    string currPortFileName;
     string currInputPath;
     string currOutputPath;
     string portStr;
     unsigned numOfVisits;
     bool lastPortVisit;
 
+    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
 
-    //TODO: Allen - pass routeStack
-    for (const SeaPortCode &port : shipRoute)
+    for (const SeaPortCode &port : routeTravelStack)
     {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
         lastPortVisit = isLastPortVisit(portStr);
-        if (popRouteFileSet(currInputPath) && lastPortVisit)
+        const bool cargoFileExists = popRouteFileSet(currInputPath);
+        if (cargoFileExists && lastPortVisit)
         {
             log("Last visited port should not have a file for it", MessageSeverity::WARNING);
         }
 
-        if(!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, shipRoute, lastPortVisit))
+        if (!cargoFileExists && !lastPortVisit)
+        {
+            log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
+                MessageSeverity::WARNING);
+        }
+
+        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack, cargoFileExists))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
+
+        routeTravelStack.pop_back();
     }
 
     WarnOnUnusedCargoFiles();
