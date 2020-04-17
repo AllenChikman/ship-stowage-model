@@ -4,7 +4,10 @@
 
 #include <iostream>
 
-const std::string CSV_DELIM = ", "; // NOLINT(cert-err58-cpp)
+using std::vector;
+using std::string;
+
+const string CSV_DELIM = ", "; // NOLINT(cert-err58-cpp)
 
 enum class MessageSeverity
 {
@@ -15,17 +18,17 @@ enum class MessageSeverity
 
 void logStartingDecorator(std::ostream &outputStream = std::cout);
 
-void log(const std::string &message, MessageSeverity severity = MessageSeverity::INFO,
+void log(const string &message, MessageSeverity severity = MessageSeverity::INFO,
          std::ostream &outputStream = std::cout);
 
-unsigned stringToUInt(const std::string &str);
+unsigned stringToUInt(const string &str);
 
-bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines);
+bool readToVecLine(const string &path, vector<vector<string>> &vecLines);
 
-bool readToVec(const std::string &path, std::vector<std::string> &vec);
+bool readToVec(const string &path, vector<string> &vec);
 
-void createDirIfNotExists(const std::string &path);
+void createDirIfNotExists(const string &path);
 
-void putDirFileListToVec(const std::string &curPath, std::vector<std::string> &dirVec, const std::string &extent = "");
+void putDirFileListToVec(const string &curPath, vector<string> &dirVec, const string &extent = "");
 
 #endif //SHIP_STOWAGE_MODEL_UTILS_H

@@ -21,7 +21,7 @@ bool isShipFull(ShipPlan *shipPlan)
 
 }
 
-bool isContainerDestPortInRoute(const std::vector<SeaPortCode> &shipRoute, const Container &container)
+bool isContainerDestPortInRoute(const vector<SeaPortCode> &shipRoute, const Container &container)
 {
     for (auto &port : shipRoute)
     {
@@ -36,7 +36,7 @@ bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord 
     return status == balanceStatus::APPROVED;
 }
 
-bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const std::vector<SeaPortCode> &shipRoute)
+bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, const vector<SeaPortCode> &shipRoute)
 {
     const bool validID = container.isValidID();
     const bool legalDestPort = !isContainerDestPortInRoute(shipRoute, container);
@@ -52,11 +52,11 @@ bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container, co
     return res;
 }
 
-bool parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath)
+bool parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
 {
     try
     {
-        std::vector<std::vector<std::string>> vecLines;
+        vector<vector<string>> vecLines;
         if (!readToVecLine(inputPath, vecLines)) { throw std::runtime_error(""); }
         for (const auto &lineVec : vecLines)
         {
@@ -86,12 +86,12 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     return ShipMaxHeight;
 }
 
-std::vector<Container> collectingPotentialContainersToLoad(bool lastPort,
-                                                           std::vector<Container> &containersToLoad,
-                                                           CargoMat cargoMat, const std::string &seaPortCodeStr,
+vector<Container> collectingPotentialContainersToLoad(bool lastPort,
+                                                           vector<Container> &containersToLoad,
+                                                           CargoMat cargoMat, const string &seaPortCodeStr,
                                                            const unsigned ShipMaxHeight, XYCord xyCord, unsigned z)
 {
-    std::vector<Container> containersToUnload;
+    vector<Container> containersToUnload;
     while (z < ShipMaxHeight && cargoMat[xyCord][z])
     {
         Container curContainer = *cargoMat[xyCord][z];
@@ -105,8 +105,8 @@ std::vector<Container> collectingPotentialContainersToLoad(bool lastPort,
     return containersToUnload;
 }
 
-void checkIfUnloadPossible(ShipPlan *shipPlan, std::vector<Container> &containersToUnload,
-                           const std::vector<SeaPortCode> &shipRoute,
+void checkIfUnloadPossible(ShipPlan *shipPlan, vector<Container> &containersToUnload,
+                           const vector<SeaPortCode> &shipRoute,
                            XYCord xyCord, std::ofstream &outputFile)
 {
     bool shipUnbalanced = false;
@@ -131,8 +131,8 @@ void checkIfUnloadPossible(ShipPlan *shipPlan, std::vector<Container> &container
     }
 }
 
-void checkIfLoadPossible(ShipPlan *shipPlan, std::vector<Container> &containersToLoad,
-                         std::ofstream &outputFile, const std::vector<SeaPortCode> &shipRoute)
+void checkIfLoadPossible(ShipPlan *shipPlan, vector<Container> &containersToLoad,
+                         std::ofstream &outputFile, const vector<SeaPortCode> &shipRoute)
 {
     for (const auto &curContainerToLoad : containersToLoad)
     {
@@ -151,19 +151,19 @@ void checkIfLoadPossible(ShipPlan *shipPlan, std::vector<Container> &containersT
     }
 }
 
-bool getInstructionsForCargo(const std::string &inputPath, const std::string &outputPath, ShipPlan *shipPlan,
-                             const SeaPortCode &curSeaPortCode, const std::vector<SeaPortCode> &shipRoute,
+bool getInstructionsForCargo(const string &inputPath, const string &outputPath, ShipPlan *shipPlan,
+                             const SeaPortCode &curSeaPortCode, const vector<SeaPortCode> &shipRoute,
                              bool isLastPortVisit)
 {
 
     try
     {
-        std::vector<Container> containerVec;
+        vector<Container> containerVec;
         if (!parseInputToContainersVec(containerVec, inputPath)) { return false; };
 
         std::ofstream outputFile;
         outputFile.open(outputPath, std::ios::out);
-        std::vector<Container> containersToUnload, containersToLoad;
+        vector<Container> containersToUnload, containersToLoad;
 
         UIntMat &availableCells = shipPlan->getUpperCellsMat();
         CargoMat &cargoMat = shipPlan->getCargo();

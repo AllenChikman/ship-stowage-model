@@ -10,9 +10,9 @@
 
 // prints
 
-void log(const std::string &message, MessageSeverity severity, std::ostream &outputStream)
+void log(const string &message, MessageSeverity severity, std::ostream &outputStream)
 {
-    std::string severityStr;
+    string severityStr;
     switch (severity)
     {
         case MessageSeverity::WARNING :
@@ -37,13 +37,13 @@ void logStartingDecorator(std::ostream &outputStream)
 
 // Static functions for parsing purposes
 
-unsigned stringToUInt(const std::string &str)
+unsigned stringToUInt(const string &str)
 {
     // TODO: check validity
     return static_cast<unsigned int>(std::stoi(str));
 }
 
-void strCleanWhitespaces(std::string &str)
+void strCleanWhitespaces(string &str)
 {
     str.erase(std::remove_if(str.begin(),
                              str.end(),
@@ -51,15 +51,15 @@ void strCleanWhitespaces(std::string &str)
               str.end());
 }
 
-std::vector<std::string> splitByDelimiter(const std::string &line, char delimiter)
+vector<string> splitByDelimiter(const string &line, char delimiter)
 {
-    std::vector<std::string> res;
+    vector<string> res;
 
     std::stringstream ss(line);
 
     while (ss.good())
     {
-        std::string substr;
+        string substr;
         getline(ss, substr, delimiter);
         res.push_back(substr);
     }
@@ -67,12 +67,12 @@ std::vector<std::string> splitByDelimiter(const std::string &line, char delimite
     return res;
 }
 
-std::vector<std::string> splitByWhiteSpace(const std::string &line)
+vector<string> splitByWhiteSpace(const string &line)
 {
-    std::vector<std::string> tokens;
+    vector<string> tokens;
     std::istringstream iss(line);
-    copy(std::istream_iterator<std::string>(iss),
-         std::istream_iterator<std::string>(),
+    copy(std::istream_iterator<string>(iss),
+         std::istream_iterator<string>(),
          std::back_inserter(tokens));
     return tokens;
 }
@@ -80,7 +80,7 @@ std::vector<std::string> splitByWhiteSpace(const std::string &line)
 
 //readers
 
-bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>> &vecLines)
+bool readToVecLine(const string &path, vector<vector<string>> &vecLines)
 {
 
     // Open the File
@@ -93,7 +93,7 @@ bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>
         return false;
     }
 
-    std::string line;
+    string line;
     // Read the next line from File until it reaches the end.
     while (std::getline(in, line))
     {
@@ -108,7 +108,7 @@ bool readToVecLine(const std::string &path, std::vector<std::vector<std::string>
     return true;
 }
 
-bool readToVec(const std::string &path, std::vector<std::string> &vec)
+bool readToVec(const string &path, vector<string> &vec)
 {
 
     // Open the File
@@ -121,7 +121,7 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec)
         return false;
     }
 
-    std::string line;
+    string line;
     // Read the next line from File until it reaches the end.
     while (std::getline(in, line))
     {
@@ -138,7 +138,7 @@ bool readToVec(const std::string &path, std::vector<std::string> &vec)
 
 // filesystem functions
 
-void createDirIfNotExists(const std::string &path)
+void createDirIfNotExists(const string &path)
 {
 
     if (!std::filesystem::exists(path))
@@ -148,12 +148,12 @@ void createDirIfNotExists(const std::string &path)
 
 }
 
-void putDirFileListToVec(const std::string &curPath, std::vector<std::string> &dirFileVec, const std::string &extent)
+void putDirFileListToVec(const string &curPath, vector<string> &dirFileVec, const string &extent)
 {
     for (const auto &entry : std::filesystem::directory_iterator(curPath))
     {
-        const std::string path = entry.path().string();
-        if (!extent.empty() && path.find(extent) == std::string::npos) { continue; }
+        const string path = entry.path().string();
+        if (!extent.empty() && path.find(extent) == string::npos) { continue; }
         dirFileVec.push_back(path);
     }
 }

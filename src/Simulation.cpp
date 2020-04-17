@@ -13,15 +13,15 @@
 
 // Simulation private class method implementation
 
-std::pair<std::string, std::string> Simulation::getPortFilePaths(const SeaPortCode &port, int numOfVisits)
+std::pair<string, string> Simulation::getPortFilePaths(const SeaPortCode &port, int numOfVisits)
 {
-    const std::string &inputFileName = port.toStr(true);
-    const std::string &outputFileName = port.toStr();
+    const string &inputFileName = port.toStr(true);
+    const string &outputFileName = port.toStr();
 
-    const std::string middlePart = "_" + std::to_string(numOfVisits);
+    const string middlePart = "_" + std::to_string(numOfVisits);
 
-    std::string inputPath = curTravelFolder + '/' + inputFileName + middlePart + ".cargo_data";
-    std::string outputPath = curTravelFolder + "/output/" + outputFileName + middlePart + ".out_cargo_data";
+    string inputPath = curTravelFolder + '/' + inputFileName + middlePart + ".cargo_data";
+    string outputPath = curTravelFolder + "/output/" + outputFileName + middlePart + ".out_cargo_data";
 
     return std::make_pair(inputPath, outputPath);
 
@@ -36,14 +36,14 @@ void Simulation::updateRouteMap()
 {
     for (const auto &port : shipRoute)
     {
-        const std::string &portStr = port.toStr();
+        const string &portStr = port.toStr();
         routeMap[portStr] = (routeMap.find(portStr) == routeMap.end()) ? 1 : routeMap[portStr] + 1;
     }
 }
 
 void Simulation::updateRouteFileSet()
 {
-    std::vector<std::string> cargoFilesVec;
+    vector<string> cargoFilesVec;
     putDirFileListToVec(curTravelFolder, cargoFilesVec, ".cargo_data");
     for (const auto &path : cargoFilesVec)
     {
@@ -60,7 +60,7 @@ void Simulation::WarnOnUnusedCargoFiles()
     }
 }
 
-bool Simulation::initTravel(const std::string &travelDir)
+bool Simulation::initTravel(const string &travelDir)
 {
     logStartingDecorator();
     log("Initializing travel...");
@@ -104,9 +104,9 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
     return valid;
 }
 
-bool validateShipRouteFile(const std::vector<std::string> &vec)
+bool validateShipRouteFile(const vector<string> &vec)
 {
-    std::string prevSymbol;
+    string prevSymbol;
     for (const auto &portSymbol : vec)
     {
         if (!SeaPortCode::isValidCode(portSymbol))
@@ -127,11 +127,11 @@ bool validateShipRouteFile(const std::vector<std::string> &vec)
 
 // Simulation public class method implementation
 
-bool Simulation::readShipPlan(const std::string &path)
+bool Simulation::readShipPlan(const string &path)
 {
     try
     {
-        std::vector<std::vector<std::string>> vecLines;
+        vector<vector<string>> vecLines;
         if (!readToVecLine(path, vecLines))
         {
             throw std::runtime_error("");
@@ -172,14 +172,14 @@ bool Simulation::readShipPlan(const std::string &path)
     }
 }
 
-bool Simulation::readShipRoute(const std::string &path)
+bool Simulation::readShipRoute(const string &path)
 {
     try
     {
-        std::vector<std::string> vec;
+        vector<string> vec;
         if (!readToVec(path, vec)) { throw std::runtime_error(""); }
 
-        std::vector<SeaPortCode> routeVec;
+        vector<SeaPortCode> routeVec;
         if (validateShipRouteFile(vec))
         {
             for (const auto &portSymbol : vec)
@@ -204,7 +204,7 @@ bool Simulation::readShipRoute(const std::string &path)
     }
 }
 
-bool Simulation::startTravel(const std::string &travelDir)
+bool Simulation::startTravel(const string &travelDir)
 {
     if (!initTravel(travelDir))
     {
@@ -212,10 +212,10 @@ bool Simulation::startTravel(const std::string &travelDir)
         return false;
     }
 
-    std::string currPortFileName;
-    std::string currInputPath;
-    std::string currOutputPath;
-    std::string portStr;
+    string currPortFileName;
+    string currInputPath;
+    string currOutputPath;
+    string portStr;
     unsigned numOfVisits;
     bool lastPortVisit;
 
@@ -245,7 +245,7 @@ bool Simulation::startTravel(const std::string &travelDir)
 
 void Simulation::runAlgorithm()
 {
-    std::vector<std::string> travelDirPaths;
+    vector<string> travelDirPaths;
     putDirFileListToVec(rootFolder, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
     {
