@@ -18,15 +18,16 @@ bool SeaPortCode::isValidCode(const std::string &portSymbol)
 }
 bool Container::isValidID() const
 {
-    if(id.size() != 10) {return false;}
+
+    if(id.size() != 11) {return false;}
     std::string ownerCode = id.substr(0, 3);
-    std::string categoryId = id.substr(2, 1);
-    std::string serialNum = id.substr(3, 6);
-    std::string checkDig = id.substr(9, 1);
+    std::string categoryId = id.substr(3, 1);
+    std::string serialNum = id.substr(4, 6);
+    std::string checkDig = id.substr(10, 1);
 
     bool sameSec1 = std::regex_match(ownerCode, std::regex("^[A-Z]+$"));
-    bool sameSec2 = std::regex_match(serialNum, std::regex("^[U,Z,J]+$"));
+    bool sameSec2 = std::regex_match(categoryId, std::regex("^[U,Z,J]+$"));
     bool sameSec3 = std::regex_match(serialNum, std::regex("^[0-9]+$"));
-    bool sameSec4 = std::regex_match(serialNum, std::regex("^[0-9]+$"));
+    bool sameSec4 = std::regex_match(checkDig, std::regex("^[0-9]+$"));
     return sameSec1 && sameSec2 && sameSec3 && sameSec4;
 }
