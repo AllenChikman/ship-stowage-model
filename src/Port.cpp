@@ -4,10 +4,33 @@
 #include <ostream>
 #include <fstream>
 
+namespace Crane
+{
 
-void dumpInstruction(std::ofstream &outputStream, char op, const Container &container, XYCord cord)
+char getCraneCmdChar(Command cmd)
+{
+    switch (cmd)
+    {
+        case Command::UNLOAD:
+            return 'U';
+        case Command::LOAD:
+            return 'L';
+        case Command::REJECT:
+            return 'R';
+        case Command::MOVE:
+            return 'M';
+        default:
+            //unreachable code
+            return 'X';
+    }
+
+}
+
+void dumpInstruction(std::ofstream &outputStream, Command cmd, const Container &container, XYCord cord)
 {
     auto id = container.getID();
+    char op = getCraneCmdChar(cmd);
+
     outputStream << op << CSV_DELIM
                  << id << CSV_DELIM
                  << cord.x << CSV_DELIM
@@ -15,45 +38,57 @@ void dumpInstruction(std::ofstream &outputStream, char op, const Container &cont
 }
 
 
-void updateShipPlan(const Container &container, std::ofstream &outputFile, ShipPlan *shipPlan,
-                    CraneCommand op, XYCord xyUpdateCord)
+void performUnload(ShipPlan *shipPlan, XYCord xyCord)
 {
-    auto cargoMat = shipPlan->getCargo();
+    auto &cargoMat = shipPlan->getCargo();
+    auto &upperCellsMat = shipPlan->getUpperCellsMat();
+
+    unsigned availableUpperCell = upperCellsMat[xyCord];
+
+    cargoMat[xyCord][availableUpperCell - 1] = std::nullopt;
+    upperCellsMat[xyCord]--;
+}
+
+void performNaiveLoad(ShipPlan *shipPlan, const Container &container)
+{
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
-    const unsigned shipHeight = shipPlan->getHeight();
-    unsigned availableCell;
-    unsigned heightToLoad = 0;
+    CargoMat &cargoMat = shipPlan->getCargo();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
 
-    switch (op)
+    unsigned heightToLoad;
+    unsigned numOfFloors;
+
+    for (XYCord xyCord: shipXYCords)
     {
-        case CraneCommand::UNLOAD:
-            availableCell = shipPlan->getFirstAvailableCellMat()[xyUpdateCord];
-            cargoMat[xyUpdateCord][availableCell -1] = std::nullopt;
-            shipPlan->getFirstAvailableCellMat()[xyUpdateCord]--;
-            dumpInstruction(outputFile, 'U', container, xyUpdateCord);
+        numOfFloors = shipPlan->getNumOfFloors(xyCord);
+        if (upperCellsMat[xyCord] < numOfFloors)
+        {
+            heightToLoad = upperCellsMat[xyCord];
+            cargoMat[xyCord][heightToLoad] = container;  // TODO: needs to be moved to Crane
+            upperCellsMat[xyCord]++;
             break;
+        }
+    }
+}
 
-        case CraneCommand::LOAD:
 
-            // choosing a free cell in a naive way
-            for (XYCord cord: shipXYCords)
-            {
-                if (shipPlan->getFirstAvailableCellMat()[cord] < shipHeight)
-                {
-                    xyUpdateCord = {cord.x , cord.y};
-                    heightToLoad = shipPlan->getFirstAvailableCellMat()[cord];
-                    //updating free cell matrix
-                    shipPlan->getFirstAvailableCellMat()[cord]++;
-                    break;
-                }
-            }
-            dumpInstruction(outputFile, 'L', container, xyUpdateCord);
-            cargoMat[xyUpdateCord][heightToLoad] = container;  //needs to be moved to Crane
+void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Container &container,
+                    Command cmd, XYCord xyCord)
+{
+    switch (cmd)
+    {
+        case Command::UNLOAD:
+            performUnload(shipPlan, xyCord);
             break;
-        case CraneCommand::REJECT:
-            dumpInstruction(outputFile, 'R', container, xyUpdateCord);
+        case Command::LOAD:
+            performNaiveLoad(shipPlan, container);
+            break;
+        case Command::REJECT:
             break;
         default:
             log("For HW2");
     }
+    dumpInstruction(outputFile, Command::REJECT, container, xyCord);
+}
+
 }

@@ -5,14 +5,23 @@
 #include "Container.h"
 #include "Ship.h"
 
-enum CraneCommand
+
+class ShipPlan;
+
+namespace Crane
+{
+
+enum Command
 {
     LOAD, UNLOAD, REJECT, MOVE
 };
 
-class ShipPlan;
+char getCraneCmdChar(Command cmd);
 
-void updateShipPlan(const Container &container, std::ofstream &outputFile,
-                    ShipPlan *shipPlan, CraneCommand op = UNLOAD, XYCord xyUpdateCord = {0, 0});
+void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Container &container, Command cmd = UNLOAD,
+                    XYCord xyCord = {0, 0});
+
+}
+
 
 #endif //SHIP_STOWAGE_MODEL_PORT_H

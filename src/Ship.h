@@ -29,7 +29,7 @@ struct UIntMat
     std::vector<std::vector<unsigned>> mat;
 
     explicit UIntMat(unsigned width, unsigned length)
-            : mat(std::vector<std::vector<unsigned>>(width, std::vector<unsigned>(length))) {}
+            : mat(std::vector<std::vector<unsigned>>(width, std::vector<unsigned>(length, 0))) {}
 
     std::vector<unsigned> &operator[](std::size_t idx) { return mat[idx]; }
 
@@ -69,21 +69,23 @@ class ShipPlan
 {
 
 private:
-    const unsigned width;     //x
-    const unsigned length;    //y
-    const unsigned height;    //z
+    const unsigned width;       //x
+    const unsigned length;      //y
+    const unsigned maxHeight;   //z
+
     std::vector<XYCord> shipXYCords;
     //std::vector<XYCord> shipXYZCords;
-    UIntMat startingHeight;
-    UIntMat firstCellAvailable;
+
     CargoMat cargo;
+    UIntMat upperCellsMat;
+
     ShipWeightBalanceCalculator balanceCalculator;
 
     void fillShipXYCords()
     {
         for (unsigned i = 0; i < width; ++i)
         {
-            for (unsigned j = 0; j < height; ++j)
+            for (unsigned j = 0; j < length; ++j)
             {
                 shipXYCords.push_back(XYCord{i, j});
             }
@@ -91,16 +93,15 @@ private:
     }
 
 public:
-    ShipPlan(unsigned width, unsigned length, unsigned height, const UIntMat &startingHeight,
+    ShipPlan(unsigned width, unsigned length, unsigned maximalHeight,
              ShipWeightBalanceCalculator balanceCalculator)
             : width(width),
               length(length),
-              height(height),
+              maxHeight(maximalHeight),
+              cargo(width, length, maximalHeight),
               shipXYCords(std::vector<XYCord>(0)),
               balanceCalculator(balanceCalculator),
-              startingHeight(startingHeight),
-              firstCellAvailable(startingHeight),
-              cargo(width, length, height)
+              upperCellsMat(width, length)
     {
         fillShipXYCords();
     }
@@ -111,13 +112,13 @@ public:
 
     unsigned getLength() { return length; }
 
-    unsigned getHeight() { return height; }
+    unsigned getMaxHeight() { return maxHeight; }
+
+    unsigned getNumOfFloors(XYCord xyCord) { return static_cast<unsigned int>(cargo[xyCord].size()); }
 
     const std::vector<XYCord> &getShipXYCordsVec() { return shipXYCords; }
 
-    UIntMat getStartingHeight() { return startingHeight; }
-
-    UIntMat &getFirstAvailableCellMat() { return firstCellAvailable; }
+    UIntMat &getUpperCellsMat() { return upperCellsMat; }
 
     CargoMat &getCargo() { return cargo; }
 

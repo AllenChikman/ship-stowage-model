@@ -45,21 +45,23 @@ balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char
 
 balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, XYCord cord)
 {
+    auto &upperCellsMat = shipPlan->getUpperCellsMat();
+
     if (!validateTryOperationsArgs(shipPlan, loadUnload, kg, cord))
     {
         return status;
     }
-    unsigned Z = 0;
+    unsigned z = 0;
     if (loadUnload == 'U')
     {
         // assuming we always call this func when we have something to unload
-        Z = shipPlan->getFirstAvailableCellMat()[cord] - 1;
+        z = upperCellsMat[cord] - 1;
     }
 
     if (loadUnload == 'L')
     {
-        Z = shipPlan->getFirstAvailableCellMat()[cord];
+        z = upperCellsMat[cord];
     }
-    return checkBalance(cord.x, cord.y, Z, kg, loadUnload);
+    return checkBalance(cord.x, cord.y, z, kg, loadUnload);
 }
 

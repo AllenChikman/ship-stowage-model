@@ -147,22 +147,21 @@ bool Simulation::readShipPlan(const std::string &path)
         unsigned numOfFloors;
 
         vecLines.erase(vecLines.begin());
-        UIntMat startingHeightsMat(width, length);
+        shipPlan = new ShipPlan(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
+        CargoMat cargoMat = shipPlan->getCargo();
 
         for (const auto &vecLine : vecLines)
         {
             x = stringToUInt(vecLine[0]);
             y = stringToUInt(vecLine[1]);
             numOfFloors = stringToUInt(vecLine[2]);
-            if (!validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
+            if (validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
             {
-                continue; //invalid input entry is ignored
+                cargoMat[x][y].resize(numOfFloors);
             }
-            startingHeightsMat[x][y] = maximalHeight - numOfFloors;
+            // else: invalid input entry is ignored
         }
 
-        shipPlan = new ShipPlan(width, length, maximalHeight, startingHeightsMat,
-                                ShipWeightBalanceCalculator(APPROVED));
         return true;
     }
 
