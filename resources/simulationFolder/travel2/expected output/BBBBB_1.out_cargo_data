@@ -1,8 +1,8 @@
-U, 23GP, 1, 0
-L, 25GP, 1, 0
-L, 26GP, 2, 0
-L, 27GP, 2, 1
+U, ALNU2345673, 1, 0
+L, ALNU2345675, 1, 0
+L, ALNU2345676, 2, 0
+L, ALNU2345677, 2, 1
 R, 28, -1, -1 Warning: Invalid container ID
-L, 28GP, 2, 1
-L, 29GP, 2, 1
-R, 30GP, -1, -1 Warning: Ship full - unable to load container
+L, ALNU2345678, 2, 1
+L, ALNU2345679, 2, 1
+R, ALNU2345680, -1, -1 Warning: Ship full - unable to load container
