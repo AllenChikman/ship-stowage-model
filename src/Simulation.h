@@ -39,7 +39,7 @@ private:
 
     void updateRouteFileSet();
 
-    bool popRouteFileSet(const string &currInputPath);
+    bool popRouteFileSet(const std::string &currInputPath);
 
     void WarnOnUnusedCargoFiles();
 
