@@ -64,7 +64,7 @@ void performNaiveLoad(ShipPlan *shipPlan, const Container &container)
         if (upperCellsMat[xyCord] < numOfFloors)
         {
             heightToLoad = upperCellsMat[xyCord];
-            cargoMat[xyCord][heightToLoad] = container;  // TODO: needs to be moved to Crane
+            cargoMat[xyCord][heightToLoad] = container;
             upperCellsMat[xyCord]++;
             break;
         }
