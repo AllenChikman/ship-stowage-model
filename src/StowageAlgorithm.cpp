@@ -165,8 +165,8 @@ bool getInstructionsForCargo(const std::string &inputPath, const std::string &ou
         outputFile.open(outputPath, std::ios::out);
         std::vector<Container> containersToUnload, containersToLoad;
 
-        auto availableCells = shipPlan->getUpperCellsMat();
-        auto cargoMat = shipPlan->getCargo();
+        UIntMat &availableCells = shipPlan->getUpperCellsMat();
+        CargoMat &cargoMat = shipPlan->getCargo();
 
         const unsigned height = shipPlan->getMaxHeight();
         const auto &seaPortCodeStr = curSeaPortCode.toStr();
