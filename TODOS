@@ -3,13 +3,6 @@ Or:
 2) Count amount of operations per travel
 3) Accredit Crane with actual ship operations
 4) Add a shipPlan copy to class Algorithm
-5) Create more travel input folders and expected output folder
-6) write testers that verify the results (test also error handling!!)
-
-
-Allen:
-
-* What to in case of reject? is the algortihm is interactive
 
 Together:
 3* Write simulation result file
