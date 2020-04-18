@@ -87,7 +87,10 @@ bool Simulation::initTravel(const string &travelDir)
     logStartingDecorator();
     log("Initializing travel...");
 
-    visitedPorts = {};
+    visitedPorts.clear();
+    cargoFilesSet.clear();
+    routeMap.clear();
+
     curTravelFolder = travelDir;
     log("Travel Root Folder is: " + curTravelFolder);
     createOutputDirectory();
@@ -109,7 +112,7 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
     std::ostringstream msg;
     bool valid = true;
 
-    if (x > width || y > length)
+    if (x >= width || y >= length)
     {
         msg << "[" << x << "][" << y << "]" << " coordinate is out of bounds (ship plan size is:" <<
             "[" << width << "][" << length << "]";
@@ -117,7 +120,7 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
     }
     else if (numOfFloors >= maximalHeight)
     {
-        msg << "Number of floors is not smaller then the maximal height "
+        msg << "Number of floors is not smaller than the maximal height "
             << maximalHeight << " in [" << x << "][" << y << "]";
         valid = false;
     }
@@ -242,7 +245,7 @@ bool Simulation::startTravel(const string &travelDir)
 
     vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
 
-    for (const SeaPortCode &port : routeTravelStack)
+    for (const SeaPortCode &port : shipRoute)
     {
         portStr = port.toStr();
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];

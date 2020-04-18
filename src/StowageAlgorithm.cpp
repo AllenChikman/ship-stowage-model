@@ -170,7 +170,6 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
         vector<Container> containersToLoad;
         vector<Container> containersToUnload;
 
-        UIntMat &availableCells = shipPlan->getUpperCellsMat();
         CargoMat &cargoMat = shipPlan->getCargo();
 
         const auto shipXYCordVec = shipPlan->getShipXYCordsVec();

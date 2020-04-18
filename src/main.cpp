@@ -6,7 +6,8 @@
 
 int main()
 {
-    Simulation sim(R"(../resources/simulationFolder)");
+    const string simRootPath = (R"(../resources/simulationFolder)");
+    Simulation sim(simRootPath);
     sim.runAlgorithm();
     return EXIT_SUCCESS;
 }
