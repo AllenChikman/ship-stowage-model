@@ -6,7 +6,29 @@
 #include "Ship.h"
 #include "WeightBalanceCalculator.h"
 
+void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
+                                   vector<Container> &containersToLoad)
+{
+    unsigned cur;
+    size_t routeSize = travelRouteStack.size();
+    for (int portPos = routeSize; portPos > 0; portPos--)
+    {
+        cur = 0;
+        auto &port = travelRouteStack[portPos-1];
+        size_t containerSize = portContainers.size();
+        for(int i = 0; i<containerSize && !portContainers.empty(); i++)
+        {
+            if(portContainers[cur].getDestinationPort().toStr() == port.toStr())
+            {
+                containersToLoad.push_back(portContainers[cur]);
+                portContainers.erase(portContainers.begin() + cur);
+            } else{
+                cur++;
+            }
+        }
 
+    }
+}
 bool isShipFull(ShipPlan *shipPlan)
 {
     const auto upperCellsMat = shipPlan->getUpperCellsMat();
@@ -189,9 +211,13 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
             containersToUnload.clear();
         }
 
-        for (const auto &container : portContainers)
+        sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
+        if(!portContainers.empty())
         {
-            containersToLoad.push_back(container);
+            for(auto &portContainer : portContainers)
+            {
+                containersToLoad.push_back(portContainer);
+            }
         }
         Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
         return true;
