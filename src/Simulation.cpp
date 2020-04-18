@@ -170,7 +170,7 @@ bool Simulation::readShipPlan(const string &path)
 
         vecLines.erase(vecLines.begin());
         shipPlan = new ShipPlan(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
-        CargoMat cargoMat = shipPlan->getCargo();
+        CargoMat &cargoMat = shipPlan->getCargo();
 
         for (const auto &vecLine : vecLines)
         {

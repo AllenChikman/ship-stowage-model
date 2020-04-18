@@ -74,26 +74,26 @@ bool parseInputToContainersVec(vector<Container> &ContainersVec, const string &i
 }
 
 unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
-                                     unsigned ShipMaxHeight, XYCord xyCord)
+                                     unsigned numOfFloors, XYCord xyCord)
 {
 
     unsigned z = 0;
-    while (z < ShipMaxHeight && cargoMat[xyCord][z])
+    while (z < numOfFloors && cargoMat[xyCord][z])
     {
         const Container &curContainer = *cargoMat[xyCord][z];
         if (curContainer.isBelongToPort(curSeaPortCode)) { return z; }
         z++;
     }
-    return ShipMaxHeight;
+    return numOfFloors;
 }
 
-void fillVecsToLoadUnload(vector<Container> &containersToUnload,
+void fillVecsToLoadReload(vector<Container> &containersToUnload,
                           vector<Container> &containersToReload,
                           CargoMat &cargoMat,
                           const SeaPortCode &port,
-                          const unsigned ShipMaxHeight,XYCord xyCord, unsigned z)
+                          const unsigned numOfFloors,XYCord xyCord, unsigned z)
 {
-    while (z < ShipMaxHeight && cargoMat[xyCord][z])
+    while (z < numOfFloors && cargoMat[xyCord][z])
     {
         Container curContainer = *cargoMat[xyCord][z];
         if(!curContainer.isBelongToPort(port))
@@ -173,17 +173,17 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
         UIntMat &availableCells = shipPlan->getUpperCellsMat();
         CargoMat &cargoMat = shipPlan->getCargo();
 
-        const unsigned height = shipPlan->getMaxHeight();
         const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
 
         unsigned z = 0;
         for (const XYCord cord : shipXYCordVec)
         {
             //1st step: Finding minimum container position on ship that needs to be unloaded
-            z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, height, cord);
+            unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
+            z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
             // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-            fillVecsToLoadUnload(containersToUnload, containersToLoad, cargoMat,
-                                 curSeaPortCode, height, cord, z);
+            fillVecsToLoadReload(containersToUnload, containersToLoad, cargoMat,
+                                 curSeaPortCode, numOfFloors, cord, z);
 
             // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
             Unloading(shipPlan, containersToUnload, travelRouteStack, cord, outputFile, curSeaPortCode);

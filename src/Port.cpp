@@ -50,7 +50,7 @@ void performUnload(ShipPlan *shipPlan, XYCord xyCord)
     upperCellsMat[xyCord]--;
 }
 
-void performNaiveLoad(ShipPlan *shipPlan, const Container &container)
+XYCord performNaiveLoad(ShipPlan *shipPlan, const Container &container)
 {
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     CargoMat &cargoMat = shipPlan->getCargo();
@@ -67,9 +67,12 @@ void performNaiveLoad(ShipPlan *shipPlan, const Container &container)
             heightToLoad = upperCellsMat[xyCord];
             cargoMat[xyCord][heightToLoad] = container;
             upperCellsMat[xyCord]++;
-            break;
+            return xyCord;
         }
     }
+
+    //Unreachable code
+    return XYCord{0,0};
 }
 
 
@@ -82,7 +85,7 @@ void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Contain
             performUnload(shipPlan, xyCord);
             break;
         case Command::LOAD:
-            performNaiveLoad(shipPlan, container);
+            xyCord = performNaiveLoad(shipPlan, container);
             break;
         case Command::REJECT:
             break;
