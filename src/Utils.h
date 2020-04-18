@@ -9,6 +9,11 @@ using std::string;
 
 const string CSV_DELIM = ", "; // NOLINT(cert-err58-cpp)
 
+
+
+
+void compareOutput(const string &travelPath);
+
 enum class MessageSeverity
 {
     INFO,

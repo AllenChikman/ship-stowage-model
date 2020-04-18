@@ -8,6 +8,46 @@
 #include "Utils.h"
 
 
+void compareOutput(const string &travelPath)
+{
+    vector<string> outputFiles;
+    vector<string> expectedFiles;
+    putDirFileListToVec(travelPath + "/output", outputFiles, ".out_cargo_data");
+    putDirFileListToVec(travelPath + "/expectedOutput", expectedFiles, ".out_cargo_data");
+    bool success = true;
+    for (const string &expectedPath  : expectedFiles)
+    {
+        for (const string &outputPath : outputFiles)
+        {
+            if (std::filesystem::path(expectedPath).filename() == std::filesystem::path(outputPath).filename())
+            {
+                vector<string> output;
+                vector<string> expected;
+
+                readToVec(expectedPath, expected);
+                readToVec(outputPath, output);
+
+                for (int i = 0; i < expected.size(); ++i)
+                {
+                    if (expected[i] != output[i])
+                    {
+                        std::cout << std::filesystem::path(expectedPath).filename() <<": " << std::endl;
+                        std::cout << "output: " << output[i] << std::endl;
+                        std::cout << "expected: " << expected[i] << std::endl;
+                        success = false;
+                    }
+                }
+
+            }
+        }
+    }
+
+    if (success)
+    {
+        std::cout << "All files under: " << travelPath << " are the same!" << std::endl;
+    }
+}
+
 // prints
 
 void log(const string &message, MessageSeverity severity, std::ostream &outputStream)
