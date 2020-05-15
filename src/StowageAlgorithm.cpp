@@ -11,12 +11,12 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
 {
     unsigned cur;
     size_t routeSize = travelRouteStack.size();
-    for (int portPos = routeSize; portPos > 0; portPos--)
+    for (size_t portPos = routeSize; portPos > 0; portPos--)
     {
         cur = 0;
         auto &port = travelRouteStack[portPos-1];
         size_t containerSize = portContainers.size();
-        for(int i = 0; i<containerSize && !portContainers.empty(); i++)
+        for(size_t i = 0; i<containerSize && !portContainers.empty(); i++)
         {
             if(portContainers[cur].getDestinationPort().toStr() == port.toStr())
             {

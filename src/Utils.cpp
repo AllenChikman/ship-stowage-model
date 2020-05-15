@@ -27,7 +27,7 @@ void compareOutput(const string &travelPath)
                 readToVec(expectedPath, expected);
                 readToVec(outputPath, output);
 
-                for (int i = 0; i < expected.size(); ++i)
+                for (size_t i = 0; i < expected.size(); ++i)
                 {
                     if (expected[i] != output[i])
                     {

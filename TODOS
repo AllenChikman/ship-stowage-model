@@ -1,52 +1,15 @@
-Or:
+Old debts:
+
 1) Implement checking if a container has wrong id
-2) Count amount of operations per travel
-3) Accredit Crane with actual ship operations
-4) Add a shipPlan copy to class Algorithm
-
-Together:
-3* Write simulation result file
-4* Read again very sourly the EX1 and Input/Output instructions and see we meet all the requirements
-5* Add an abstract "Algorithm" class and set the naive algorithms to inherit from it
-6* decouple the algorithm and the simulator
+2) Count amount of operations per travel and Write simulation result file
+3) decouple the algorithm and the simulator
 
 
-///////////////////// Things to verify/test
+TODOs:
 
-* For all files, a line starting with the # symbol should be considered as a comment line
-  and be ignored.
+* Use C++ smart pointers to avoid or bring to minimum direct heap memory allocation and
+deallocation - using std::make_unique and std::make_shared appropriately.
 
+* implement one more naive algorithm, and make sure it hold with the same signature required
 
-* For all files, leading white spaces and any additional white spaces before or after
-  comma shall be allowed and ignored.
-
-
-* In case a position has an equal number of floors, or more, than the number of floors
-provided in the first line, this input line shall be ignored and a proper warning message shall be printed to screen.
-
-* If a given position exceeds the X/Y ship limits (as defined in the first line) it should be ignored
-  and a proper warning message shall be printed to screen.
-
-
-* If the file format cannot be read altogether, the file shall be ignored and a proper message
-shall be printed to screen. Without a ship plan the simulation should ignore the travel
-associated with this file.
-
-* The same port may appear more than once, but not in two consecutive lines.
-
-* Additional cargo_data files that were not in use (not in route or too many files for port) would
-  be ignored but a proper warning message will be printed to screen.
-
-* The last visit in the route is not expected to have a “Containers awaiting at port” file - ship is
-  expected to unload only (and go for maintenance) at the last stop. In case last stop does
-  have a “Containers awaiting at port” file, a proper warning should be printed to screen and
-  the file shall be ignored.
-
-* In case the number of “Containers awaiting at port” files for port P is less than the number of
-  times P appears in the route file (not counting last stop, if this port is the last stop of the
-  route): It shall be considered that in the last visits (==number of “missing files”) of the ship to
-  port P, no cargo is to be loaded onto it, and cargo is only to be unloaded at destination P for
-  those visits - if applicable. A proper warning should be printed to screen for a corresponding
-  missing “Containers awaiting at port” file ( except for the last stop in the route which shall not
-  have a file ).
 
