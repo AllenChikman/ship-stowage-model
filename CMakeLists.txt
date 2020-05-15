@@ -7,6 +7,7 @@ add_executable(ship_stowage_model
         src/main.cpp
         src/StowageAlgorithm.cpp
         src/StowageAlgorithm.h
+        src/AbstractAlgorithm.h
         src/Ship.cpp
         src/Ship.h
         src/Simulation.cpp

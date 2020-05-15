@@ -39,7 +39,7 @@ void dumpInstruction(std::ofstream &outputStream, Command cmd, const Container &
 }
 
 
-void performUnload(ShipPlan *shipPlan, XYCord xyCord)
+void performUnload(std::shared_ptr<ShipPlan> shipPlan, XYCord xyCord)
 {
     auto &cargoMat = shipPlan->getCargo();
     auto &upperCellsMat = shipPlan->getUpperCellsMat();
@@ -50,7 +50,7 @@ void performUnload(ShipPlan *shipPlan, XYCord xyCord)
     upperCellsMat[xyCord]--;
 }
 
-XYCord performNaiveLoad(ShipPlan *shipPlan, const Container &container)
+XYCord performNaiveLoad(const std::shared_ptr<ShipPlan> &shipPlan, const Container &container)
 {
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     CargoMat &cargoMat = shipPlan->getCargo();
@@ -76,7 +76,7 @@ XYCord performNaiveLoad(ShipPlan *shipPlan, const Container &container)
 }
 
 
-void updateShipPlan(std::ofstream &outputFile, ShipPlan *shipPlan, const Container &container,
+void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPlan, const Container &container,
                     Command cmd, XYCord xyCord)
 {
     switch (cmd)

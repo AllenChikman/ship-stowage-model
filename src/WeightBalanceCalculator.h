@@ -2,6 +2,8 @@
 #define SHIP_STOWAGE_MODEL_BALANCE_CALCULATOR_H
 
 
+#include <memory>
+
 class ShipPlan;
 struct XYCord;
 
@@ -16,7 +18,7 @@ public:
 
     explicit ShipWeightBalanceCalculator(balanceStatus status1):status(status1){}
 
-    balanceStatus tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, XYCord cord);
+    balanceStatus tryOperation(std::shared_ptr<ShipPlan> shipPlan, char loadUnload, unsigned kg, XYCord cord);
 
     balanceStatus getStatus (){return status;}
 

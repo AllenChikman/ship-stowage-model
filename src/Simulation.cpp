@@ -10,6 +10,7 @@
 #include "Simulation.h"
 #include "StowageAlgorithm.h"
 #include "filesystem"
+#include "AbstractAlgorithm.h"
 
 
 // Simulation private class method implementation
@@ -73,7 +74,7 @@ bool Simulation::popRouteFileSet(const string &currInputPath)
     return false;
 }
 
-void Simulation::WarnOnUnusedCargoFiles()
+void Simulation::ValidateAllCargoFilesWereUsed()
 {
     for (const auto &file : cargoFilesSet)
     {
@@ -172,7 +173,7 @@ bool Simulation::readShipPlan(const string &path)
         unsigned numOfFloors;
 
         vecLines.erase(vecLines.begin());
-        shipPlan = new ShipPlan(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
+        shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
         CargoMat &cargoMat = shipPlan->getCargo();
 
         for (const auto &vecLine : vecLines)
@@ -229,6 +230,8 @@ bool Simulation::readShipRoute(const string &path)
     }
 }
 
+
+// TODO: this function is for reference
 bool Simulation::startTravel(const string &travelDir)
 {
     if (!initTravel(travelDir))
@@ -251,7 +254,7 @@ bool Simulation::startTravel(const string &travelDir)
         numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
         visitedPorts[portStr] = ++numOfVisits;
         std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
-        lastPortVisit = isLastPortVisit(portStr);
+        lastPortVisit = isLastPortVisit(port);
         const bool cargoFileExists = popRouteFileSet(currInputPath);
         if (cargoFileExists && lastPortVisit)
         {
@@ -272,7 +275,7 @@ bool Simulation::startTravel(const string &travelDir)
         routeTravelStack.pop_back();
     }
 
-    WarnOnUnusedCargoFiles();
+    ValidateAllCargoFilesWereUsed();
 
     return true;
 }
@@ -288,6 +291,130 @@ void Simulation::runAlgorithm()
             log("Travel Finished Successfully!!!");
         }
     }
+
+}
+
+/////// EX2 Part
+
+void validateIfAlgorithmSucceeded(int algorithmReturnFlag, const string &currInputPath)
+{
+    if (!algorithmReturnFlag)
+    {
+        log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
+    }
+}
+
+void validateLastPort(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
+{
+
+    if (cargoFileExists && lastPortVisit)
+    {
+        log("Last visited port should not have a file for it", MessageSeverity::WARNING);
+    }
+
+    if (!cargoFileExists && !lastPortVisit)
+    {
+        log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
+            MessageSeverity::WARNING);
+    }
+
+}
+
+
+void Simulation::updateVisitedPortsMap(const SeaPortCode &port)
+{
+    const string &portStr = port.toStr();
+    if (visitedPorts.find(port.toStr()) != visitedPorts.end())
+    {
+        visitedPorts[portStr]++;
+    }
+    else
+    {
+        visitedPorts[portStr] = 1;
+    }
+}
+
+
+bool Simulation::performAndValidateAlgorithmInstructions(const string &outputDirPath)
+{
+    /* The simulator will check the following
+     * legal output format
+     * x,y legal coordinates
+     * UNLOAD - legal pull in UNLOAD(from the top) using the container Id
+     * LOAD - legal insert (at the top of the coordinate) using the container Id
+     * Valid Container Id
+     *
+     * TODO: or - please fill the function
+     *
+     * */
+
+    vector<vector<string>> vecLines;
+    readToVecLine(outputDirPath, vecLines);
+    int instructionCounter = 0;
+
+    for (const auto &vecLine : vecLines)
+    {
+        //if(validateLine)
+            // instructionCounter++;
+            //performOperation
+
+    }
+
+
+
+
+
+    return true;
+}
+
+
+void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
+                                        AbstractAlgorithm &algorithm, const string &outputDirPath)
+{
+
+    // init simulator for this travel
+    initTravel(travelDirPath);
+
+    // init algorithm for this travel
+    algorithm.readShipPlan(travelDirPath);
+    algorithm.readShipRoute(travelDirPath);
+
+    // get a stack (for popping logic of routes) of the shipRoute
+    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
+
+    // traverse each port
+    for (const SeaPortCode &port : shipRoute)
+    {
+        // update visited ports map
+        updateVisitedPortsMap(port);
+
+        // get the input and output for the algorithm "getInstructionsForCargo"
+        string currInputPath, currOutputPath;
+        std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, visitedPorts[port.toStr()]);
+
+        // set boolean variables
+        const bool lastPortVisit = isLastPortVisit(port);
+        const bool cargoFileExists = popRouteFileSet(currInputPath);
+
+        // call algorithms' get instruction for cargo
+        /*getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack,cargoFileExists);*/
+        const int algorithmReturnFlag = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
+
+        // validations regarding the last port and existence of expected file
+        validateLastPort(currInputPath, cargoFileExists, lastPortVisit);
+
+        // validate return code of the Algorithm
+        validateIfAlgorithmSucceeded(algorithmReturnFlag, currInputPath);
+
+        // Go through the instruction output of the algorithm and approve every move
+        performAndValidateAlgorithmInstructions(outputDirPath);
+
+        // pop the port we've been in from the left routes stack
+        routeTravelStack.pop_back();
+    }
+
+    ValidateAllCargoFilesWereUsed();
+
 
 }
 

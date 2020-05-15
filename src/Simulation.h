@@ -5,10 +5,12 @@
 
 
 #include <utility>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include "Ship.h"
+#include "AbstractAlgorithm.h"
 
 class Simulation
 {
@@ -17,14 +19,18 @@ private:
     const std::string rootFolder;
     std::string curTravelFolder;
 
-    ShipPlan *shipPlan = nullptr;
+    std::shared_ptr<ShipPlan> shipPlan;
     std::vector<SeaPortCode> shipRoute;
     std::unordered_map<std::string, unsigned> visitedPorts = {};
     std::unordered_map<std::string, unsigned> routeMap = {};
     std::unordered_set<std::string> cargoFilesSet = {};
 
-    bool isLastPortVisit(const std::string &portStr)
+    std::unordered_map<std::string, unsigned> algorithmPathIdxMap = {};
+    std::vector<std::vector<int>> instructionCountMat;
+
+    bool isLastPortVisit(const SeaPortCode &port)
     {
+        const std::string& portStr = port.toStr();
         return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
     }
 
@@ -36,21 +42,27 @@ private:
 
     void createOutputDirectory();
 
+    void updateVisitedPortsMap(const SeaPortCode &port);
+
     void updateRouteMap();
 
     void updateRouteFileSet();
 
     bool popRouteFileSet(const std::string &currInputPath);
 
-    void WarnOnUnusedCargoFiles();
+    void ValidateAllCargoFilesWereUsed();
 
     bool initTravel(const std::string &travelName);
 
+    bool performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
+
+    void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
+                                const std::string &outputDirPath);
+
 public:
     explicit Simulation(std::string rootFolder) :
+            instructionCountMat(std::vector<std::vector<int>>()),
             rootFolder(std::move(rootFolder)) {}
-
-    ~Simulation() { free(shipPlan); }
 
     bool readShipPlan(const std::string &path);
 

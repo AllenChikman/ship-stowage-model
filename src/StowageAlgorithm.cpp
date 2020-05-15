@@ -29,7 +29,7 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
 
     }
 }
-bool isShipFull(ShipPlan *shipPlan)
+bool isShipFull(std::shared_ptr<ShipPlan> shipPlan)
 {
     const auto upperCellsMat = shipPlan->getUpperCellsMat();
     const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
@@ -52,13 +52,13 @@ bool isContainerDestPortInRoute(const vector<SeaPortCode> &travelRouteStack, con
     return false;
 }
 
-bool isBalanced(ShipPlan *shipPlan, char op, const Container &container, XYCord cord = {0, 0})
+bool isBalanced(std::shared_ptr<ShipPlan> shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
     balanceStatus status = shipPlan->getBalanceCalculator().tryOperation(shipPlan, op, container.getWeight(), cord);
     return status == balanceStatus::APPROVED;
 }
 
-bool rejectContainer(ShipPlan *shipPlan, char op, const Container &container,
+bool rejectContainer(std::shared_ptr<ShipPlan> shipPlan, char op, const Container &container,
         const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &curSeaPortCode)
 {
     const bool validID = container.isValidID();
@@ -127,7 +127,7 @@ void fillVecsToLoadReload(vector<Container> &containersToUnload,
     }
 }
 
-void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
+void Unloading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &containersToUnload,
                const vector<SeaPortCode> &travelRouteStack,
                XYCord xyCord, std::ofstream &outputFile, const SeaPortCode &curSeaPortCode)
 {
@@ -153,7 +153,7 @@ void Unloading(ShipPlan *shipPlan, vector<Container> &containersToUnload,
     }
 }
 
-void Loading(ShipPlan *shipPlan, vector<Container> &containersToLoad,
+void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &containersToLoad,
              std::ofstream &outputFile, const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &curSeaPortCode)
 {
     for (const auto &curContainerToLoad : containersToLoad)
@@ -173,7 +173,7 @@ void Loading(ShipPlan *shipPlan, vector<Container> &containersToLoad,
     }
 }
 
-bool getInstructionsForCargo(const string &inputPath, const string &outputPath, ShipPlan *shipPlan,
+bool getInstructionsForCargo(const string &inputPath, const string &outputPath, std::shared_ptr<ShipPlan> shipPlan,
                              const SeaPortCode &curSeaPortCode, const vector<SeaPortCode> &travelRouteStack,
                              bool ignoreInputFile)
 {

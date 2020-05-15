@@ -4,7 +4,7 @@
 #include "Ship.h"
 #include "Utils.h"
 
-bool validateTryOperationsArgs(ShipPlan *shipPlan, char loadUnload, unsigned kg,
+bool validateTryOperationsArgs(const std::shared_ptr<ShipPlan> &shipPlan, char loadUnload, unsigned kg,
                                                             XYCord cord)
 {
     std::string reason;
@@ -43,7 +43,7 @@ balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char
     return APPROVED;
 }
 
-balanceStatus ShipWeightBalanceCalculator::tryOperation(ShipPlan *shipPlan, char loadUnload, unsigned kg, XYCord cord)
+balanceStatus ShipWeightBalanceCalculator::tryOperation(std::shared_ptr<ShipPlan> shipPlan, char loadUnload, unsigned kg, XYCord cord)
 {
     auto &upperCellsMat = shipPlan->getUpperCellsMat();
 
