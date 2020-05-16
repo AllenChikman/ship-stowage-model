@@ -6,8 +6,8 @@
 
 void test()
 {
-    compareOutput((R"(../resources/simulationFolder/travel1)"));
-    compareOutput((R"(../resources/simulationFolder/travel2)"));
+    compareOutput((R"(../resources/simulationFolder/travel5)"));
+    compareOutput((R"(../resources/simulationFolder/travel6)"));
     compareOutput((R"(../resources/simulationFolder/travel3)"));
     compareOutput((R"(../resources/simulationFolder/travel4)"));
 }

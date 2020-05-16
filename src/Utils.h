@@ -36,4 +36,6 @@ void createDirIfNotExists(const string &path);
 
 void putDirFileListToVec(const string &curPath, vector<string> &dirVec, const string &extent = "");
 
+void strCleanWhitespaces(string &str);
+
 #endif //SHIP_STOWAGE_MODEL_UTILS_H
