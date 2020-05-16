@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include "Ship.h"
 #include "AbstractAlgorithm.h"
@@ -25,8 +26,8 @@ private:
     std::unordered_map<std::string, unsigned> routeMap = {};
     std::unordered_set<std::string> cargoFilesSet = {};
 
-    std::unordered_map<std::string, unsigned> algorithmPathIdxMap = {};
-    std::vector<std::vector<int>> instructionCountMat;
+    typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
+    ResultsPairMap algorithmTravelResults = {};
 
     bool isLastPortVisit(const SeaPortCode &port)
     {
@@ -50,18 +51,22 @@ private:
 
     bool popRouteFileSet(const std::string &currInputPath);
 
-    void ValidateAllCargoFilesWereUsed();
+    void validateAllCargoFilesWereUsed();
 
     bool initTravel(const std::string &travelName);
 
     bool performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
+
+
+    void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
+
+    void writeSimulationOutput(const std::string &outputFilePath);
 
     void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
                                 const std::string &outputDirPath);
 
 public:
     explicit Simulation(std::string rootFolder) :
-            instructionCountMat(std::vector<std::vector<int>>()),
             rootFolder(std::move(rootFolder)) {}
 
     bool readShipPlan(const std::string &path);

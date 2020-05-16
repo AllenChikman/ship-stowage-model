@@ -2,9 +2,11 @@
 #include <vector>
 #include <iterator>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <map>
 
 #include "Utils.h"
 #include "Simulation.h"
@@ -74,7 +76,7 @@ bool Simulation::popRouteFileSet(const string &currInputPath)
     return false;
 }
 
-void Simulation::ValidateAllCargoFilesWereUsed()
+void Simulation::validateAllCargoFilesWereUsed()
 {
     for (const auto &file : cargoFilesSet)
     {
@@ -275,7 +277,7 @@ bool Simulation::startTravel(const string &travelDir)
         routeTravelStack.pop_back();
     }
 
-    ValidateAllCargoFilesWereUsed();
+    validateAllCargoFilesWereUsed();
 
     return true;
 }
@@ -295,6 +297,87 @@ void Simulation::runAlgorithm()
 }
 
 /////// EX2 Part
+
+void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &algoScoreVec)
+{
+
+    // fill algoScoreVec vector with result data
+    for (const auto &algoTravelPair : algorithmTravelResults)
+    {
+        int operationsSum = 0;
+        int errorsSum = 0;
+        string travelName;
+
+        for (const auto &travelResultPair : algoTravelPair.second)
+        {
+            int travelOperations;
+            travelName = travelResultPair.first;
+            travelOperations = travelResultPair.second;
+            (travelOperations < 0) ? errorsSum++ : operationsSum += travelOperations;
+        }
+
+        algoScoreVec.emplace_back(travelName, operationsSum, errorsSum);
+    }
+
+    // sort the vector
+    std::sort(algoScoreVec.begin(), algoScoreVec.end(),
+              [](auto &left, auto &right)
+              {
+                  int leftNumOfErrors, leftNumOfOperations;
+                  int rightNumOfErrors, rightNumOfOperations;
+
+                  std::tie(std::ignore, leftNumOfErrors, leftNumOfOperations) = left;
+                  std::tie(std::ignore, rightNumOfErrors, rightNumOfOperations) = right;
+
+                  if (leftNumOfErrors != rightNumOfErrors)
+                      return leftNumOfErrors < rightNumOfErrors;
+
+                  return leftNumOfOperations < rightNumOfOperations;
+              });
+
+}
+
+
+void Simulation::writeSimulationOutput(const string &outputDirPath)
+{
+
+    //sort first by error, than by num of operations
+    std::vector<std::tuple<string, int, int>> algoScoreVec;
+    getSortedResultVec(algoScoreVec);
+
+    const std::string outputFileName = "simulation.results";
+    const std::string outputFileFullPath = outputDirPath + "/" + outputFileName;
+
+    //algorithmPathIdxMap
+
+    std::ofstream outputFile;
+    outputFile.open(outputFileFullPath);
+    outputFile << "RERULTS, short_travel, long_travel, complex_travel, Sum, Num Errors\n";
+
+    for (const auto &algoScore : algoScoreVec)
+    {
+        const std::string algoName;
+        int sumOfOperations, sumOfErrors;
+        std::tie(algoName, sumOfOperations, sumOfErrors);
+
+        outputFile << algoName << CSV_DELIM;
+        for (const auto &travelResultPair : algorithmTravelResults[algoName])
+        {
+            const std::string &travelName = travelResultPair.first;
+            int numOfOperations = travelResultPair.second;
+            outputFile << travelName << CSV_DELIM << numOfOperations << CSV_DELIM;
+        }
+
+        outputFile << sumOfOperations << CSV_DELIM << sumOfErrors << "\n";
+
+    }
+
+
+    outputFile.close();
+
+
+}
+
 
 void validateIfAlgorithmSucceeded(int algorithmReturnFlag, const string &currInputPath)
 {
@@ -355,13 +438,10 @@ bool Simulation::performAndValidateAlgorithmInstructions(const string &outputDir
     for (const auto &vecLine : vecLines)
     {
         //if(validateLine)
-            // instructionCounter++;
-            //performOperation
+        // instructionCounter++;
+        //performOperation
 
     }
-
-
-
 
 
     return true;
@@ -413,7 +493,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         routeTravelStack.pop_back();
     }
 
-    ValidateAllCargoFilesWereUsed();
+    validateAllCargoFilesWereUsed();
 
 
 }
