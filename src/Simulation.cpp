@@ -10,7 +10,7 @@
 
 #include "Utils.h"
 #include "Simulation.h"
-#include "StowageAlgorithm.h"
+#include "NaiveAlgorithm.h"
 #include "filesystem"
 #include "AbstractAlgorithm.h"
 
@@ -269,10 +269,10 @@ bool Simulation::startTravel(const string &travelDir)
                 MessageSeverity::WARNING);
         }
 
-        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack, cargoFileExists))
-        {
-            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
-        }
+//        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack, cargoFileExists))
+//        {
+//            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
+//        }
 
         routeTravelStack.pop_back();
     }
