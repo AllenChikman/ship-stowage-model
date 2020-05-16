@@ -177,11 +177,11 @@ void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &conta
 int NaiveAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name,
                             const std::string &output_full_path_and_file_name)
 {
-
+   bool useInputFile;
     try
     {
         vector<Container> portContainers;
-        if (ignoreInputFile)
+        if (useInputFile)
         {
             if (!parseInputToContainersVec(portContainers, input_full_path_and_file_name)) { return -1; };
         }
@@ -227,5 +227,9 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &input_full_path_a
     {
         return -1;
     }
+}
+
+int NaiveAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+    return 0;
 }
 

@@ -242,6 +242,10 @@ bool Simulation::startTravel(const string &travelDir)
         return false;
     }
 
+    NaiveAlgorithm algorithm;
+    algorithm.readShipPlan(travelDir);
+    algorithm.readShipRoute(travelDir);
+
     string currInputPath;
     string currOutputPath;
     string portStr;
@@ -269,10 +273,10 @@ bool Simulation::startTravel(const string &travelDir)
                 MessageSeverity::WARNING);
         }
 
-//        if (!getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack, cargoFileExists))
-//        {
-//            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
-//        }
+        if (!algorithm.getInstructionsForCargo(currInputPath, currOutputPath)
+        {
+            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
+        }
 
         routeTravelStack.pop_back();
     }
