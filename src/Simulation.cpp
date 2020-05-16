@@ -108,8 +108,8 @@ bool Simulation::initTravel(const string &travelDir)
 
 // File input validators
 
-bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeight,
-                           unsigned x, unsigned y, unsigned numOfFloors)
+bool algoValidateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeight,
+                               unsigned x, unsigned y, unsigned numOfFloors)
 {
 
     std::ostringstream msg;
@@ -132,7 +132,7 @@ bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeig
     return valid;
 }
 
-bool validateShipRouteFile(const vector<string> &vec)
+bool algoValidateShipRouteFile(const vector<string> &vec)
 {
     string prevSymbol;
     for (const auto &portSymbol : vec)
@@ -183,7 +183,7 @@ bool Simulation::readShipPlan(const string &path)
             x = stringToUInt(vecLine[0]);
             y = stringToUInt(vecLine[1]);
             numOfFloors = stringToUInt(vecLine[2]);
-            if (validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
+            if (algoValidateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
             {
                 cargoMat[x][y].resize(numOfFloors);
             }
@@ -208,7 +208,7 @@ bool Simulation::readShipRoute(const string &path)
         if (!readToVec(path, vec)) { throw std::runtime_error(""); }
 
         vector<SeaPortCode> routeVec;
-        if (validateShipRouteFile(vec))
+        if (algoValidateShipRouteFile(vec))
         {
             for (const auto &portSymbol : vec)
             {
@@ -243,8 +243,8 @@ bool Simulation::startTravel(const string &travelDir)
     }
 
     NaiveAlgorithm algorithm;
-    algorithm.readShipPlan(travelDir);
-    algorithm.readShipRoute(travelDir);
+    algorithm.readShipPlan(travelDir + "/shipPlan.csv");
+    algorithm.readShipRoute(travelDir + "/routeFile.csv");
 
     string currInputPath;
     string currOutputPath;
@@ -273,7 +273,7 @@ bool Simulation::startTravel(const string &travelDir)
                 MessageSeverity::WARNING);
         }
 
-        if (!algorithm.getInstructionsForCargo(currInputPath, currOutputPath)
+        if (!algorithm.getInstructionsForCargo(currInputPath, currOutputPath))
         {
             log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
         }
@@ -302,9 +302,9 @@ void Simulation::runAlgorithm()
 
 /////// EX2 Part
 
-bool SetSimulatorCmdParams(char** argv, int argc,
-                  std::string &travel_path,
-                  std::string &algorithm_path)
+bool SetSimulatorCmdParams(char **argv, int argc,
+                           std::string &travel_path,
+                           std::string &algorithm_path)
 {
     std::vector<std::string> args = std::vector<std::string>(static_cast<unsigned long long int>(argc - 1));
     for (size_t idx = 0; idx < static_cast<size_t>(argc) - 1; idx++) args[idx] = std::string(argv[idx + 1]);
@@ -346,7 +346,8 @@ bool SetSimulatorCmdParams(char** argv, int argc,
 
     if (showHelp || !travelPathFound)
     {
-        std::cout << "Usage: simulator [-travel_path <path>] [-algorithm_path <algorithm path>] [-output <output path>]" << std::endl;
+        std::cout << "Usage: simulator [-travel_path <path>] [-algorithm_path <algorithm path>] [-output <output path>]"
+                  << std::endl;
         return false;
     }
 
@@ -515,9 +516,6 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     algorithm.readShipPlan(travelDirPath);
     algorithm.readShipRoute(travelDirPath);
 
-    // get a stack (for popping logic of routes) of the shipRoute
-    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
-
     // traverse each port
     for (const SeaPortCode &port : shipRoute)
     {
@@ -544,9 +542,6 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
         // Go through the instruction output of the algorithm and approve every move
         performAndValidateAlgorithmInstructions(outputDirPath);
-
-        // pop the port we've been in from the left routes stack
-        routeTravelStack.pop_back();
     }
 
     validateAllCargoFilesWereUsed();
