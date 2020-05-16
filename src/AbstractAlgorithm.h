@@ -9,7 +9,7 @@ class WeightBalanceCalculator;
 class AbstractAlgorithm
 {
 public:
-    virtual ~AbstractAlgorithm() {}
+    virtual ~AbstractAlgorithm() = default;
 
     enum class Action
     {

@@ -52,6 +52,7 @@ void compareOutput(const string &travelPath)
 
 void log(const string &message, MessageSeverity severity, std::ostream &outputStream)
 {
+    //TODO: re-implement
     string severityStr;
     switch (severity)
     {

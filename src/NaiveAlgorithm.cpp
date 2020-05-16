@@ -1,10 +1,11 @@
 
 #include <vector>
 #include <string>
-#include "StowageAlgorithm.h"
+#include "NaiveAlgorithm.h"
 #include "Utils.h"
 #include "Ship.h"
 #include "WeightBalanceCalculator.h"
+
 
 void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
                                    vector<Container> &containersToLoad)
@@ -29,7 +30,7 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
 
     }
 }
-bool isShipFull(std::shared_ptr<ShipPlan> shipPlan)
+bool isShipFull(const std::shared_ptr<ShipPlan>& shipPlan)
 {
     const auto upperCellsMat = shipPlan->getUpperCellsMat();
     const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
@@ -52,13 +53,13 @@ bool isContainerDestPortInRoute(const vector<SeaPortCode> &travelRouteStack, con
     return false;
 }
 
-bool isBalanced(std::shared_ptr<ShipPlan> shipPlan, char op, const Container &container, XYCord cord = {0, 0})
+bool isBalanced(const std::shared_ptr<ShipPlan>& shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
     balanceStatus status = shipPlan->getBalanceCalculator().tryOperation(shipPlan, op, container.getWeight(), cord);
     return status == balanceStatus::APPROVED;
 }
 
-bool rejectContainer(std::shared_ptr<ShipPlan> shipPlan, char op, const Container &container,
+bool rejectContainer(const std::shared_ptr<ShipPlan>& shipPlan, char op, const Container &container,
         const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &curSeaPortCode)
 {
     const bool validID = container.isValidID();
@@ -173,9 +174,8 @@ void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &conta
     }
 }
 
-bool getInstructionsForCargo(const string &inputPath, const string &outputPath, std::shared_ptr<ShipPlan> shipPlan,
-                             const SeaPortCode &curSeaPortCode, const vector<SeaPortCode> &travelRouteStack,
-                             bool ignoreInputFile)
+int NaiveAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name,
+                            const std::string &output_full_path_and_file_name)
 {
 
     try
@@ -183,12 +183,12 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
         vector<Container> portContainers;
         if (ignoreInputFile)
         {
-            if (!parseInputToContainersVec(portContainers, inputPath)) { return false; };
+            if (!parseInputToContainersVec(portContainers, input_full_path_and_file_name)) { return -1; };
         }
 
 
         std::ofstream outputFile;
-        outputFile.open(outputPath, std::ios::out);
+        outputFile.open(output_full_path_and_file_name, std::ios::out);
         vector<Container> containersToLoad;
         vector<Container> containersToUnload;
 
@@ -220,11 +220,12 @@ bool getInstructionsForCargo(const string &inputPath, const string &outputPath, 
             }
         }
         Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
-        return true;
+        return 0;
     }
 
     catch (const std::exception &e)
     {
-        return false;
+        return -1;
     }
 }
+

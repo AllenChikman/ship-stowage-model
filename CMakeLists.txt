@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ship_stowage_model
         src/main.cpp
-        src/StowageAlgorithm.cpp
-        src/StowageAlgorithm.h
+        src/NaiveAlgorithm.cpp
+        src/NaiveAlgorithm.h
         src/AbstractAlgorithm.h
         src/Ship.cpp
         src/Ship.h
@@ -19,4 +19,4 @@ add_executable(ship_stowage_model
         src/Utils.cpp
         src/Utils.h
         src/Container.cpp
-        src/Container.h)
+        src/Container.h src/ErrorHandling.cpp src/ErrorHandling.h)
