@@ -16,6 +16,8 @@ private:
     balanceStatus status;
 public:
 
+    ShipWeightBalanceCalculator() = default;
+
     explicit ShipWeightBalanceCalculator(balanceStatus status1):status(status1){}
 
     balanceStatus tryOperation(std::shared_ptr<ShipPlan> shipPlan, char loadUnload, unsigned kg, XYCord cord);

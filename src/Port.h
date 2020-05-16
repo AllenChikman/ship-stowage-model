@@ -2,11 +2,12 @@
 #define SHIP_STOWAGE_MODEL_PORT_H
 
 
+#include <memory>
 #include "Container.h"
-#include "Ship.h"
 
 
 class ShipPlan;
+class XYCord;
 
 namespace Crane
 {
@@ -19,7 +20,7 @@ enum Command
 char getCraneCmdChar(Command cmd);
 
 void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPlan, const Container &container, Command cmd,
-                    XYCord xyCord = {0, 0});
+                    XYCord xyCord);
 
 }
 

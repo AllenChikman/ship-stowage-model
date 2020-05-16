@@ -199,3 +199,8 @@ void putDirFileListToVec(const string &curPath, vector<string> &dirFileVec, cons
     }
 }
 
+string getDirectoryOfPath(const string &fullPath)
+{
+    std::filesystem::path p(fullPath);
+    return p.parent_path().string();
+}

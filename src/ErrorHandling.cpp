@@ -208,8 +208,9 @@ void ErrorHandle::validateDuplicateIDOnPort(const vector<Container> &containersA
             idMap[container.getID()] ++;
         }
     }
-    for(string &id : idMap)
+    for(auto &temp_id : idMap)
     {
+        auto id = temp_id.first;
         if(idMap[id] > 1)
         {
             msg << "Duplicated ID on port.";

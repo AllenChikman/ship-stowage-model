@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Simulation.h"
 #include "Utils.h"
+#include "NaiveAlgorithm.h"
 
 
 void test()
@@ -15,8 +16,12 @@ int main()
 {
     const string simRootPath = (R"(../resources/simulationFolder)");
     Simulation sim(simRootPath);
-    sim.runAlgorithm();
 
+    //sim.runAlgorithm();
+
+    // new flow
+    NaiveAlgorithm algorithm;
+    sim.runAlgorithmOnTravels(R"(../resources/simulationFolder)", algorithm, "");
 
     bool debug = true;
     if (debug) { test(); }

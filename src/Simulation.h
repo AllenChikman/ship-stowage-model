@@ -62,8 +62,6 @@ private:
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
-                                const std::string &outputDirPath);
 
 public:
     explicit Simulation(std::string rootFolder) :
@@ -76,6 +74,12 @@ public:
     bool startTravel(const std::string &travelName);
 
     void runAlgorithm();
+
+    void runAlgorithmOnTravels(const std::string &travelsRootDir,
+                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath);
+
+    void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
+                                const std::string &outputDirPath);
 
 };
 
