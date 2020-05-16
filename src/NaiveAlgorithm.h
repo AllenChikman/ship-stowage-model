@@ -14,29 +14,17 @@
 class NaiveAlgorithm : public AbstractAlgorithm{
 private:
     std::shared_ptr<ShipPlan> shipPlan;
-    const SeaPortCode &curSeaPortCode;
-    std::vector<SeaPortCode> &travelRouteStack;
-    bool ignoreInputFile;
+    std::vector<SeaPortCode> travelRouteStack;
+    ShipWeightBalanceCalculator weightBalanceCalculator;
 public:
-    NaiveAlgorithm( std::shared_ptr<ShipPlan> shipPlan,
-    const SeaPortCode &curSeaPortCode,
-    std::vector<SeaPortCode> &shipRoute) : shipPlan(std::move(shipPlan)),curSeaPortCode(curSeaPortCode), travelRouteStack(shipRoute) {
-        ignoreInputFile = false;
-    }
-    void updateIgnoreInputFile(bool flag) {ignoreInputFile = flag;}
+    int readShipPlan(const std::string &full_path_and_file_name) override;
 
-    void updateTravelRouteStack(const std::vector<SeaPortCode> &updatedTravelRouteStack)
-    {
-        travelRouteStack = updatedTravelRouteStack;
-    }
-    int readShipPlan(const std::string &full_path_and_file_name) override = 0;
+    int readShipRoute(const std::string &full_path_and_file_name) override;
 
-    int readShipRoute(const std::string &full_path_and_file_name) override = 0;
-
-    int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override = 0;
+    int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 
     int getInstructionsForCargo(const std::string &input_full_path_and_file_name,
-                                const std::string &output_full_path_and_file_name) override = 0;
+                                const std::string &output_full_path_and_file_name) override;
 
 };
 

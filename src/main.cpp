@@ -6,8 +6,6 @@
 
 void test()
 {
-    compareOutput((R"(../resources/simulationFolder/travel5)"));
-    compareOutput((R"(../resources/simulationFolder/travel6)"));
     compareOutput((R"(../resources/simulationFolder/travel3)"));
     compareOutput((R"(../resources/simulationFolder/travel4)"));
 }
@@ -20,7 +18,7 @@ int main()
     sim.runAlgorithm();
 
 
-    bool debug = false;
+    bool debug = true;
     if (debug) { test(); }
 
     return EXIT_SUCCESS;
