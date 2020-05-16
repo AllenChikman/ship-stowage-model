@@ -302,6 +302,22 @@ void Simulation::runAlgorithm()
 
 /////// EX2 Part
 
+
+void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
+                                       AbstractAlgorithm &algorithm, const string &outputDirPath)
+{
+    vector<string> travelDirPaths;
+    putDirFileListToVec(travelsRootDir, travelDirPaths);
+    for (const auto &travelFolder :travelDirPaths)
+    {
+        runAlgorithmTravelPair(travelFolder, algorithm, outputDirPath);
+        log("Travel Finished Successfully!!!");
+    }
+
+}
+
+
+
 bool SetSimulatorCmdParams(char **argv, int argc,
                            std::string &travel_path,
                            std::string &algorithm_path)
@@ -489,7 +505,7 @@ bool Simulation::performAndValidateAlgorithmInstructions(const string &outputDir
      * */
 
     vector<vector<string>> vecLines;
-    readToVecLine(outputDirPath, vecLines);
+    //readToVecLine(outputDirPath, vecLines);
     int instructionCounter = 0;
 
     for (const auto &vecLine : vecLines)
@@ -513,8 +529,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     initTravel(travelDirPath);
 
     // init algorithm for this travel
-    algorithm.readShipPlan(travelDirPath);
-    algorithm.readShipRoute(travelDirPath);
+    algorithm.readShipPlan(travelDirPath + "/shipPlan.csv");
+    algorithm.readShipRoute(travelDirPath + "/routeFile.csv");
 
     // traverse each port
     for (const SeaPortCode &port : shipRoute)
