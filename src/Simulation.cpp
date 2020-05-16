@@ -298,6 +298,58 @@ void Simulation::runAlgorithm()
 
 /////// EX2 Part
 
+bool SetSimulatorCmdParams(char** argv, int argc,
+                  std::string &travel_path,
+                  std::string &algorithm_path)
+{
+    std::vector<std::string> args = std::vector<std::string>(static_cast<unsigned long long int>(argc - 1));
+    for (size_t idx = 0; idx < static_cast<size_t>(argc) - 1; idx++) args[idx] = std::string(argv[idx + 1]);
+    size_t idx = 0;
+
+    bool showHelp = false;
+    bool travelPathFound = false;
+
+    while (idx < args.size())
+    {
+        if ((args[idx] == "--help") ||
+            (args[idx] == "-h"))
+        {
+            showHelp = true;
+            break;
+        }
+        else if (args[idx] == "-travel_path")
+        {
+            travel_path = args[++idx];
+            travelPathFound = true;
+        }
+        else if (args[idx] == "-algorithm_path")
+        {
+            algorithm_path = args[++idx];
+        }
+        else if (args[idx] == "-output")
+        {
+            algorithm_path = args[++idx];
+        }
+        else
+        {
+            std::cout << "ERROR: Unknown argument:" << args[idx] << std::endl;
+            showHelp = true;
+            break;
+        }
+        idx++;
+    }
+
+
+    if (showHelp || !travelPathFound)
+    {
+        std::cout << "Usage: simulator [-travel_path <path>] [-algorithm_path <algorithm path>] [-output <output path>]" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
 void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &algoScoreVec)
 {
 
