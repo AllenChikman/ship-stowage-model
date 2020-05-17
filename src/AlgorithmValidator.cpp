@@ -33,7 +33,7 @@ bool checkShipPlanLineFormat(const std::vector<std::string> &line)
     return valid;
 }
 
-bool AlgorithmValidator::validateShipDims(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors)
+bool AlgorithmValidator::validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors)
 {
     std::ostringstream msg;
     bool valid = true;
@@ -73,14 +73,11 @@ bool AlgorithmValidator::validateShipXYCords(unsigned width, unsigned length, un
     return true;
 }
 
-bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<std::vector<string>> &shipFloors)
+bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<string> &shipFloor)
 {
     std::ostringstream msg;
-    bool valid = true;
-    for (auto &line : shipFloors)
-    {
-        valid = checkShipPlanLineFormat(line);
-    }
+    bool valid = checkShipPlanLineFormat(shipFloor);
+
     if (!valid)
     {
         errorHandle.reportError(Errors::badLineFormatAfterFirstLine);
@@ -124,16 +121,16 @@ bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shi
     return true;
 }
 
-bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vector<SeaPortCode> &routeVec)
+bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vector<string> &routeVec)
 {
     std::ostringstream msg;
 
     auto prevPort = routeVec[0];
     for (auto &port : routeVec)
     {
-        if (port.toStr() == prevPort.toStr())
+        if (port == prevPort)
         {
-            msg << "Port " + port.toStr() + " appears twice or more consecutively.";
+            msg << "Port " + port + " appears twice or more consecutively.";
             log(msg.str(), MessageSeverity::WARNING);
             errorHandle.reportError(Errors::portAppearsMoreThanOnceConsecutively);
             return false;
@@ -142,10 +139,10 @@ bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vecto
     return true;
 }
 
-bool AlgorithmValidator::validatePortFormat(const SeaPortCode &port)
+bool AlgorithmValidator::validatePortFormat(const string &port)
 {
     std::ostringstream msg;
-    bool valid = SeaPortCode::isValidCode(port.toStr());
+    bool valid = SeaPortCode::isValidCode(port);
     if (!valid)
     {
         msg << "Bad port symbol format.";
@@ -196,13 +193,13 @@ bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &s
 }
 
 
-bool AlgorithmValidator::validateAmountOfValidPorts(const std::vector<SeaPortCode> &routeVec)
+bool AlgorithmValidator::validateAmountOfValidPorts(const vector<string> &routeVec)
 {
     std::ostringstream msg;
     int validPorts = 0;
     for (auto &port : routeVec)
     {
-        if (SeaPortCode::isValidCode(port.toStr()))
+        if (SeaPortCode::isValidCode(port))
         {
             validPorts++;
         }

@@ -9,6 +9,12 @@
 #include "WeightBalanceCalculator.h"
 
 
+
+
+
+
+
+
 void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
                                    vector<Container> &containersToLoad)
 {
@@ -82,25 +88,7 @@ bool rejectContainer(const std::shared_ptr<ShipPlan> &shipPlan, char op, const C
     return isInvalid;
 }
 
-bool parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
-{
-    try
-    {
-        vector<vector<string>> vecLines;
-        if (!readToVecLine(inputPath, vecLines)) { throw std::runtime_error(""); }
-        for (const auto &lineVec : vecLines)
-        {
-            ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
-        }
-        return true;
-    }
 
-    catch (const std::runtime_error &e)
-    {
-        return false;
-    }
-
-}
 
 unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
                                      unsigned numOfFloors, XYCord xyCord)
@@ -184,6 +172,36 @@ void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &conta
 //// Ex2
 
 
+void clearDuplicatedPorts(const vector<string> &vec)
+{
+    //TODO: Allen
+}
+
+void clearDuplicatedContainers(const vector<Container> &portContainers)
+{
+    //TODO: Allen
+}
+
+// private header functions
+int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
+{
+    vector<vector<string>> vecLines;
+    if (!readToVecLine(inputPath, vecLines))
+    {
+        validator.errorHandle.reportError(Errors::containerFileCannotBeRead);
+        return validator.getErrorBits();
+    }
+    for (const auto &lineVec : vecLines)
+    {
+        if (validator.validateContainerFromFile(lineVec))
+        {
+            ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
+        }
+    }
+
+    return validator.getErrorBits();
+}
+
 bool NaiveAlgorithm::popRouteFileSet(const string &currInputPath)
 {
     string pathToPop;
@@ -203,50 +221,6 @@ bool NaiveAlgorithm::popRouteFileSet(const string &currInputPath)
         return true;
     }
     return false;
-}
-
-bool validateShipPlanEntry(unsigned width, unsigned length, unsigned maximalHeight,
-                           unsigned x, unsigned y, unsigned numOfFloors)
-{
-
-    std::ostringstream msg;
-    bool valid = true;
-
-    if (x >= width || y >= length)
-    {
-        msg << "[" << x << "][" << y << "]" << " coordinate is out of bounds (ship plan size is:" <<
-            "[" << width << "][" << length << "]";
-        valid = false;
-    }
-    else if (numOfFloors >= maximalHeight)
-    {
-        msg << "Number of floors is not smaller than the maximal height "
-            << maximalHeight << " in [" << x << "][" << y << "]";
-        valid = false;
-    }
-
-    if (!valid) { log(msg.str(), MessageSeverity::WARNING); }
-    return valid;
-}
-
-bool validateShipRouteFile(const vector<string> &vec)
-{
-    string prevSymbol;
-    for (const auto &portSymbol : vec)
-    {
-        if (!SeaPortCode::isValidCode(portSymbol))
-        {
-            log("SeaPortCode: " + portSymbol + " is invalid!", MessageSeverity::ERROR);
-            return false;
-        }
-        if (portSymbol == prevSymbol)
-        {
-            log("SeaPortCode: " + portSymbol + " appears twice in a row!", MessageSeverity::ERROR);
-            return false;
-        }
-        prevSymbol = portSymbol;
-    }
-    return true;
 }
 
 void NaiveAlgorithm::updateRouteMap()
@@ -269,139 +243,81 @@ void NaiveAlgorithm::updateRouteFileSet(const string &curTravelFolder)
 }
 
 
-int NaiveAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name,
-                                            const std::string &output_full_path_and_file_name)
-{
-    const bool cargoFileExists = popRouteFileSet(input_full_path_and_file_name);
-    try
-    {
-        vector<Container> portContainers;
-        if (cargoFileExists)
-        {
-            if (!parseInputToContainersVec(portContainers, input_full_path_and_file_name)) { return -1; };
-        }
+// API Functions
 
-
-        SeaPortCode curSeaPortCode = travelRouteStack.back();
-
-        std::ofstream outputFile;
-        outputFile.open(output_full_path_and_file_name, std::ios::out);
-        vector<Container> containersToLoad;
-        vector<Container> containersToUnload;
-
-        CargoMat &cargoMat = shipPlan->getCargo();
-
-        const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
-
-        unsigned z = 0;
-        for (const XYCord cord : shipXYCordVec)
-        {
-            //1st step: Finding minimum container position on ship that needs to be unloaded
-            unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
-            z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
-            // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-            fillVecsToLoadReload(containersToUnload, containersToLoad, cargoMat,
-                                 curSeaPortCode, numOfFloors, cord, z);
-
-            // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-            Unloading(shipPlan, containersToUnload, travelRouteStack, cord, outputFile, curSeaPortCode);
-            containersToUnload.clear();
-        }
-
-        sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
-        if (!portContainers.empty())
-        {
-            for (auto &portContainer : portContainers)
-            {
-                containersToLoad.push_back(portContainer);
-            }
-        }
-        Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
-        travelRouteStack.pop_back();
-        return (int) true;
-    }
-
-    catch (const std::exception &e)
-    {
-        return (false);
-    }
-}
 
 int NaiveAlgorithm::readShipPlan(const std::string &path)
 {
-    try
+    vector<vector<string>> vecLines;
+    if (!readToVecLine(path, vecLines))
     {
-        vector<vector<string>> vecLines;
-        if (!readToVecLine(path, vecLines))
-        {
-            throw std::runtime_error("");
-        }
-        auto shipPlanData = vecLines[0];
+        validator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
+        return validator.getErrorBits();
+    }
+    auto shipPlanData = vecLines[0];
 
-        unsigned maximalHeight = stringToUInt(shipPlanData[0]);
-        unsigned width = stringToUInt(shipPlanData[1]);
-        unsigned length = stringToUInt(shipPlanData[2]);
-
-        unsigned x;
-        unsigned y;
-        unsigned numOfFloors;
-
-        vecLines.erase(vecLines.begin());
-        shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
-        CargoMat &cargoMat = shipPlan->getCargo();
-
-        for (const auto &vecLine : vecLines)
-        {
-            x = stringToUInt(vecLine[0]);
-            y = stringToUInt(vecLine[1]);
-            numOfFloors = stringToUInt(vecLine[2]);
-            if (validateShipPlanEntry(width, length, maximalHeight, x, y, numOfFloors))
-            {
-                cargoMat[x][y].resize(numOfFloors);
-            }
-            // else: invalid input entry is ignored
-        }
-
-        return true;
+    if (!validator.validateShipPlanFirstLine(shipPlanData))
+    {
+        return validator.getErrorBits();
     }
 
-    catch (const std::runtime_error &e)
+    unsigned maximalHeight = stringToUInt(shipPlanData[0]);
+    unsigned width = stringToUInt(shipPlanData[1]);
+    unsigned length = stringToUInt(shipPlanData[2]);
+
+    unsigned x;
+    unsigned y;
+    unsigned numOfFloors;
+
+    vecLines.erase(vecLines.begin());
+    shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
+    CargoMat &cargoMat = shipPlan->getCargo();
+
+    for (const auto &vecLine : vecLines)
     {
-        log("Failed to read the ship plan", MessageSeverity::ERROR);
-        return false;
+        if (!validator.validateShipPlanFloorsFormat(vecLine)) { continue; }
+        x = stringToUInt(vecLine[0]);
+        y = stringToUInt(vecLine[1]);
+        numOfFloors = stringToUInt(vecLine[2]);
+
+        if (validator.validateShipHeightInput(maximalHeight, x, y, numOfFloors) &&
+            validator.validateShipXYCords(width, length, x, y))
+        {
+            cargoMat[x][y].resize(numOfFloors);
+        }
     }
+
+    return validator.getErrorBits();
+
 }
 
 int NaiveAlgorithm::readShipRoute(const std::string &path)
 {
-    try
+    vector<string> vec;
+    if (!readToVec(path, vec))
     {
-        vector<string> vec;
-        if (!readToVec(path, vec)) { throw std::runtime_error(""); }
+        validator.errorHandle.reportError(Errors::emptyFileOrRouteFileCannotBeRead);
+        return validator.getErrorBits();
+    }
 
-        vector<SeaPortCode> routeVec;
-        if (validateShipRouteFile(vec))
+    vector<SeaPortCode> routeVec;
+    if (validator.validateAmountOfValidPorts(vec))
+    {
+        for (const auto &portSymbol : vec)
         {
-            for (const auto &portSymbol : vec)
-            {
+            if (validator.validatePortFormat(portSymbol))
                 routeVec.emplace_back(portSymbol);
-            }
         }
-        else
-        {
-            throw std::runtime_error("");
-        }
-        travelRouteStack = vector<SeaPortCode>(routeVec.rbegin(), routeVec.rend());
-        updateRouteMap();
-        updateRouteFileSet(getDirectoryOfPath(path));
-
-        return true;
     }
-    catch (const std::runtime_error &e)
+    if (validator.validateSamePortInstancesConsecutively(vec))
     {
-        log("Failed to read the ship route", MessageSeverity::ERROR);
-        return false;
+        clearDuplicatedPorts(vec);
     }
+    travelRouteStack = vector<SeaPortCode>(routeVec.rbegin(), routeVec.rend());
+    updateRouteMap();
+    updateRouteFileSet(getDirectoryOfPath(path));
+
+    return validator.getErrorBits();
 }
 
 int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
@@ -409,3 +325,69 @@ int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculat
     return 0;
 }
 
+int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
+                                            const std::string &outputFilePath)
+{
+    const bool cargoFileExists = popRouteFileSet(inputFilePath);
+    vector<Container> portContainers;
+    if (cargoFileExists)
+    {
+        validator.validateContainerAtLastPort(inputFilePath);
+
+        const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath);
+        const auto isFatal = (errorCode & Errors::containerFileCannotBeRead) != 0;
+        if (isFatal) { validator.getErrorBits(); }
+    }
+
+    if(!validator.validateDuplicateIDOnPort(portContainers))
+    {
+        //remove duplicates
+    }
+/*   // TODO: fix validator.validateDuplicateIDOnShip();
+    {
+
+    }*/
+
+
+
+    std::ofstream outputFile;
+    outputFile.open(outputFilePath, std::ios::out);
+
+    SeaPortCode curSeaPortCode = travelRouteStack.back();
+    vector<Container> containersToLoad;
+    vector<Container> containersToUnload;
+
+    CargoMat &cargoMat = shipPlan->getCargo();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+
+    unsigned z = 0;
+    for (const XYCord cord : shipXYCordVec)
+    {
+
+        // 1st step: Finding minimum container position on ship that needs to be unloaded
+        unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
+        z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
+
+        // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
+        fillVecsToLoadReload(containersToUnload, containersToLoad, cargoMat,
+                             curSeaPortCode, numOfFloors, cord, z);
+
+        // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
+        Unloading(shipPlan, containersToUnload, travelRouteStack, cord, outputFile, curSeaPortCode);
+        containersToUnload.clear();
+    }
+
+    sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
+    if (!portContainers.empty())
+    {
+        for (auto &portContainer : portContainers)
+        {
+            containersToLoad.push_back(portContainer);
+        }
+    }
+    Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
+    travelRouteStack.pop_back();
+
+    return validator.getErrorBits();
+
+}

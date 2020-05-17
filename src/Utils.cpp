@@ -80,7 +80,6 @@ void logStartingDecorator(std::ostream &outputStream)
 
 unsigned stringToUInt(const string &str)
 {
-    // TODO: check validity
     return static_cast<unsigned int>(std::stoi(str));
 }
 

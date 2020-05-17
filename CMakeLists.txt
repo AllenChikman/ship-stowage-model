@@ -8,7 +8,6 @@ add_executable(ship_stowage_model
         src/NaiveAlgorithm.cpp
         src/NaiveAlgorithm.h
         src/AbstractAlgorithm.h
-        src/Ship.cpp
         src/Ship.h
         src/Simulation.cpp
         src/Simulation.h

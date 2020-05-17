@@ -13,12 +13,14 @@
 #include "Port.h"
 #include "AbstractAlgorithm.h"
 #include "WeightBalanceCalculator.h"
+#include "AlgorithmValidator.h"
 
 class NaiveAlgorithm : public AbstractAlgorithm{
 private:
     std::shared_ptr<ShipPlan> shipPlan;
     std::vector<SeaPortCode> travelRouteStack;
     ShipWeightBalanceCalculator weightBalanceCalculator{};
+    AlgorithmValidator validator;
 
     // from simulation
 
@@ -31,6 +33,8 @@ private:
 
     void updateRouteFileSet(const std::string &curTravelFolder);
 
+    int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath);
+
 public:
 
     explicit NaiveAlgorithm() = default;
@@ -41,8 +45,8 @@ public:
 
     int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 
-    int getInstructionsForCargo(const std::string &input_full_path_and_file_name,
-                                const std::string &output_full_path_and_file_name) override;
+    int getInstructionsForCargo(const std::string &inputFilePath,
+                                const std::string &outputFilePath) override;
 
 };
 
