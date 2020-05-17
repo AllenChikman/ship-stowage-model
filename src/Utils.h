@@ -18,7 +18,8 @@ enum class MessageSeverity
 {
     INFO,
     WARNING,
-    ERROR
+    ERROR,
+    Reject
 };
 
 void logStartingDecorator(std::ostream &outputStream = std::cout);

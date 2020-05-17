@@ -19,4 +19,4 @@ add_executable(ship_stowage_model
         src/Utils.cpp
         src/Utils.h
         src/Container.cpp
-        src/Container.h src/ErrorHandling.cpp src/ErrorHandling.h)
+        src/Container.h src/ErrorHandling.cpp src/ErrorHandling.h src/AlgorithmValidator.cpp src/AlgorithmValidator.h)
