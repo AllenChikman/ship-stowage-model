@@ -176,7 +176,7 @@ void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &conta
         {
             cmd = Crane::Command::LOAD;
         }
-        Crane::updateShipPlan(outputFile, shipPlan, curContainerToLoad, cmd, {0,0});
+        Crane::updateShipPlan(outputFile, shipPlan, curContainerToLoad, cmd, {0, 0});
     }
 }
 
@@ -318,7 +318,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &input_full_path_a
         }
         Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
         travelRouteStack.pop_back();
-        return (int)true;
+        return (int) true;
     }
 
     catch (const std::exception &e)
