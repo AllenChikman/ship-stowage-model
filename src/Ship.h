@@ -79,7 +79,7 @@ private:
     CargoMat cargo;
     UIntMat upperCellsMat;
 
-    ShipWeightBalanceCalculator balanceCalculator;
+    WeightBalanceCalculator balanceCalculator;
 
     void fillShipXYCords()
     {
@@ -94,7 +94,7 @@ private:
 
 public:
     ShipPlan(unsigned width, unsigned length, unsigned maximalHeight,
-             ShipWeightBalanceCalculator balanceCalculator)
+             WeightBalanceCalculator balanceCalculator)
             : width(width),
               length(length),
               maxHeight(maximalHeight),
@@ -122,7 +122,7 @@ public:
 
     CargoMat &getCargo() { return cargo; }
 
-    ShipWeightBalanceCalculator getBalanceCalculator() { return balanceCalculator; }
+    WeightBalanceCalculator getBalanceCalculator() { return balanceCalculator; }
 
 };
 

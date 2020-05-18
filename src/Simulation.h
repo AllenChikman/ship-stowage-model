@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include "Ship.h"
 #include "AbstractAlgorithm.h"
+#include "AlgorithmValidator.h"
 
 class Simulation
 {
@@ -28,6 +29,8 @@ private:
 
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
+
+    AlgorithmValidator validator;
 
     bool isLastPortVisit(const SeaPortCode &port)
     {
@@ -55,7 +58,7 @@ private:
 
     bool initTravel(const std::string &travelName);
 
-    bool performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
+    int performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
 
 
     void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
@@ -71,15 +74,19 @@ public:
 
     bool readShipRoute(const std::string &path);
 
-    bool startTravel(const std::string &travelName);
-
-    void runAlgorithm();
 
     void runAlgorithmOnTravels(const std::string &travelsRootDir,
                                            AbstractAlgorithm &algorithm, const std::string &outputDirPath);
 
     void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
                                 const std::string &outputDirPath);
+
+
+    // EX1 functions - for reference
+
+    bool startTravel(const std::string &travelName);
+
+    void runAlgorithm();
 
 };
 

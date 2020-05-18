@@ -1,32 +1,17 @@
-#ifndef SHIP_STOWAGE_MODEL_BALANCE_CALCULATOR_H
-#define SHIP_STOWAGE_MODEL_BALANCE_CALCULATOR_H
+// WeightBalanceCalculator.h
+#pragma once
 
-
-#include <memory>
-
-class ShipPlan;
-struct XYCord;
-
-enum balanceStatus {
-    APPROVED, X_IMBALANCED, Y_IMBALANCED, X_Y_IMBALANCED
-};
-
-class ShipWeightBalanceCalculator {
-private:
-    balanceStatus status;
+class WeightBalanceCalculator
+{
 public:
+    enum BalanceStatus
+    {
+        APPROVED, X_IMBALANCED, Y_IMBALANCED, X_Y_IMBALANCED
+    };
 
-    ShipWeightBalanceCalculator() = default;
+// EDIT, 05-05-2020: the method below is required in ex2
+// but you may implement it just as: return 0;
+    int readShipPlan(const std::string &full_path_and_file_name);
 
-    explicit ShipWeightBalanceCalculator(balanceStatus status1):status(status1){}
-
-    balanceStatus tryOperation(std::shared_ptr<ShipPlan> shipPlan, char loadUnload, unsigned kg, XYCord cord);
-
-    balanceStatus getStatus (){return status;}
-
-    void setStatus(balanceStatus newStatus){ status = newStatus;}
-
+    BalanceStatus tryOperation(char loadUnload, int kg, int x, int y);
 };
-
-
-#endif //SHIP_STOWAGE_MODEL_BALANCE_CALCULATOR_H

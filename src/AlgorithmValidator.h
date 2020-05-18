@@ -8,6 +8,7 @@
 #include "Container.h"
 #include "Ship.h"
 #include <vector>
+#include <memory>
 #include "ErrorHandling.h"
 
 class AlgorithmValidator

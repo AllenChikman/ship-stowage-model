@@ -1,8 +1,9 @@
-
 #include <iostream>
 #include "WeightBalanceCalculator.h"
 #include "Ship.h"
 #include "Utils.h"
+#include <memory>
+
 
 bool validateTryOperationsArgs(const std::shared_ptr<ShipPlan> &shipPlan, char loadUnload, unsigned kg,
                                                             XYCord cord)
@@ -31,7 +32,7 @@ bool validateTryOperationsArgs(const std::shared_ptr<ShipPlan> &shipPlan, char l
     return valid;
 }
 
-balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char loadUnload)
+WeightBalanceCalculator::BalanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char loadUnload)
 {
 
     (void) x;
@@ -40,10 +41,11 @@ balanceStatus checkBalance(unsigned x, unsigned y, unsigned z, unsigned kg, char
     (void) kg;
     (void) loadUnload;
     //TODO: implement (for exercise 2)
-    return APPROVED;
+    return WeightBalanceCalculator::BalanceStatus::APPROVED;
 }
 
-balanceStatus ShipWeightBalanceCalculator::tryOperation(std::shared_ptr<ShipPlan> shipPlan, char loadUnload, unsigned kg, XYCord cord)
+/*
+WeightBalanceCalculator::BalanceStatus WeightBalanceCalculator::tryOperation(char loadUnload, int kg, int x, int y);
 {
     auto &upperCellsMat = shipPlan->getUpperCellsMat();
 
@@ -65,3 +67,13 @@ balanceStatus ShipWeightBalanceCalculator::tryOperation(std::shared_ptr<ShipPlan
     return checkBalance(cord.x, cord.y, z, kg, loadUnload);
 }
 
+*/
+int WeightBalanceCalculator::readShipPlan(const std::string &full_path_and_file_name)
+{
+    return 0;
+}
+
+WeightBalanceCalculator::BalanceStatus WeightBalanceCalculator::tryOperation(char loadUnload, int kg, int x, int y)
+{
+    return APPROVED;
+}

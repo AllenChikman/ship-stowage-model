@@ -9,12 +9,6 @@
 #include "WeightBalanceCalculator.h"
 
 
-
-
-
-
-
-
 void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
                                    vector<Container> &containersToLoad)
 {
@@ -67,8 +61,10 @@ bool isContainerDestPortInRoute(const vector<SeaPortCode> &travelRouteStack, con
 
 bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
-    balanceStatus status = shipPlan->getBalanceCalculator().tryOperation(shipPlan, op, container.getWeight(), cord);
-    return status == balanceStatus::APPROVED;
+    WeightBalanceCalculator::BalanceStatus status = shipPlan->getBalanceCalculator().tryOperation(op,
+                                                                                                  container.getWeight(),
+                                                                                                  cord.x, cord.y);
+    return status == WeightBalanceCalculator::BalanceStatus::APPROVED;
 }
 
 bool rejectContainer(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container,
@@ -87,7 +83,6 @@ bool rejectContainer(const std::shared_ptr<ShipPlan> &shipPlan, char op, const C
     if (isInvalid) {{ log("Container " + container.getID() + " Rejected!", MessageSeverity::WARNING); }}
     return isInvalid;
 }
-
 
 
 unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
@@ -183,6 +178,7 @@ void clearDuplicatedContainers(const vector<Container> &portContainers)
 }
 
 // private header functions
+
 int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath)
 {
     vector<vector<string>> vecLines;
@@ -270,7 +266,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
     unsigned numOfFloors;
 
     vecLines.erase(vecLines.begin());
-    shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, ShipWeightBalanceCalculator(APPROVED));
+    shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
     for (const auto &vecLine : vecLines)
@@ -339,7 +335,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
         if (isFatal) { validator.getErrorBits(); }
     }
 
-    if(!validator.validateDuplicateIDOnPort(portContainers))
+    if (!validator.validateDuplicateIDOnPort(portContainers))
     {
         //remove duplicates
     }

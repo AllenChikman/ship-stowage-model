@@ -203,3 +203,9 @@ string getDirectoryOfPath(const string &fullPath)
     std::filesystem::path p(fullPath);
     return p.parent_path().string();
 }
+
+string getPathFileName(const string &fullPath)
+{
+    std::filesystem::path p(fullPath);
+    return p.filename().string();
+}

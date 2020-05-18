@@ -19,7 +19,7 @@ class NaiveAlgorithm : public AbstractAlgorithm{
 private:
     std::shared_ptr<ShipPlan> shipPlan;
     std::vector<SeaPortCode> travelRouteStack;
-    ShipWeightBalanceCalculator weightBalanceCalculator{};
+    WeightBalanceCalculator weightBalanceCalculator{};
     AlgorithmValidator validator;
 
     // from simulation
