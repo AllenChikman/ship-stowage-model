@@ -1,6 +1,7 @@
 COMP = g++-8.3.0
 #put all your object files here
-OBJS = main.o StowageAlgorithm.o Ship.o Simulation.o WeightBalanceCalculator.o Port.o Utils.o Container.o
+OBJS = main.o  NaiveAlgorithm.o  AbstractAlgorithm.o Ship.o Simulation.o WeightBalanceCalculator.o Port.o Utils.o Container.o  ErrorHandling.o AlgorithmValidator.o AlgorithmRegistration.o AlgorithmRegistrar.o
+
 #The executabel filename DON'T CHANGE
 EXEC = ex1
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I./src
@@ -14,3 +15,7 @@ $(OBJS):
 
 clean:
 	rm -f $(OBJS) $(EXEC)
+
+
+
+

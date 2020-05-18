@@ -80,7 +80,7 @@ void dumpInstruction(std::ofstream &outputStream, const string &containerLine)
     //only rejected containers
     int x = -1;
     int y = -1;
-    auto reject = " R ";
+    string reject = " R ";
     outputStream << reject << containerLine << std::endl;
 }
 

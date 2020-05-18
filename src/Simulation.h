@@ -3,7 +3,7 @@
 #ifndef SHIP_STOWAGE_MODEL_SIMULATION_H
 #define SHIP_STOWAGE_MODEL_SIMULATION_H
 
-
+#include <functional>
 #include <utility>
 #include <memory>
 #include <string>
@@ -45,6 +45,9 @@ private:
 
     AlgorithmValidator simValidator;
 
+    std::vector<std::function<std::unique_ptr<AbstractAlgorithm>()>> algorithmFactories;
+    std::vector<std::string> algorithmNames;
+
     bool isLastPortVisit(const SeaPortCode &port)
     {
         const std::string& portStr = port.toStr();
@@ -79,6 +82,7 @@ private:
 
     bool validateInstructionLine(const std::vector<std::string> &instructionLine);
 
+    void loadAlgorithms(const std::string &dirPath);
 
 public:
     bool readShipPlan(const std::string &path);

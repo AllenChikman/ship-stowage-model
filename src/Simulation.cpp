@@ -14,6 +14,7 @@
 #include "NaiveAlgorithm.h"
 #include "filesystem"
 #include "AbstractAlgorithm.h"
+#include "AlgorithmRegistrar.h"
 
 
 
@@ -533,7 +534,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     // TODO: turn a algorithm path to a algorithm
 
     const string algoPath;
-
+    std::unique_ptr <AbstractAlgorithm> loadedAlgoPtr = algorithmFactories[0]();
     // init simulator for this travel
     initTravel(travelDirPath);
 
@@ -581,6 +582,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
                                        AbstractAlgorithm &algorithm, const string &outputDirPath)
 {
+
     vector<string> travelDirPaths;
     putDirFileListToVec(travelsRootDir, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
@@ -593,4 +595,34 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
 }
 
 
+void Simulation::loadAlgorithms(const string &dirPath)
+{
 
+    vector<string> algoFilesVec;
+    putDirFileListToVec(dirPath, algoFilesVec, ".so");
+
+    auto &registrar = AlgorithmRegistrar::getInstance();
+
+    for (auto &soFile: algoFilesVec)
+    {
+
+        if (!registrar.loadSharedObject(soFile))
+        {
+            //TODO: report loading error
+            continue;
+        }
+
+        int addedAlgorithms = registrar.howManyAdded();  // how many algorithms were added
+
+        if (addedAlgorithms != 1)
+        {
+            //TODO: report {addedAlgorithms} so files were registered, while expecting only 1 file.
+            continue;
+        }
+
+        algorithmFactories.push_back(registrar.getLast());
+        algorithmNames.push_back(soFile);
+
+    }
+
+}
