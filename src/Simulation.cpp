@@ -18,8 +18,7 @@
 
 // Ex1 functions for reference
 
-
-
+/*
 bool Simulation::startTravel(const string &travelDir)
 {
     if (!initTravel(travelDir))
@@ -71,8 +70,9 @@ bool Simulation::startTravel(const string &travelDir)
 
     return true;
 }
+*/
 
-void Simulation::runAlgorithm()
+/*void Simulation::runAlgorithm()
 {
     vector<string> travelDirPaths;
     putDirFileListToVec(rootFolder, travelDirPaths);
@@ -84,7 +84,7 @@ void Simulation::runAlgorithm()
         }
     }
 
-}
+}*/
 
 
 // Simulation private class method implementation
@@ -161,14 +161,15 @@ bool Simulation::initTravel(const string &travelDir)
 {
     logStartingDecorator();
     log("Initializing travel...");
+    log("Travel Root Folder is: " + travelDir);
+    log("Output Folder is: " + travelDir + "/output");
 
+    // clear
     visitedPorts.clear();
     cargoFilesSet.clear();
     routeMap.clear();
 
-    log("Travel Root Folder is: " + travelDir);
     createOutputDirectory();
-    log("Output Folder is: " + travelDir + "/output");
 
     bool isSuccessful = true;
     isSuccessful &= readShipPlan(getShipPlanFilePath());
@@ -512,6 +513,8 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
 void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
                                         AbstractAlgorithm &algorithm, const string &outputDirPath)
 {
+
+
     // TODO: turn a algorithm path to a algorithm
 
     const string algoPath;
@@ -571,6 +574,7 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
         log("Travel Finished Successfully!!!");
     }
 
+    writeSimulationOutput(outputDirPath);
 }
 
 

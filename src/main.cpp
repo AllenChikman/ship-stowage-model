@@ -15,9 +15,7 @@ void test()
 int main()
 {
     const string simRootPath = (R"(../resources/simulationFolder)");
-    Simulation sim(simRootPath);
-
-    //sim.runAlgorithm();
+    Simulation sim;
 
     // new flow
     NaiveAlgorithm algorithm;

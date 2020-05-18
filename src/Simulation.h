@@ -18,19 +18,32 @@ class Simulation
 {
 
 private:
-    const std::string rootFolder;
+
+    // saving the current travel folder
     std::string curTravelFolder;
 
-    std::shared_ptr<ShipPlan> shipPlan;
-    std::vector<SeaPortCode> shipRoute;
+    // initialized in initTravel Function
+    std::shared_ptr<ShipPlan> shipPlan; // read ship plan
+    std::vector<SeaPortCode> shipRoute; // read ship route
+
+    // mapping between a port and number of times it has been visited so far.
+    // Used for getting the updated cargo path (and also detecting if werwe in the last port)
     std::unordered_map<std::string, unsigned> visitedPorts = {};
+
+    // A map between each port and how many time it appears in the DIRECTORY (regardless of the run)
+    // used for the last port check. TODO: might be redundant
     std::unordered_map<std::string, unsigned> routeMap = {};
+
+    // keeping track of all cargo files in the cargo directory
+    // usage of see if the file we are expecting to get (port_name + numOfVisits) appears in directory and
+    // also we check this set at the end of each run to see what files we haven't used
     std::unordered_set<std::string> cargoFilesSet = {};
 
+    // saving the results (number of operations) of each pair
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
 
-    AlgorithmValidator validator;
+    AlgorithmValidator simValidator;
 
     bool isLastPortVisit(const SeaPortCode &port)
     {
@@ -60,20 +73,15 @@ private:
 
     int performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
 
-
     void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
 
 public:
-    explicit Simulation(std::string rootFolder) :
-            rootFolder(std::move(rootFolder)) {}
-
     bool readShipPlan(const std::string &path);
 
     bool readShipRoute(const std::string &path);
-
 
     void runAlgorithmOnTravels(const std::string &travelsRootDir,
                                            AbstractAlgorithm &algorithm, const std::string &outputDirPath);
@@ -84,9 +92,9 @@ public:
 
     // EX1 functions - for reference
 
-    bool startTravel(const std::string &travelName);
+/*    bool startTravel(const std::string &travelName);
 
-    void runAlgorithm();
+    void runAlgorithm();*/
 
 };
 
