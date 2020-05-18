@@ -39,7 +39,8 @@ public:
 
     bool validateDuplicateIDOnPort(const std::vector<Container> &containersAtPort);
 
-    bool validateContainerFromFile(const std::vector<std::string> &line);
+    bool validateContainerFromFile(const std::vector<std::string> &line,
+                                   const std::vector<SeaPortCode> &travelRouteStack);
 
     bool validateDuplicateIDOnShip(const Container &container, const std::shared_ptr<ShipPlan> &shipPlan);
 
@@ -47,14 +48,13 @@ public:
 
     bool validateContainerWeight(const std::string &weight);
 
-    bool validateContainerDestPort(const std::string &destPort);
+    bool validateContainerDestPort(const std::string &destPort, const std::vector<SeaPortCode> &travelRouteStack);
 
     bool validateReadingContainingFileAltogether(const std::string &containersAtPortFile);
 
     bool validateContainerAtLastPort(const std::string &travelPath);
 
-    bool validateShipFull(const std::vector<Container> &container);
-
+    bool validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan);
 };
 
 

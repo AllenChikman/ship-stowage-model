@@ -454,7 +454,7 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 
 void validateIfAlgorithmSucceeded(int algorithmReturnFlag, const string &currInputPath)
 {
-    if (!algorithmReturnFlag)
+    if (algorithmReturnFlag)
     {
         log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
     }

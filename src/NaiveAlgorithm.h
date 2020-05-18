@@ -45,6 +45,12 @@ public:
 
     int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 
+    void Unloading(std::vector<Container> &containersToUnload,
+            XYCord xyCord, std::ofstream &outputFile, const SeaPortCode &curSeaPortCode);
+
+    void Loading(std::vector<Container> &containersToLoad,
+                                 std::ofstream &outputFile, const SeaPortCode &curSeaPortCode);
+
     int getInstructionsForCargo(const std::string &inputFilePath,
                                 const std::string &outputFilePath) override;
 
