@@ -1,4 +1,5 @@
 // AlgorithmRegistration.h
+
 #pragma once
 
 #include <functional>
@@ -13,4 +14,4 @@ public:
 
 #define REGISTER_ALGORITHM(class_name) \
 AlgorithmRegistration register_me_##class_name \
-([]{return std::make_unique<class_name>();} );
+    ([]{return std::make_unique<class_name>();} );

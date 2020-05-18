@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <map>
+//#include <dlfcn.h>
 
 #include "Utils.h"
 #include "Simulation.h"
@@ -165,6 +166,7 @@ bool Simulation::initTravel(const string &travelDir)
     log("Output Folder is: " + travelDir + "/output");
 
     // clear
+    curTravelFolder = travelDir;
     visitedPorts.clear();
     cargoFilesSet.clear();
     routeMap.clear();
@@ -499,6 +501,7 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
      *
      * */
 
+    return 0;
     vector<vector<string>> vecLines;
     readToVecLine(outputDirPath, vecLines);
     int instructionCounter = 0;
@@ -586,7 +589,7 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
         log("Travel Finished Successfully!!!");
     }
 
-    writeSimulationOutput(outputDirPath);
+    //writeSimulationOutput(outputDirPath);
 }
 
 
