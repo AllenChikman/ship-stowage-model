@@ -17,13 +17,11 @@ enum Command
     LOAD, UNLOAD, REJECT, MOVE
 };
 
-char getCraneCmdChar(Command cmd);
+    void performUnload(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord);
 
-void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPlan, const Container &container, Command cmd,
-                    XYCord xyCord);
+    void performLoad(const std::shared_ptr<ShipPlan> &shipPlan, const Container &container, const XYCord &xyCord);
 
-
-void performOperation(std::shared_ptr<ShipPlan> shipPlan);
+    void preformMove();
 
 }
 

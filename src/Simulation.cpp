@@ -515,7 +515,7 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
 
         }
         instructionCounter++;
-        Crane::performOperation(shipPlan);
+//        Crane::(shipPlan);
 
 
     }

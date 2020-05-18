@@ -33,7 +33,7 @@ private:
 
     void updateRouteFileSet(const std::string &curTravelFolder);
 
-    int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath);
+    int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath, std::ofstream &outputPath);
 
 public:
 

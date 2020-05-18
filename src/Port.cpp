@@ -4,100 +4,34 @@
 #include <ostream>
 #include <fstream>
 
-namespace Crane
-{
+namespace Crane {
 
-char getCraneCmdChar(Command cmd)
-{
-    switch (cmd)
-    {
-        case Command::UNLOAD:
-            return 'U';
-        case Command::LOAD:
-            return 'L';
-        case Command::REJECT:
-            return 'R';
-        case Command::MOVE:
-            return 'M';
-        default:
-            //unreachable code
-            return 'X';
+    void performUnload(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord) {
+        auto &cargoMat = shipPlan->getCargo();
+        auto &upperCellsMat = shipPlan->getUpperCellsMat();
+
+        unsigned availableUpperCell = upperCellsMat[xyCord];
+
+        cargoMat[xyCord][availableUpperCell - 1] = std::nullopt;
+        upperCellsMat[xyCord]--;
     }
 
-}
 
-void dumpInstruction(std::ofstream &outputStream, Command cmd, const Container &container, XYCord xyCord)
-{
-    auto id = container.getID();
-    char op = getCraneCmdChar(cmd);
-    int x = (cmd == Command ::REJECT) ? -1 : (int)xyCord.x;
-    int y = (cmd == Command ::REJECT) ? -1 : (int)xyCord.y;
-    outputStream << op << CSV_DELIM
-                 << id << CSV_DELIM
-                 << x << CSV_DELIM
-                 << y << std::endl;
-}
+    void performLoad(const std::shared_ptr<ShipPlan> &shipPlan, const Container &container, const XYCord &xyCord) {
+        CargoMat &cargoMat = shipPlan->getCargo();
+        UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
 
+        unsigned heightToLoad;
+        heightToLoad = upperCellsMat[xyCord];
+        cargoMat[xyCord][heightToLoad] = container;
+        upperCellsMat[xyCord]++;
 
-void performUnload(std::shared_ptr<ShipPlan> shipPlan, XYCord xyCord)
-{
-    auto &cargoMat = shipPlan->getCargo();
-    auto &upperCellsMat = shipPlan->getUpperCellsMat();
-
-    unsigned availableUpperCell = upperCellsMat[xyCord];
-
-    cargoMat[xyCord][availableUpperCell - 1] = std::nullopt;
-    upperCellsMat[xyCord]--;
-}
-
-XYCord performNaiveLoad(const std::shared_ptr<ShipPlan> &shipPlan, const Container &container)
-{
-    const auto shipXYCords = shipPlan->getShipXYCordsVec();
-    CargoMat &cargoMat = shipPlan->getCargo();
-    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
-
-    unsigned heightToLoad;
-    unsigned numOfFloors;
-
-    for (XYCord xyCord: shipXYCords)
-    {
-        numOfFloors = shipPlan->getNumOfFloors(xyCord);
-        if (upperCellsMat[xyCord] < numOfFloors)
-        {
-            heightToLoad = upperCellsMat[xyCord];
-            cargoMat[xyCord][heightToLoad] = container;
-            upperCellsMat[xyCord]++;
-            return xyCord;
-        }
     }
 
-    //Unreachable code
-    return XYCord{0,0};
-}
-
-
-void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPlan, const Container &container,
-                    Command cmd, XYCord xyCord)
-{
-    switch (cmd)
+    void preformMove()
     {
-        case Command::UNLOAD:
-            performUnload(shipPlan, xyCord);
-            break;
-        case Command::LOAD:
-            xyCord = performNaiveLoad(shipPlan, container);
-            break;
-        case Command::REJECT:
-            break;
-        default:
-            log("For HW2");
+        //TODO: for ex 3
     }
-    dumpInstruction(outputFile, cmd, container, xyCord);
-}
 
-void performOperation(std::shared_ptr<ShipPlan> shipPlan)
-{
-
-}
 
 }
