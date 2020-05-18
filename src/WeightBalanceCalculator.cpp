@@ -40,7 +40,7 @@ WeightBalanceCalculator::BalanceStatus checkBalance(unsigned x, unsigned y, unsi
     (void) z;
     (void) kg;
     (void) loadUnload;
-    //TODO: implement (for exercise 2)
+    //TODO: implement (for exercise 3)
     return WeightBalanceCalculator::BalanceStatus::APPROVED;
 }
 

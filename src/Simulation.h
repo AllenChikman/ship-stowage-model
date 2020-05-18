@@ -71,11 +71,13 @@ private:
 
     bool initTravel(const std::string &travelName);
 
-    int performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
+    int  performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
 
     void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
+
+    bool validateInstructionLine(const std::vector<std::string> &instructionLine);
 
 
 public:

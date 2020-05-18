@@ -22,6 +22,9 @@ char getCraneCmdChar(Command cmd);
 void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPlan, const Container &container, Command cmd,
                     XYCord xyCord);
 
+
+void performOperation(std::shared_ptr<ShipPlan> shipPlan);
+
 }
 
 

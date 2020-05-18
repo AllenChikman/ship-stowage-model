@@ -95,4 +95,9 @@ void updateShipPlan(std::ofstream &outputFile, std::shared_ptr<ShipPlan> shipPla
     dumpInstruction(outputFile, cmd, container, xyCord);
 }
 
+void performOperation(std::shared_ptr<ShipPlan> shipPlan)
+{
+
+}
+
 }

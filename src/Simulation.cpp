@@ -480,6 +480,12 @@ bool SetSimulatorCmdParams(char **argv, int argc,
     return true;
 }
 
+
+bool Simulation::validateInstructionLine(const vector<string> &instructionLine)
+{
+    return true;
+}
+
 int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirPath)
 {
     /* The simulator will check the following
@@ -494,19 +500,25 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
      * */
 
     vector<vector<string>> vecLines;
-    //readToVecLine(outputDirPath, vecLines);
+    readToVecLine(outputDirPath, vecLines);
     int instructionCounter = 0;
+    bool encounteredErrors = false;
 
     for (const auto &vecLine : vecLines)
     {
-        //if(validateLine)
-        // instructionCounter++;
-        //performOperation
+        if (!validateInstructionLine(vecLine))
+        {
+            encounteredErrors = true;
+
+        }
+        instructionCounter++;
+        Crane::performOperation(shipPlan);
+
 
     }
 
 
-    return instructionCounter;
+    return (!encounteredErrors) ? instructionCounter : -1;
 }
 
 
@@ -576,5 +588,6 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
 
     writeSimulationOutput(outputDirPath);
 }
+
 
 

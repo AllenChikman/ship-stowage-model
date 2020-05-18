@@ -1,8 +1,16 @@
-//
-// Created by Allen on 18/05/2020.
-//
+// AlgorithmRegistration.h
+#pragma once
 
-#ifndef SHIP_STOWAGE_MODEL_ALGORITHMREGISTRATION_H
-#define SHIP_STOWAGE_MODEL_ALGORITHMREGISTRATION_H
+#include <functional>
+#include <memory>
+#include "AbstractAlgorithm.h"
 
-#endif //SHIP_STOWAGE_MODEL_ALGORITHMREGISTRATION_H
+class AlgorithmRegistration
+{
+public:
+    AlgorithmRegistration(std::function<std::unique_ptr<AbstractAlgorithm>()>);
+};
+
+#define REGISTER_ALGORITHM(class_name) \
+AlgorithmRegistration register_me_##class_name \
+([]{return std::make_unique<class_name>();} );
