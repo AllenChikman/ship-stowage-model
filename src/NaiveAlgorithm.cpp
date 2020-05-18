@@ -35,30 +35,6 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
     }
 }
 
-bool isShipFull(const std::shared_ptr<ShipPlan> &shipPlan)
-{
-    const auto upperCellsMat = shipPlan->getUpperCellsMat();
-    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
-
-    for (XYCord cord: shipXYCordVec)
-    {
-        unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
-        if (upperCellsMat[cord] < numOfFloors) { return false; }
-    }
-    return true;
-
-}
-
-bool isContainerDestPortInRoute(const vector<SeaPortCode> &travelRouteStack, const Container &container,
-                                const SeaPortCode &curSeaPortCode)
-{
-    for (auto &port : travelRouteStack)
-    {
-        if (container.isBelongToPort(port) && (port.toStr() != curSeaPortCode.toStr())) { return true; }
-    }
-    return false;
-}
-
 bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
     WeightBalanceCalculator::BalanceStatus status = shipPlan->getBalanceCalculator().tryOperation(op,
@@ -66,24 +42,6 @@ bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Contai
                                                                                                   cord.x, cord.y);
     return status == WeightBalanceCalculator::BalanceStatus::APPROVED;
 }
-
-bool rejectContainer(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container,
-                     const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &curSeaPortCode)
-{
-    const bool validID = container.isValidID();
-    const bool legalDestPort = (op != 'L') || isContainerDestPortInRoute(travelRouteStack, container, curSeaPortCode);
-    const bool legalLoading = !((op == 'L') && isShipFull(shipPlan));
-
-    if (!validID) { log("Invalid container ID", MessageSeverity::WARNING); }
-    if (!legalDestPort) { log("Container destination port is not in route", MessageSeverity::WARNING); }
-    if (!legalLoading) { log("Ship full - unable to load container", MessageSeverity::WARNING); }
-
-    const bool isInvalid = !validID || !legalDestPort || !legalLoading;
-
-    if (isInvalid) {{ log("Container " + container.getID() + " Rejected!", MessageSeverity::WARNING); }}
-    return isInvalid;
-}
-
 
 unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
                                      unsigned numOfFloors, XYCord xyCord)
@@ -99,11 +57,11 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     return numOfFloors;
 }
 
-void fillVecsToLoadReload(vector<Container> &containersToUnload,
-                          vector<Container> &containersToReload,
-                          CargoMat &cargoMat,
-                          const SeaPortCode &port,
-                          const unsigned numOfFloors, XYCord xyCord, unsigned z)
+void fillVecToLoadReload(vector<Container> &containersToUnload,
+                         vector<Container> &containersToReload,
+                         CargoMat &cargoMat,
+                         const SeaPortCode &port,
+                         const unsigned numOfFloors, XYCord xyCord, unsigned z)
 {
     while (z < numOfFloors && cargoMat[xyCord][z])
     {
@@ -117,8 +75,7 @@ void fillVecsToLoadReload(vector<Container> &containersToUnload,
     }
 }
 
-void Unloading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &containersToUnload,
-               const vector<SeaPortCode> &travelRouteStack,
+void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
                XYCord xyCord, std::ofstream &outputFile, const SeaPortCode &curSeaPortCode)
 {
     bool shipUnbalanced = false;
@@ -131,7 +88,7 @@ void Unloading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &con
             shipUnbalanced = true;
         }
 // Checking if the operation should be rejected
-        if (rejectContainer(shipPlan, 'U', container, travelRouteStack, curSeaPortCode) || shipUnbalanced)
+        if (shipUnbalanced)
         {
             cmd = Crane::Command::REJECT;
         }
@@ -143,15 +100,15 @@ void Unloading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &con
     }
 }
 
-void Loading(const std::shared_ptr<ShipPlan> &shipPlan, vector<Container> &containersToLoad,
-             std::ofstream &outputFile, const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &curSeaPortCode)
+void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
+             std::ofstream &outputFile, const SeaPortCode &curSeaPortCode)
 {
     for (const auto &curContainerToLoad : containersToLoad)
     {
         bool shipUnbalanced;
         Crane::Command cmd;
         shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad); //optional
-        if (rejectContainer(shipPlan, 'L', curContainerToLoad, travelRouteStack, curSeaPortCode) || shipUnbalanced)
+        if (validator.validateShipFull(shipPlan) || shipUnbalanced)
         {
             cmd = Crane::Command::REJECT;
         }
@@ -189,7 +146,7 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
     }
     for (const auto &lineVec : vecLines)
     {
-        if (validator.validateContainerFromFile(lineVec))
+        if (validator.validateContainerFromFile(lineVec, travelRouteStack))
         {
             ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
         }
@@ -343,9 +300,6 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     {
 
     }*/
-
-
-
     std::ofstream outputFile;
     outputFile.open(outputFilePath, std::ios::out);
 
@@ -365,11 +319,11 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
         z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
 
         // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-        fillVecsToLoadReload(containersToUnload, containersToLoad, cargoMat,
-                             curSeaPortCode, numOfFloors, cord, z);
+        fillVecToLoadReload(containersToUnload, containersToLoad, cargoMat,
+                            curSeaPortCode, numOfFloors, cord, z);
 
         // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-        Unloading(shipPlan, containersToUnload, travelRouteStack, cord, outputFile, curSeaPortCode);
+        Unloading(containersToUnload, cord, outputFile, curSeaPortCode);
         containersToUnload.clear();
     }
 
@@ -381,7 +335,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
             containersToLoad.push_back(portContainer);
         }
     }
-    Loading(shipPlan, containersToLoad, outputFile, travelRouteStack, curSeaPortCode);
+    Loading(containersToLoad, outputFile, curSeaPortCode);
     travelRouteStack.pop_back();
 
     return validator.getErrorBits();
