@@ -577,7 +577,6 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
     validateAllCargoFilesWereUsed();
 
-
 }
 
 
