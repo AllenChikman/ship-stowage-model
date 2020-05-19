@@ -108,7 +108,7 @@ bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vecto
     std::ostringstream msg;
 
 
-    for (int i = 1; i < routeVec.size(); i++) {
+    for (size_t i = 1; i < routeVec.size(); i++) {
         auto prevPort = routeVec[i - 1];
         auto port = routeVec[i];
 
@@ -218,8 +218,8 @@ AlgorithmValidator::validateDuplicateIDOnShip(const Container &container, const 
     auto xyCords = shipPlan->getShipXYCordsVec();
     for (auto &xyCord : xyCords) {
         auto maxFloor = shipPlan->getNumOfFloors(xyCord);
-        for (int floor = 0; floor < maxFloor; floor++) {
-            if (shipPlan->getCargo()[xyCord.x][xyCord.y][floor]->getID() == container.getID()) {
+        for (unsigned floor = 0; floor < maxFloor; floor++) {
+            if (shipPlan->getCargo()[xyCord][floor]->getID() == container.getID()) {
                 msg << "Containers at port: ID already on ship";
                 log(msg.str(), MessageSeverity::Reject);
                 errorHandle.reportError(Errors::duplicateIDOnShip);
@@ -233,7 +233,7 @@ AlgorithmValidator::validateDuplicateIDOnShip(const Container &container, const 
 bool AlgorithmValidator::validateContainerID(const string &id) {
     // id doesn't exist
     std::ostringstream msg;
-    auto properIDLen = 11;
+    size_t properIDLen = 11;
     if (id.size() != properIDLen) {
         msg << "Containers at port: bad line format, ID cannot be read.";
         log(msg.str(), MessageSeverity::WARNING);
@@ -336,7 +336,7 @@ bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &c
 }
 
 bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath) {
-    // TODO: implement
+    (void) shipRouteFilePath;
     return false;
 }
 

@@ -369,6 +369,7 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 
     for (const auto &algoScore : algoScoreVec)
     {
+        (void) algoScore;
         const std::string algoName;
         int sumOfOperations, sumOfErrors;
         std::tie(algoName, sumOfOperations, sumOfErrors);
@@ -485,6 +486,7 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 
 bool Simulation::validateInstructionLine(const vector<string> &instructionLine)
 {
+    (void) instructionLine;
     return true;
 }
 
@@ -589,7 +591,7 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
         log("Travel Finished Successfully!!!");
     }
 
-    //writeSimulationOutput(outputDirPath);
+//    writeSimulationOutput(outputDirPath);
 }
 
 

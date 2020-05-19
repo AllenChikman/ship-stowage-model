@@ -363,6 +363,7 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
 
 int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
 {
+    (void) calculator;
     return 0;
 }
 
