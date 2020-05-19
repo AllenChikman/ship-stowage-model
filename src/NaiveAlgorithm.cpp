@@ -432,10 +432,10 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     {
         clearDuplicatedContainers(portContainers);
     }
-//    if (!validator.validateDuplicateIDOnShip(portContainers, shipPlan))
-//    {
-//       // clearDuplicatedContainers(portContainers, shipPlan);
-//    }
+    if (!validator.validateDuplicateIDOnShip(portContainers, shipPlan))
+    {
+       clearDuplicatedContainers(portContainers, shipPlan);
+    }
 
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     vector<Container> containersToLoad;
