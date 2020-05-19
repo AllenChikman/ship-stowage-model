@@ -536,7 +536,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     // TODO: turn a algorithm path to a algorithm
 
     const string algoPath;
-    std::unique_ptr <AbstractAlgorithm> loadedAlgoPtr = algorithmFactories[0]();
+    //std::unique_ptr <AbstractAlgorithm> loadedAlgoPtr = algorithmFactories[0]();
     // init simulator for this travel
     initTravel(travelDirPath);
 
