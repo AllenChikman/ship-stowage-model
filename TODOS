@@ -1,8 +1,7 @@
 Old debts:
 
-1) Implement checking if a container has wrong id
-2) Count amount of operations per travel and Write simulation result file
-3) decouple the algorithm and the simulator
+1) Count amount of operations per travel and Write simulation result file
+2) decouple the algorithm and the simulator
 
 
 TODOs:
