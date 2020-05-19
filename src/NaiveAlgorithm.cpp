@@ -44,7 +44,7 @@ bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Contai
 }
 
 /*
- * Write algorithm results to instructions file
+ * Write algorithm results to instruction file
  */
 
 char getCraneCmdChar(Crane::Command cmd) {
@@ -203,14 +203,58 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
 //// Ex2
 
 
-void clearDuplicatedPorts()
+void clearDuplicatedPorts(vector<string> &vec)
 {
-    //TODO: Allen
+    unsigned pos = 1;
+    while(pos < vec.size())
+    {
+        if(vec[pos] == vec[pos-1])
+        {
+            vec.erase(vec.begin()+pos);
+        } else
+        {
+            pos ++;
+        }
+    }
 }
 
-void clearDuplicatedContainers()
+void clearDuplicatedContainers(vector<Container> &portContainers)
 {
-    //TODO: Allen
+    for(unsigned i=0; i < portContainers.size() - 1; i++)
+    {
+        auto j = i+1;
+        while(j < portContainers.size())
+        {
+            if(portContainers[i].getID() == portContainers[j].getID())
+            {
+                portContainers.erase(portContainers.begin() + j);
+                continue;
+            }
+            j++;
+        }
+    }
+}
+
+void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<ShipPlan> &shipPlan)
+{
+    auto xyCords = shipPlan->getShipXYCordsVec();
+    unsigned pos = 0;
+    while(pos < containers.size())
+    {
+        for (auto &xyCord : xyCords)
+        {
+            auto maxFloor = shipPlan->getUpperCellsMat()[xyCord];
+            for (unsigned floor = 0; floor < maxFloor; floor++)
+            {
+                if (shipPlan->getCargo()[xyCord][floor]->getID() == containers[pos].getID())
+                {
+                    containers.erase(containers.begin()+pos);
+                    continue;
+                }
+                pos++ ;
+            }
+        }
+    }
 }
 
 // private header functions
@@ -352,7 +396,7 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
     }
     if (validator.validateSamePortInstancesConsecutively(vec))
     {
-        clearDuplicatedPorts();
+        clearDuplicatedPorts(vec);
     }
     travelRouteStack = vector<SeaPortCode>(routeVec.rbegin(), routeVec.rend());
     updateRouteMap();
@@ -386,13 +430,12 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
 
     if (!validator.validateDuplicateIDOnPort(portContainers))
     {
-        //remove duplicates
+        clearDuplicatedContainers(portContainers);
     }
-/*   // TODO: fix validator.validateDuplicateIDOnShip();
-    {
-
-    }*/
-
+//    if (!validator.validateDuplicateIDOnShip(portContainers, shipPlan))
+//    {
+//       // clearDuplicatedContainers(portContainers, shipPlan);
+//    }
 
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     vector<Container> containersToLoad;
@@ -404,7 +447,6 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     unsigned z = 0;
     for (const XYCord cord : shipXYCordVec)
     {
-
         // 1st step: Finding minimum container position on ship that needs to be unloaded
         unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
         z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);

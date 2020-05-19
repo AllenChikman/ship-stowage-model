@@ -43,7 +43,7 @@ public:
     bool validateContainerFromFile(const std::vector<std::string> &line,
                                    const std::vector<SeaPortCode> &travelRouteStack);
 
-    bool validateDuplicateIDOnShip(const Container &container, const std::shared_ptr<ShipPlan> &shipPlan);
+    bool validateDuplicateIDOnShip(const std::vector<Container> &containers, const std::shared_ptr<ShipPlan> &shipPlan);
 
     bool validateContainerID(const std::string &id);
 
