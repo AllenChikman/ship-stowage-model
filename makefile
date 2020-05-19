@@ -1,6 +1,6 @@
 COMP = g++-9.3.0
 #put all your object files here
-OBJS = main.o  NaiveAlgorithm.o Simulation.o WeightBalanceCalculator.o Port.o Utils.o Container.o  ErrorHandling.o AlgorithmValidator.o
+OBJS = main.o  NaiveAlgorithm.o Simulation.o WeightBalanceCalculator.o Port.o Utils.o Container.o  ErrorHandling.o AlgorithmValidator.o AlgorithmRegistrar.o AlgorithmRegistration.o
 
 #The executabel filename DON'T CHANGE
 EXEC = simulator
