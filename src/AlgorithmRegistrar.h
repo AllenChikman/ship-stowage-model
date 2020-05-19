@@ -10,7 +10,7 @@
 #include <functional>
 #include "AbstractAlgorithm.h"
 
-#ifdef RUNNING_ON_NOVA
+#ifdef LINUX_ENV
 #include "iostream"
 #include <dlfcn.h>
 #endif
@@ -39,7 +39,7 @@ public:
 
     virtual ~AlgorithmRegistrar();
 
-#ifdef RUNNING_ON_NOVA
+#ifdef LINUX_ENV
     private:
     struct DlCloser{
         void operator()(void *dlHandle) const noexcept {

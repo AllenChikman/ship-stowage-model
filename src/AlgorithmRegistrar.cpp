@@ -5,7 +5,7 @@
 //#include <iostream>
 #include "AlgorithmRegistrar.h"
 
-#ifdef RUNNING_ON_NOVA
+#ifdef LINUX_ENV
 #include <dlfcn.h>
 #endif
 
@@ -35,7 +35,7 @@ std::function<std::unique_ptr<AbstractAlgorithm>()> &AlgorithmRegistrar::getLast
 }
 
 bool AlgorithmRegistrar::loadSharedObject(const std::string &path) {
-#ifdef RUNNING_ON_NOVA
+#ifdef LINUX_ENV
     std::unique_ptr<void, DlCloser> handle(dlopen(path.c_str(), RTLD_LAZY));
     if (!handle) {
         return false;
@@ -49,7 +49,7 @@ bool AlgorithmRegistrar::loadSharedObject(const std::string &path) {
 
 AlgorithmRegistrar::~AlgorithmRegistrar() {
     algorithmsFactory.clear();
-#ifdef RUNNING_ON_NOVA
+#ifdef LINUX_ENV
     handles.clear();
 #endif
 }
