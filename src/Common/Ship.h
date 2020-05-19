@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include "Container.h"
-#include "WeightBalanceCalculator.h"
+#include "../Interfaces/WeightBalanceCalculator.h"
 
 
 struct XYCord

@@ -1,8 +1,8 @@
 #include <vector>
 #include <iostream>
-#include "Simulation.h"
-#include "Utils.h"
-#include "NaiveAlgorithm.h"
+#include "Simulator/Simulation.h"
+#include "Common/Utils.h"
+#include "Algorithms/NaiveAlgorithm.h"
 
 
 void test()

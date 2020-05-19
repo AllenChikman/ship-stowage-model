@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <map>
 #include <unordered_set>
-#include "Ship.h"
-#include "AbstractAlgorithm.h"
-#include "AlgorithmValidator.h"
+#include "../Common/Ship.h"
+#include "../Interfaces/AbstractAlgorithm.h"
+#include "../Common/AlgorithmValidator.h"
 
 class Simulation
 {

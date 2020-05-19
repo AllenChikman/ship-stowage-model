@@ -1,7 +1,7 @@
 #include <iostream>
 #include "WeightBalanceCalculator.h"
-#include "Ship.h"
-#include "Utils.h"
+#include "../Common/Ship.h"
+#include "../Common/Utils.h"
 #include <memory>
 
 

@@ -9,11 +9,11 @@
 #include <map>
 //#include <dlfcn.h>
 
-#include "Utils.h"
+#include "../Common/Utils.h"
 #include "Simulation.h"
-#include "NaiveAlgorithm.h"
+#include "../Algorithms/NaiveAlgorithm.h"
 #include "filesystem"
-#include "AbstractAlgorithm.h"
+#include "../Interfaces/AbstractAlgorithm.h"
 #include "AlgorithmRegistrar.h"
 
 
@@ -576,6 +576,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     }
 
     validateAllCargoFilesWereUsed();
+
 
 }
 

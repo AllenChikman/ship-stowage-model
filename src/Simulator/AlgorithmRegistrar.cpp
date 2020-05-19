@@ -25,7 +25,7 @@ void AlgorithmRegistrar::registerAlgorithm(std::function<std::unique_ptr<Abstrac
 }
 
 int AlgorithmRegistrar::howManyAdded() {
-    int delta = static_cast<int>(algorithmsFactory.size() - size);
+    auto delta = static_cast<int>(algorithmsFactory.size() - size);
     size = algorithmsFactory.size();
     return delta;
 }
