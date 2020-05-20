@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+
 #include "Simulator/Simulation.h"
 #include "Common/Utils.h"
 #include "Algorithms/NaiveAlgorithm.h"
@@ -19,9 +20,9 @@ int main()
 
     // new flow
     NaiveAlgorithm algorithm;
-    sim.runAlgorithmOnTravels(R"(../resources/simulationFolder)", algorithm, "../");
+    sim.runAlgorithmOnTravels(R"(../resources/simulationFolder)", algorithm, "../resources");
 
-    bool debug = true;
+    bool debug = false;
     if (debug) { test(); }
 
     return EXIT_SUCCESS;

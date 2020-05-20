@@ -42,6 +42,8 @@ private:
 public:
     unsigned getErrorBits() { return errorBits; }
 
+    void clear() { errorBits = noError; }
+
     void reportError(Errors error) { errorBits |= error; }
 
     static unsigned isFatalError(unsigned errorCode)

@@ -1,10 +1,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <algorithm>
 #include <sstream>
 #include <iterator>
 #include <filesystem>
+
 #include "Utils.h"
 
 
@@ -31,7 +31,7 @@ void compareOutput(const string &travelPath)
                 {
                     if (expected[i] != output[i])
                     {
-                        std::cout << std::filesystem::path(expectedPath).filename() <<": " << std::endl;
+                        std::cout << std::filesystem::path(expectedPath).filename() << ": " << std::endl;
                         std::cout << "output: " << output[i] << std::endl;
                         std::cout << "expected: " << expected[i] << std::endl;
                         success = false;
@@ -105,16 +105,6 @@ vector<string> splitByDelimiter(const string &line, char delimiter)
     }
 
     return res;
-}
-
-vector<string> splitByWhiteSpace(const string &line)
-{
-    vector<string> tokens;
-    std::istringstream iss(line);
-    copy(std::istream_iterator<string>(iss),
-         std::istream_iterator<string>(),
-         std::back_inserter(tokens));
-    return tokens;
 }
 
 
@@ -204,8 +194,19 @@ string getDirectoryOfPath(const string &fullPath)
     return p.parent_path().string();
 }
 
-string getPathFileName(const string &fullPath)
+string getPathFileName(const string &fullPath, bool removeExtention)
 {
     std::filesystem::path p(fullPath);
-    return p.filename().string();
+    std::filesystem::path lastComponent(p.filename());
+    if (removeExtention)
+    {
+        return lastComponent.stem().string();
+    }
+    return lastComponent.string();
+}
+
+void createEmptyFile(const string &fullPath)
+{
+    std::ofstream outfile(fullPath);
+    outfile.close();
 }

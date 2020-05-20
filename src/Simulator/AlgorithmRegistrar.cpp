@@ -2,7 +2,6 @@
 // Created by Allen on 18/05/2020.
 //
 
-//#include <iostream>
 #include "AlgorithmRegistrar.h"
 
 #ifdef LINUX_ENV

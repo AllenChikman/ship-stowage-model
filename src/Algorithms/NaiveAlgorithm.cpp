@@ -1,13 +1,10 @@
-
 #include <vector>
 #include <string>
 #include <sstream>
 #include "filesystem"
+
 #include "NaiveAlgorithm.h"
 #include "../Common/Utils.h"
-#include "../Common/Ship.h"
-#include "../Interfaces/WeightBalanceCalculator.h"
-
 
 
 void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
@@ -35,6 +32,7 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
 
     }
 }
+
 bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
     WeightBalanceCalculator::BalanceStatus status = shipPlan->getBalanceCalculator().tryOperation(op,
@@ -47,8 +45,10 @@ bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Contai
  * Write algorithm results to instruction file
  */
 
-char getCraneCmdChar(Crane::Command cmd) {
-    switch (cmd) {
+char getCraneCmdChar(Crane::Command cmd)
+{
+    switch (cmd)
+    {
         case Crane::Command::UNLOAD:
             return 'U';
         case Crane::Command::LOAD:
@@ -64,7 +64,9 @@ char getCraneCmdChar(Crane::Command cmd) {
 
 }
 
-void dumpInstruction(std::ofstream &outputStream, const Container &container,  const Crane::Command &cmd,  const XYCord &xyCord) {
+void dumpInstruction(std::ofstream &outputStream, const Container &container, const Crane::Command &cmd,
+                     const XYCord &xyCord)
+{
     auto id = container.getID();
     char op = getCraneCmdChar(cmd);
     int x = (cmd == Crane::Command::REJECT) ? -1 : (int) xyCord.x;
@@ -106,6 +108,7 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     }
     return numOfFloors;
 }
+
 //step2:
 void fillVecToLoadReload(vector<Container> &containersToUnload,
                          vector<Container> &containersToReload,
@@ -127,7 +130,7 @@ void fillVecToLoadReload(vector<Container> &containersToUnload,
 
 //step3:
 void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
-                              XYCord xyCord, std::ofstream &outputFile)
+                               XYCord xyCord, std::ofstream &outputFile)
 {
     bool shipUnbalanced = false;
     Crane::Command cmd;
@@ -158,15 +161,18 @@ void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
  */
 
 //step1:
-XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan) {
+XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
+{
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
 
     unsigned numOfFloors;
 
-    for (XYCord xyCord: shipXYCords) {
+    for (XYCord xyCord: shipXYCords)
+    {
         numOfFloors = shipPlan->getNumOfFloors(xyCord);
-        if (upperCellsMat[xyCord] < numOfFloors) {
+        if (upperCellsMat[xyCord] < numOfFloors)
+        {
             return xyCord;
         }
     }
@@ -177,13 +183,13 @@ XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan) {
 
 //step2:
 void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
-             std::ofstream &outputFile)
+                             std::ofstream &outputFile)
 {
     for (const auto &curContainerToLoad : containersToLoad)
     {
         bool shipUnbalanced;
         Crane::Command cmd;
-        XYCord xyCord = {0,0};
+        XYCord xyCord = {0, 0};
         shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad); //optional
         if (validator.validateShipFull(shipPlan) || shipUnbalanced)
         {
@@ -206,26 +212,27 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
 void clearDuplicatedPorts(vector<string> &vec)
 {
     unsigned pos = 1;
-    while(pos < vec.size())
+    while (pos < vec.size())
     {
-        if(vec[pos] == vec[pos-1])
+        if (vec[pos] == vec[pos - 1])
         {
-            vec.erase(vec.begin()+pos);
-        } else
+            vec.erase(vec.begin() + pos);
+        }
+        else
         {
-            pos ++;
+            pos++;
         }
     }
 }
 
 void clearDuplicatedContainers(vector<Container> &portContainers)
 {
-    for(unsigned i=0; i < portContainers.size() - 1; i++)
+    for (unsigned i = 0; i < portContainers.size() - 1; i++)
     {
-        auto j = i+1;
-        while(j < portContainers.size())
+        auto j = i + 1;
+        while (j < portContainers.size())
         {
-            if(portContainers[i].getID() == portContainers[j].getID())
+            if (portContainers[i].getID() == portContainers[j].getID())
             {
                 portContainers.erase(portContainers.begin() + j);
                 continue;
@@ -239,7 +246,7 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
 {
     auto xyCords = shipPlan->getShipXYCordsVec();
     unsigned pos = 0;
-    while(pos < containers.size())
+    while (pos < containers.size())
     {
         for (auto &xyCord : xyCords)
         {
@@ -248,10 +255,10 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
             {
                 if (shipPlan->getCargo()[xyCord][floor]->getID() == containers[pos].getID())
                 {
-                    containers.erase(containers.begin()+pos);
+                    containers.erase(containers.begin() + pos);
                     continue;
                 }
-                pos++ ;
+                pos++;
             }
         }
     }
@@ -259,7 +266,8 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
 
 // private header functions
 
-int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath, std::ofstream &outputStream)
+int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath,
+                                              std::ofstream &outputStream)
 {
     vector<vector<string>> vecLines;
     if (!readToVecLine(inputPath, vecLines))
@@ -276,7 +284,7 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
         else
         {
             string containerLine = " ";
-            for(auto &word : lineVec)
+            for (auto &word : lineVec)
             {
                 containerLine += word;
             }
@@ -414,13 +422,13 @@ int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculat
 int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
                                             const std::string &outputFilePath)
 {
-    std::ofstream outputFile;
-    outputFile.open(outputFilePath, std::ios::out);
+    std::ofstream outputFile(outputFilePath);
 
     const bool cargoFileExists = popRouteFileSet(inputFilePath);
     vector<Container> portContainers;
     if (cargoFileExists)
     {
+        // TODO: File alwaus exists. just check if last port and if there are container waiting
         validator.validateContainerAtLastPort(inputFilePath);
 
         const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
@@ -476,6 +484,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     Loading(containersToLoad, outputFile);
     travelRouteStack.pop_back();
 
+    outputFile.close();
     return validator.getErrorBits();
 
 }

@@ -40,7 +40,7 @@ private:
     std::unordered_set<std::string> cargoFilesSet = {};
 
     // saving the results (number of operations) of each pair
-    std::vector<std::string> allTravels;
+    std::vector<std::string> allTravelsNames;
 
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
@@ -56,13 +56,12 @@ private:
         return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
     }
 
-    std::pair<std::string, std::string> getPortFilePaths(const SeaPortCode &port, int numOfVisits);
+    std::pair<std::string, std::string> getPortFilePaths
+    (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
-    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
+    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; } //TODO: any suffix will work here
 
-    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; }
-
-    void createOutputDirectory();
+    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; } //TODO: any suffix will work here
 
     void updateVisitedPortsMap(const SeaPortCode &port);
 
@@ -91,6 +90,11 @@ private:
     bool validateMove(const std::string &id);
 
     bool validateInstructionLine(const std::vector <std::string> &instructionLine, const std::vector <std::string> &portContainerLine, const SeaPortCode &curPort);
+    void handleCargoFileExistence(const std::string &currInputPath , bool cargoFileExists , bool lastPortVisit);
+
+    Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
+
+    void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
 
     void loadAlgorithms(const std::string &dirPath);
 
@@ -101,17 +105,10 @@ public:
     bool readShipRoute(const std::string &path);
 
     void runAlgorithmOnTravels(const std::string &travelsRootDir,
-                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath);
+                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath = "./");
 
     void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
                                 const std::string &outputDirPath);
-
-
-    // EX1 functions - for reference
-
-/*    bool startTravel(const std::string &travelName);
-
-    void runAlgorithm();*/
 
 };
 

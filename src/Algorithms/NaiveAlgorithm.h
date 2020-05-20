@@ -9,10 +9,8 @@
 #include <utility>
 #include <unordered_set>
 
-#include "../Common/Container.h"
 #include "../Common/Port.h"
 #include "../Interfaces/AbstractAlgorithm.h"
-#include "../Interfaces/WeightBalanceCalculator.h"
 #include "../Common/AlgorithmValidator.h"
 
 class NaiveAlgorithm : public AbstractAlgorithm{

@@ -24,6 +24,17 @@ class AlgorithmRegistrar
 
     AlgorithmRegistrar() = default;  // singleton class, private constructor
 
+#ifdef LINUX_ENV
+    struct DlCloser{
+        void operator()(void *dlHandle) const noexcept {
+            dlclose(dlHandle);
+        }
+    };
+
+    std::vector<std::unique_ptr<void, DlCloser>> handles;  // We keep them here to call the destructor at the end
+#endif
+
+
 public:
     void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algorithmFactory);
 
@@ -40,16 +51,7 @@ public:
 
     virtual ~AlgorithmRegistrar();
 
-#ifdef LINUX_ENV
-    private:
-    struct DlCloser{
-        void operator()(void *dlHandle) const noexcept {
-            dlclose(dlHandle);
-        }
-    };
 
-    std::vector<std::unique_ptr<void, DlCloser>> handles;  // We keep them here to call the destructor at the end
-#endif
 };
 
 #endif //SHIP_STOWAGE_MODEL_ALGORITHMRESGISTRAR_H

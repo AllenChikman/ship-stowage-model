@@ -4,107 +4,32 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include "filesystem"
 #include <map>
-//#include <dlfcn.h>
 
 #include "Simulation.h"
+#include "AlgorithmRegistrar.h"
 #include "../Common/Utils.h"
 #include "../Algorithms/NaiveAlgorithm.h"
 
-#include "filesystem"
-#include "AlgorithmRegistrar.h"
 
-
-// Ex1 functions for reference
-
-/*
-bool Simulation::startTravel(const string &travelDir)
-{
-    if (!initTravel(travelDir))
-    {
-        log("Failed to init the travel - Ignoring this travel simulation ", MessageSeverity::ERROR);
-        return false;
-    }
-
-    NaiveAlgorithm algorithm;
-    algorithm.readShipPlan(travelDir + "/shipPlan.csv");
-    algorithm.readShipRoute(travelDir + "/routeFile.csv");
-
-    string currInputPath;
-    string currOutputPath;
-    string portStr;
-    unsigned numOfVisits;
-    bool lastPortVisit;
-
-    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
-
-    for (const SeaPortCode &port : shipRoute)
-    {
-        portStr = port.toStr();
-        numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
-        visitedPorts[portStr] = ++numOfVisits;
-        std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
-        lastPortVisit = isLastPortVisit(port);
-        const bool cargoFileExists = popRouteFileSet(currInputPath);
-        if (cargoFileExists && lastPortVisit)
-        {
-            log("Last visited port should not have a file for it", MessageSeverity::WARNING);
-        }
-
-        if (!cargoFileExists && !lastPortVisit)
-        {
-            log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
-                MessageSeverity::WARNING);
-        }
-
-        if (!algorithm.getInstructionsForCargo(currInputPath, currOutputPath))
-        {
-            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
-        }
-
-        routeTravelStack.pop_back();
-    }
-
-    validateAllCargoFilesWereUsed();
-
-    return true;
-}
-*/
-
-/*void Simulation::runAlgorithm()
-{
-    vector<string> travelDirPaths;
-    putDirFileListToVec(rootFolder, travelDirPaths);
-    for (const auto &travelFolder :travelDirPaths)
-    {
-        if (startTravel(travelFolder))
-        {
-            log("Travel Finished Successfully!!!");
-        }
-    }
-
-}*/
 
 
 // Simulation private class method implementation
 
-std::pair<string, string> Simulation::getPortFilePaths(const SeaPortCode &port, int numOfVisits)
+std::pair<string, string> Simulation::getPortFilePaths(const string &outputDir,
+                                                       const SeaPortCode &port, int numOfVisits)
 {
     const string &inputFileName = port.toStr(true);
     const string &outputFileName = port.toStr();
 
-    const string middlePart = "_" + std::to_string(numOfVisits);
+    const string visitsStr = "_" + std::to_string(numOfVisits);
 
-    string inputPath = curTravelFolder + '/' + inputFileName + middlePart + ".cargo_data";
-    string outputPath = curTravelFolder + "/output/" + outputFileName + middlePart + ".out_cargo_data";
+    string inputPath = curTravelFolder + '/' + inputFileName + visitsStr + ".cargo_data";
+    string outputPath = outputDir + '/' + outputFileName + visitsStr + ".crane_instructions";
 
     return std::make_pair(inputPath, outputPath);
 
-}
-
-void Simulation::createOutputDirectory()
-{
-    createDirIfNotExists(curTravelFolder + "/output");
 }
 
 void Simulation::updateRouteMap()
@@ -151,6 +76,8 @@ void Simulation::validateAllCargoFilesWereUsed()
 {
     for (const auto &file : cargoFilesSet)
     {
+        // TODO: write to error file
+        // TODO: Check if the files corespond to a stop in the route file or not
         log("File: " + file + " was not used and ignored (not in route or too many files for port)",
             MessageSeverity::WARNING);
     }
@@ -168,8 +95,7 @@ bool Simulation::initTravel(const string &travelDir)
     visitedPorts.clear();
     cargoFilesSet.clear();
     routeMap.clear();
-
-    createOutputDirectory();
+    simValidator.clear();
 
     bool isSuccessful = true;
     isSuccessful &= readShipPlan(getShipPlanFilePath());
@@ -309,6 +235,17 @@ bool Simulation::readShipRoute(const string &path)
 /////// EX2 Part
 
 
+void writeToErrorFile(const string &errorDirectoryPath, const string &errorFilePath, const string &text)
+{
+    //if there were errors create the error directory
+    createDirIfNotExists(errorDirectoryPath);
+    std::ofstream errorFile(errorFilePath, std::ios_base::app);
+    errorFile << text << std::endl;
+    errorFile.close();
+
+}
+
+
 void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &algoScoreVec)
 {
 
@@ -317,6 +254,7 @@ void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &a
     {
         int operationsSum = 0;
         int errorsSum = 0;
+        string algoName = algoTravelPair.first;
         string travelName;
 
         for (const auto &travelResultPair : algoTravelPair.second)
@@ -327,7 +265,7 @@ void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &a
             (travelOperations < 0) ? errorsSum++ : operationsSum += travelOperations;
         }
 
-        algoScoreVec.emplace_back(travelName, operationsSum, errorsSum);
+        algoScoreVec.emplace_back(algoName, operationsSum, errorsSum);
     }
 
     // sort the vector
@@ -365,7 +303,7 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
     outputFile.open(outputFileFullPath);
 
     outputFile << "RERULTS" << CSV_DELIM;
-    for (const auto &travelPath : allTravels)
+    for (const auto &travelPath : allTravelsNames)
     {
         outputFile << travelPath << CSV_DELIM;
     }
@@ -373,21 +311,20 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 
     for (const auto &algoScore : algoScoreVec)
     {
-        (void) algoScore;
-        const std::string algoName;
+        std::string algoName;
         int sumOfOperations, sumOfErrors;
-        std::tie(algoName, sumOfOperations, sumOfErrors);
+        std::tie(algoName, sumOfOperations, sumOfErrors) = algoScore;
 
         outputFile << algoName << CSV_DELIM;
 
 
-        for (const auto &travelName: allTravels)
+        for (const auto &travelName: allTravelsNames)
         {
             const bool travelInAlgo = algorithmTravelResults[algoName].find(travelName) !=
                                       algorithmTravelResults[algoName].end();
 
             int numOfOperations = (travelInAlgo) ? algorithmTravelResults[algoName][travelName] : -1;
-            outputFile << CSV_DELIM << numOfOperations << CSV_DELIM;
+            outputFile << numOfOperations << CSV_DELIM;
         }
 
         outputFile << sumOfOperations << CSV_DELIM << sumOfErrors << "\n";
@@ -401,7 +338,24 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 }
 
 
-void validateIfAlgorithmSucceeded(int algorithmReturnFlag, const string &currInputPath)
+void Simulation::handleCargoFileExistence(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
+{
+
+    if (!cargoFileExists)
+    {
+        createEmptyFile(currInputPath);
+        if (!lastPortVisit)
+        {
+            log("This port visit has no file for it (expected: " + currInputPath + "). Creating empty file",
+                MessageSeverity::WARNING);
+        }
+
+    }
+
+}
+
+
+void handleAlgorithmReturnCode(int algorithmReturnFlag, const string &currInputPath)
 {
     if (algorithmReturnFlag)
     {
@@ -409,22 +363,23 @@ void validateIfAlgorithmSucceeded(int algorithmReturnFlag, const string &currInp
     }
 }
 
-void validateLastPort(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
+
+void Simulation::updateResults(const string &algoName, const string &travelName, int numOfOperations)
 {
+    const bool hadErrors = (algorithmTravelResults[algoName][travelName] == -1);
+    const bool isError = (numOfOperations == -1);
 
-    if (cargoFileExists && lastPortVisit)
+    if (hadErrors || isError)
     {
-        log("Last visited port should not have a file for it", MessageSeverity::WARNING);
+        algorithmTravelResults[algoName][travelName] = -1;
+
     }
-
-    if (!cargoFileExists && !lastPortVisit)
+    else
     {
-        log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
-            MessageSeverity::WARNING);
+        algorithmTravelResults[algoName][travelName] += numOfOperations;
     }
 
 }
-
 
 void Simulation::updateVisitedPortsMap(const SeaPortCode &port)
 {
@@ -543,7 +498,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
     // TODO: turn a algorithm path to a algorithm
 
-    const string algoPath = "algo1./file.txt";
+    const string algoPath = "fakeDir/algo1.txt";
     //std::unique_ptr <AbstractAlgorithm> loadedAlgoPtr = algorithmFactories[0]();
     // init simulator for this travel
     initTravel(travelDirPath);
@@ -551,6 +506,24 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     // init algorithm for this travel
     algorithm.readShipPlan(travelDirPath + "/shipPlan.csv");
     algorithm.readShipRoute(travelDirPath + "/routeFile.csv");
+
+    // TODO: Note that Travel input violations are to be revealed by the simulation and the column for the
+    //Travel should not appear in the results output file at all in a case of Travel input violations .
+
+    // get alggorithm and travel names
+    const string algoName = getPathFileName(algoPath, true);
+    const string travelName = getPathFileName(curTravelFolder);
+
+    // construct the new algorithm-travel pair output dir
+    const string newOutputDir = outputDirPath + "/" + algoName + "_" + travelName + "__crane_instructions";
+    createDirIfNotExists(newOutputDir);
+
+    // get the error directory and file
+    const string errorDirectory = outputDirPath + "/errors";
+    const string errorFile = errorDirectory + "/" + algoName + "_" + travelName + ".errors";
+
+    // Add the current travel to the travel names
+    allTravelsNames.push_back(travelName);
 
     // traverse each port
     for (const SeaPortCode &port : shipRoute)
@@ -560,27 +533,26 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
         // get the input and output for the algorithm "getInstructionsForCargo"
         string currInputPath, currOutputPath;
-        std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, visitedPorts[port.toStr()]);
+        std::tie(currInputPath, currOutputPath) = getPortFilePaths(newOutputDir, port, visitedPorts[port.toStr()]);
 
         // set boolean variables
-        const bool lastPortVisit = isLastPortVisit(port);
         const bool cargoFileExists = popRouteFileSet(currInputPath);
+        const bool lastPortVisit = isLastPortVisit(port);
+
+        // if cargo file doesn't exist we create a new empty file
+        handleCargoFileExistence(currInputPath, cargoFileExists, lastPortVisit);
 
         // call algorithms' get instruction for cargo
-        const int algorithmReturnFlag = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
+        const int algorithmReturnCode = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
 
-        // validations regarding the last port and existence of expected file
-        validateLastPort(currInputPath, cargoFileExists, lastPortVisit);
-
-        // validate return code of the Algorithm
-        validateIfAlgorithmSucceeded(algorithmReturnFlag, currInputPath);
+        // handle return code of the Algorithm
+        handleAlgorithmReturnCode(algorithmReturnCode, currInputPath);
 
         // Go through the instruction output of the algorithm and approve every move
         const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port);
-        //const string algoName = getPathFileName(algoPath);
-        const string algoName = getDirectoryOfPath(algoPath);
-        const string travelName = getDirectoryOfPath(curTravelFolder);
-        algorithmTravelResults[algoName][travelName] = numOfOperations;
+
+        // update results
+        updateResults(algoName, travelName, numOfOperations);
     }
 
     validateAllCargoFilesWereUsed();
@@ -597,13 +569,11 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
     putDirFileListToVec(travelsRootDir, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
     {
-        allTravels.push_back(travelFolder);
         runAlgorithmTravelPair(travelFolder, algorithm, outputDirPath);
         log("Travel Finished Successfully!!!");
     }
 
-    (void)outputDirPath;
-    //writeSimulationOutput(outputDirPath);
+    writeSimulationOutput(outputDirPath);
 }
 
 

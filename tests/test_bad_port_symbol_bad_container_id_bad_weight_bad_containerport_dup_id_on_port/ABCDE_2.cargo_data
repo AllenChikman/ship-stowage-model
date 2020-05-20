@@ -1,0 +1,6 @@
+ABCU1234563, 7, ABCDJ  # bad container id
+CSQU3054382, -9s, ABCDF  # bad weight
+ABCU1234576, 7, asd12312ffds  # bad container port
+ABCU1234576, 7, ABCDF
+ABCU1234576, 7, ABCDF # dup id on port
+ABCU1234576, 7, ABCDA

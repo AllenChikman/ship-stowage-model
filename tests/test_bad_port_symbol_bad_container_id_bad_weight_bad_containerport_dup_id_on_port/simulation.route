@@ -1,0 +1,7 @@
+ABCDE
+ABCDF
+ABCDF # Two ports in a row
+ABCDE
+ABCDE12332424334  # Bad port symbol
+ABCDJ
+ABCDF
