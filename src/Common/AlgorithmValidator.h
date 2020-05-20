@@ -18,6 +18,8 @@ public:
 
     int getErrorBits() { return errorHandle.getErrorBits(); }
 
+    void clear() { errorHandle.clear(); }
+
     explicit AlgorithmValidator() : errorHandle(ErrorHandle()) {}
 
     bool validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors);

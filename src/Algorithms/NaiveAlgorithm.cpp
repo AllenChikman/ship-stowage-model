@@ -5,9 +5,6 @@
 #include "filesystem"
 #include "NaiveAlgorithm.h"
 #include "../Common/Utils.h"
-#include "../Common/Ship.h"
-#include "../Interfaces/WeightBalanceCalculator.h"
-
 
 
 void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
@@ -414,13 +411,13 @@ int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculat
 int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
                                             const std::string &outputFilePath)
 {
-    std::ofstream outputFile;
-    outputFile.open(outputFilePath, std::ios::out);
+    std::ofstream outputFile(outputFilePath);
 
     const bool cargoFileExists = popRouteFileSet(inputFilePath);
     vector<Container> portContainers;
     if (cargoFileExists)
     {
+        // TODO: or - check on last port
         validator.validateContainerAtLastPort(inputFilePath);
 
         const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
@@ -471,6 +468,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     Loading(containersToLoad, outputFile);
     travelRouteStack.pop_back();
 
+    outputFile.close();
     return validator.getErrorBits();
 
 }

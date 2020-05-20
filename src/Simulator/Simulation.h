@@ -59,9 +59,9 @@ private:
     std::pair<std::string, std::string> getPortFilePaths
     (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
-    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
+    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; } //TODO: any suffix will work here
 
-    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; }
+    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; } //TODO: any suffix will work here
 
     void createOutputDirectory();
 
@@ -97,7 +97,7 @@ public:
     bool readShipRoute(const std::string &path);
 
     void runAlgorithmOnTravels(const std::string &travelsRootDir,
-                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath);
+                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath = "./");
 
     void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
                                 const std::string &outputDirPath);

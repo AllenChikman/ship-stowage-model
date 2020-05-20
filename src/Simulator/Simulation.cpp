@@ -152,6 +152,8 @@ void Simulation::validateAllCargoFilesWereUsed()
 {
     for (const auto &file : cargoFilesSet)
     {
+        // TODO: write to error file
+        // TODO: Check if the files corespond to a stop in the route file or not
         log("File: " + file + " was not used and ignored (not in route or too many files for port)",
             MessageSeverity::WARNING);
     }
@@ -169,6 +171,7 @@ bool Simulation::initTravel(const string &travelDir)
     visitedPorts.clear();
     cargoFilesSet.clear();
     routeMap.clear();
+    simValidator.clear();
 
     createOutputDirectory();
 
@@ -582,6 +585,9 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     algorithm.readShipPlan(travelDirPath + "/shipPlan.csv");
     algorithm.readShipRoute(travelDirPath + "/routeFile.csv");
 
+    // TODO: Note that Travel input violations are to be revealed by the simulation and the column for the
+    //Travel should not appear in the results output file at all in a case of Travel input violations .
+
     // get alggorithm and travel names
     const string algoName = getPathFileName(algoPath, true);
     const string travelName = getPathFileName(curTravelFolder);
@@ -615,10 +621,10 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         handleCargoFileExistence(currInputPath, cargoFileExists, lastPortVisit);
 
         // call algorithms' get instruction for cargo
-        const int algorithmReturnFlag = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
+        const int algorithmReturnCode = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
 
         // handle return code of the Algorithm
-        handleAlgorithmReturnCode(algorithmReturnFlag, currInputPath);
+        handleAlgorithmReturnCode(algorithmReturnCode, currInputPath);
 
         // Go through the instruction output of the algorithm and approve every move
         const int numOfOperations = performAndValidateAlgorithmInstructions(currOutputPath);

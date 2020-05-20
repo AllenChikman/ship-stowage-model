@@ -39,6 +39,8 @@ private:
 public:
     int getErrorBits() { return errorBits; }
 
+    void clear() { errorBits = noError; }
+
     void reportError(Errors error) { errorBits |= error; }
 
     static bool isFatalError(Errors errorCode) { return errorCode != Errors::noError; } //TODO: implement
