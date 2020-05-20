@@ -41,7 +41,9 @@ void strCleanWhitespaces(string &str);
 
 string getDirectoryOfPath(const string &fullPath);
 
-string getPathFileName(const string &fullPath);
+string getPathFileName(const string &fullPath, bool removeExtention = false);
 
+void createEmptyFile(const string &fullPath);
 
 #endif //SHIP_STOWAGE_MODEL_UTILS_H
+

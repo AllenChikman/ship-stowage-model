@@ -40,7 +40,7 @@ private:
     std::unordered_set<std::string> cargoFilesSet = {};
 
     // saving the results (number of operations) of each pair
-    std::vector<std::string> allTravels;
+    std::vector<std::string> allTravelsNames;
 
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
@@ -56,7 +56,8 @@ private:
         return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
     }
 
-    std::pair<std::string, std::string> getPortFilePaths(const SeaPortCode &port, int numOfVisits);
+    std::pair<std::string, std::string> getPortFilePaths
+    (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
     std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; }
 
@@ -82,7 +83,11 @@ private:
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
+    void handleCargoFileExistence(const std::string &currInputPath , bool cargoFileExists , bool lastPortVisit);
+
     Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
+
+    void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
 
     void loadAlgorithms(const std::string &dirPath);
 
