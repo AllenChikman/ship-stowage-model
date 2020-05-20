@@ -76,17 +76,26 @@ private:
 
     bool initTravel(const std::string &travelName);
 
-    int  performAndValidateAlgorithmInstructions(const std::string &cargoFilePath);
+    int performAndValidateAlgorithmInstructions(const std::string &portFilePath , const std::string &instructionsFilePath, const SeaPortCode &curPort);
 
     void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
+    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort);
+
+    bool validateLoad(const std::string &id, XYCord xyCord, const vector<string> &portContainerLine);
+
+    bool validateReject(const string &id, const std::vector<std::string> &portContainerLine);
+
+    bool validateMove(const std::string &id);
+
+    bool validateInstructionLine(const std::vector <std::string> &instructionLine, const std::vector <std::string> &portContainerLine, const SeaPortCode &curPort);
 
     void loadAlgorithms(const std::string &dirPath);
 
 public:
+
     bool readShipPlan(const std::string &path);
 
     bool readShipRoute(const std::string &path);
@@ -104,9 +113,6 @@ public:
 
     void runAlgorithm();*/
 
-    bool checkUnload(const string& id, XYCord xyCord);
-
-    bool checkLoad(const string &id, XYCord xyCord);
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

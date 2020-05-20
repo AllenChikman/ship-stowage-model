@@ -271,7 +271,7 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
     {
         if (validator.validateContainerFromFile(lineVec, travelRouteStack))
         {
-            ContainersVec.emplace_back(lineVec[0], stringToUInt(lineVec[1]), SeaPortCode(lineVec[2]));
+            ContainersVec.emplace_back(Container(lineVec));
         }
         else
         {

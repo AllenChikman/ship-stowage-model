@@ -35,9 +35,6 @@ void preformMove()
     //TODO: for ex 3
 }
 
-void performValidLineCommand(const std::vector<std::string> &vecLine)
-{
-}
 
 
 }

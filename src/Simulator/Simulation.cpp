@@ -493,43 +493,46 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 
 
 
-int Simulation::performAndValidateAlgorithmInstructions(const string &cargoFilePath)
+int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePath, const string &instructionsFilePath, const SeaPortCode &curPort)
 {
-    /* The simulator will check the following
-     * legal output format
-     * x,y legal coordinates
-     * UNLOAD - legal pull in UNLOAD(from the top) using the container Id
-     * LOAD - legal insert (at the top of the coordinate) using the container Id
-     * Valid Container Id
-     *
-     * TODO: or - please fill the function
-     *
-     * */
+/* The simulator will check the following
+ * legal output format
+ * x,y legal coordinates
+ * UNLOAD - legal pull in UNLOAD(from the top) using the container Id
+ * LOAD - legal insert (at the top of the coordinate) using the container Id
+ * Valid Container Id
+ * */
 
-    vector<vector<string>> vecLines;
-    readToVecLine(cargoFilePath, vecLines);
+    vector<vector<string>> vecLinesPort;
+    vector<vector<string>> vecLinesInstructions;
+
+//    if (!readToVecLine(portFilePath, vecLinesPort))
+//    {
+//        simValidator.errorHandle.reportError(Errors::containerFileCannotBeRead);
+//        return false;
+//    }
+
+    readToVecLine(instructionsFilePath, vecLinesInstructions);
+
     int instructionCounter = 0;
-    bool encounteredErrors = false;
 
-    for (const auto &vecLine : vecLines)
+    for (const auto &vecLineIns : vecLinesInstructions)
     {
-        const Errors errorCode = validateInstructionLine(vecLine);
-        if (errorCode != 0)
+        for(const auto &portContainerLine : vecLinesPort)
         {
-            encounteredErrors = true;
-            if (ErrorHandle::isFatalError(errorCode))
-                return -1;
-
-
+            if (portContainerLine[0] == vecLineIns[0])
+            {
+                if (!validateInstructionLine(vecLineIns, portContainerLine, curPort))
+                {
+                    return -1;
+                }
+                break;
+            }
         }
-        Crane::performValidLineCommand(vecLine);
-        instructionCounter++;
 
-
+       instructionCounter++;
     }
-
-
-    return (!encounteredErrors) ? instructionCounter : -1;
+    return instructionCounter;
 }
 
 
@@ -573,7 +576,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         validateIfAlgorithmSucceeded(algorithmReturnFlag, currInputPath);
 
         // Go through the instruction output of the algorithm and approve every move
-        const int numOfOperations = performAndValidateAlgorithmInstructions(currOutputPath);
+        const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port);
         //const string algoName = getPathFileName(algoPath);
         const string algoName = getDirectoryOfPath(algoPath);
         const string travelName = getDirectoryOfPath(curTravelFolder);
@@ -636,9 +639,10 @@ void Simulation::loadAlgorithms(const string &dirPath)
 
 }
 
+
 //Or's functions:
 
-bool Simulation::checkUnload(const string& id, XYCord xyCord)
+bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCode &curPort)
 {
     std::ostringstream msg;
     // check if container can be unloaded from the ship with the given coordinates
@@ -659,16 +663,32 @@ bool Simulation::checkUnload(const string& id, XYCord xyCord)
 
     //check if container's dest port is compatible with current port
     string containerPort = containerOnShip->getDestinationPort().toStr();
-    //TODO: check if containerPort == curPort -> ask Allen for the curPort field
+    if(containerPort != curPort.toStr())
+    {
+        msg << "Container's dest port differs from current port. Cannot unload container.";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
+    }
 
-    //container has passed all simulator validations and can be unloaded
+    //container has passed all simulator validations and can be unloaded!
+    msg << "Container passed!.";
+    log(msg.str(), MessageSeverity::INFO);
     Crane::performUnload(shipPlan, xyCord);
     return true;
 }
 
-bool Simulation::checkLoad(const string& id, XYCord xyCord)
+bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<string> &portContainerLine)
 {
     std::ostringstream msg;
+    //check container is valid
+    if (!simValidator.validateContainerFromFile(portContainerLine, shipRoute))   ///re-check with shipRoute
+        {
+            msg << "Rejecting Container. It has illegal format.";
+            log(msg.str(), MessageSeverity::WARNING);
+            return false;
+        }
+
+    Container newContainer = Container(portContainerLine);
 
     // check if container has any duplicates on ship
     if(!simValidator.validateDuplicateIDOnShip(id, shipPlan))
@@ -678,41 +698,87 @@ bool Simulation::checkLoad(const string& id, XYCord xyCord)
         return false;
     }
 
-    // check if container id has illegal ISO 6346 format
-    if(!simValidator.validateContainerID(id))
+    //check if ship is full
+    if(simValidator.validateShipFull(shipPlan))
     {
-        msg << "Rejecting Container. It's id has illegal format.";
+        msg << "Ship is full. Cannot load container.";
         log(msg.str(), MessageSeverity::WARNING);
         return false;
     }
 
-    //check if ship is full
-    if(!simValidator.validateShipFull(shipPlan))
+    //check if ship is empty in given position
+    unsigned freeSpot = shipPlan->getUpperCellsMat()[xyCord];
+    unsigned maxHeight = shipPlan->getNumOfFloors(xyCord);
+    if(freeSpot == maxHeight)
     {
-
+        msg << "Position is full. Cannot load container to that position.";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
     }
+
+    //container has passed all simulator validations and can be loaded!
+    msg << "Container passed!.";
+    log(msg.str(), MessageSeverity::INFO);
+    Crane::performLoad(shipPlan, newContainer, xyCord);
     return true;
 }
-bool Simulation::validateInstructionLine(const vector<string> &instructionLine)
+
+bool Simulation::validateMove(const string &id)
+{
+    //TODO: implement
+    return true;
+}
+
+bool Simulation::validateReject(const string &id, const std::vector<std::string> &portContainerLine)
 {
     std::ostringstream msg;
+    //check if container is invalid
+    bool validContainerProperties = simValidator.validateContainerFromFile(portContainerLine, shipRoute);   ///re-check with shipRoute
+
+    // check if container has any duplicates on ship
+    bool nonDuplicatesOnShip = simValidator.validateDuplicateIDOnShip(id, shipPlan);
+
+//    // check if container id has illegal ISO 6346 format
+//    bool illegalID = !simValidator.validateContainerID(id);
+
+    //check if ship is full
+    bool shipNotFull = !simValidator.validateShipFull(shipPlan);
+
+    //check if there are no containers with further destports
+    //container has passed all simulator validations and can be loaded!
+    msg << "Container passed!. It really is rejected.";
+    log(msg.str(), MessageSeverity::INFO);
+    bool isAllValid = validContainerProperties && nonDuplicatesOnShip && shipNotFull;
+    return !(isAllValid);
+}
+
+bool Simulation::validateInstructionLine(const vector <string> &instructionLine, const vector <string> &portContainerLine, const SeaPortCode &curPort)
+
+{
     /* instructionLine.size() = 4
      * [0] = U/L/M/R
      * [1] = id
      * [2] = x cord
      * [3] = y cord
      * */
-    string cmd = instructionLine[0];
+    char cmd = instructionLine[0][0];
     string id = instructionLine[1];
     unsigned xCord = std::stoul(instructionLine[2]);
     unsigned yCord = std::stoul(instructionLine[3]);
     XYCord xyCord = {xCord, yCord};
-    if(cmd == "U")
-    {
-        return checkUnload(id, xyCord);
+    if (cmd == 'U') {
+        return validateUnload(id, xyCord, curPort);
     }
-    if(cmd == "L")
+    if (cmd == 'L') {
+        return validateLoad(id, xyCord, portContainerLine);
+    }
+    if (cmd == 'M')
     {
+        return validateMove(id);
+    }
+    if(cmd == 'R')
+    {
+        return validateReject(id, portContainerLine);
     }
     return true;
 }

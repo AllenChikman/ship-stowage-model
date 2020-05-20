@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include "Utils.h"
 
 class SeaPortCode
 {
@@ -29,6 +30,12 @@ private:
     SeaPortCode destinationPort;
 
 public:
+
+    explicit Container(const std::vector<std::string> &lineVec):
+    id(lineVec[0]),
+    weight(stringToUInt(lineVec[1])),
+    destinationPort(SeaPortCode(lineVec[2])){}
+
     Container(std::string id, unsigned weight, SeaPortCode destinationPort)
             : id(std::move(id)),
               weight(weight),

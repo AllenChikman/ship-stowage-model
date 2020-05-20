@@ -9,25 +9,28 @@
 enum Errors
 {
     noError = 0,
-    floorsExceedMaxHeight = 1u << 0u,
-    posExceedsXYLimits = 1u << 1u,
-    badLineFormatAfterFirstLine = 1u << 2u,
-    BadFirstLineOrShipPlanFileCannotBeRead = 1u << 3u,
-    reserved = 1u << 4u,
-    portAppearsMoreThanOnceConsecutively = 1u << 5u,
-    wrongSeaPortCode = 1u << 6u,
-    emptyFileOrRouteFileCannotBeRead = 1u << 7u,
-    atMostOneValidPort = 1u << 8u,
+    floorsExceedMaxHeight = 1u << 0u,                     // ignore
+    posExceedsXYLimits = 1u << 1u,                        // ignore
+    badLineFormatAfterFirstLine = 1u << 2u,               // ignore
+    BadFirstLineOrShipPlanFileCannotBeRead = 1u << 3u,    // fatal
+    duplicatedXYWithDifferentData = 1u << 4u,             // fatal
+
+    portAppearsMoreThanOnceConsecutively = 1u << 5u,      // ignore
+    wrongSeaPortCode = 1u << 6u,                          // ignore
+    emptyFileOrRouteFileCannotBeRead = 1u << 7u,          // fatal
+    atMostOneValidPort = 1u << 8u,                        // fatal
+
     reserved2 = 1u << 9u,
-    duplicateIDOnPort = 1u << 10u,
-    duplicateIDOnShip = 1u << 11u,
-    badContainerWeight = 1u << 12u,
-    badContainerDestPort = 1u << 13u,
-    ContainerIDCannotBeRead = 1u << 14u,
-    badContainerID = 1u << 15u,
-    containerFileCannotBeRead = 1u << 16u,
-    lastPortHasContainersWaiting = 1u << 17u,
-    containersExceedShipCapacity = 1u << 18u
+
+    duplicateIDOnPort = 1u << 10u,                        // reject (container)
+    duplicateIDOnShip = 1u << 11u,                        // reject (container)
+    badContainerWeight = 1u << 12u,                       // reject (container)
+    badContainerDestPort = 1u << 13u,                     // reject (container)
+    ContainerIDCannotBeRead = 1u << 14u,                  // ignore
+    badContainerID = 1u << 15u,                           // reject (container)
+    containerFileCannotBeRead = 1u << 16u,                // ingnore
+    lastPortHasContainersWaiting = 1u << 17u,             // reject (container)
+    containersExceedShipCapacity = 1u << 18u              // reject (container)
 
 
 };
@@ -35,13 +38,19 @@ enum Errors
 class ErrorHandle
 {
 private:
-    int errorBits;
+    unsigned errorBits;
 public:
-    int getErrorBits() { return errorBits; }
+    unsigned getErrorBits() { return errorBits; }
 
     void reportError(Errors error) { errorBits |= error; }
 
-    static bool isFatalError(Errors errorCode) { return errorCode != Errors::noError; } //TODO: implement
+    static unsigned isFatalError(unsigned errorCode)
+    {
+        // in case
+        unsigned fatalErrors = BadFirstLineOrShipPlanFileCannotBeRead | duplicatedXYWithDifferentData |
+                emptyFileOrRouteFileCannotBeRead | atMostOneValidPort ;
+        return (errorCode & fatalErrors) != 0;
+    }
 };
 
 

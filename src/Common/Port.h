@@ -23,8 +23,6 @@ enum Command
 
     void preformMove();
 
-    void performValidLineCommand(const std::vector<std::string> &vecLine);
-
 }
 
 
