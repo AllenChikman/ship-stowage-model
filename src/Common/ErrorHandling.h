@@ -8,6 +8,7 @@
 
 enum Errors
 {
+    noError = 0,
     floorsExceedMaxHeight = 1u << 0u,
     posExceedsXYLimits = 1u << 1u,
     badLineFormatAfterFirstLine = 1u << 2u,
@@ -40,6 +41,7 @@ public:
 
     void reportError(Errors error) { errorBits |= error; }
 
+    static bool isFatalError(Errors errorCode) { return errorCode != Errors::noError; } //TODO: implement
 };
 
 

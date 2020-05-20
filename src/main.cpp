@@ -19,7 +19,7 @@ int main()
 
     // new flow
     NaiveAlgorithm algorithm;
-    sim.runAlgorithmOnTravels(R"(../resources/simulationFolder)", algorithm, "");
+    sim.runAlgorithmOnTravels(R"(../resources/simulationFolder)", algorithm, "../");
 
     bool debug = true;
     if (debug) { test(); }
