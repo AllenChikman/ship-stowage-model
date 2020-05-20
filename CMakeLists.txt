@@ -5,25 +5,29 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ship_stowage_model
         src/main.cpp
-        src/NaiveAlgorithm.cpp
-        src/NaiveAlgorithm.h
-        src/AbstractAlgorithm.h
-        src/Ship.h
-        src/Simulation.cpp
-        src/Simulation.h
-        src/WeightBalanceCalculator.cpp
-        src/WeightBalanceCalculator.h
-        src/Port.cpp
-        src/Port.h
-        src/Utils.cpp
-        src/Utils.h
-        src/Container.cpp
-        src/Container.h
-        src/ErrorHandling.cpp
-        src/ErrorHandling.h
-        src/AlgorithmValidator.cpp
-        src/AlgorithmValidator.h
-        src/AlgorithmRegistration.h
-        src/AlgorithmRegistration.cpp
-        src/AlgorithmRegistrar.cpp
-        src/AlgorithmRegistrar.h)
+        src/Algorithms/NaiveAlgorithm.cpp
+        src/Algorithms/NaiveAlgorithm.h
+        src/Interfaces/AbstractAlgorithm.h
+        src/Common/Ship.h
+        src/Simulator/Simulation.cpp
+        src/Simulator/Simulation.h
+        src/Interfaces/WeightBalanceCalculator.cpp
+        src/Interfaces/WeightBalanceCalculator.h
+        src/Common/Port.cpp
+        src/Common/Port.h
+        src/Common/Utils.cpp
+        src/Common/Utils.h
+        src/Common/Container.cpp
+        src/Common/Container.h
+        src/Common/ErrorHandling.cpp
+        src/Common/ErrorHandling.h
+        src/Common/AlgorithmValidator.cpp
+        src/Common/AlgorithmValidator.h
+        src/Interfaces/AlgorithmRegistration.h
+        src/Interfaces/AlgorithmRegistration.cpp
+        src/Simulator/AlgorithmRegistrar.cpp
+        src/Simulator/AlgorithmRegistrar.h
+        src/Algorithms/_317624278_a.cpp
+        src/Algorithms/_317624278_a.h
+        src/Algorithms/_317624278_b.cpp
+        src/Algorithms/_317624278_b.h src/Common/EnviormentConfig.h)

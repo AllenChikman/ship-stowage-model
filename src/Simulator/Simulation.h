@@ -10,9 +10,9 @@
 #include <unordered_map>
 #include <map>
 #include <unordered_set>
-#include "Ship.h"
-#include "AbstractAlgorithm.h"
-#include "AlgorithmValidator.h"
+#include "../Common/Ship.h"
+#include "../Interfaces/AbstractAlgorithm.h"
+#include "../Common/AlgorithmValidator.h"
 
 class Simulation
 {
@@ -40,6 +40,8 @@ private:
     std::unordered_set<std::string> cargoFilesSet = {};
 
     // saving the results (number of operations) of each pair
+    std::vector<std::string> allTravels;
+
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
 
@@ -74,13 +76,13 @@ private:
 
     bool initTravel(const std::string &travelName);
 
-    int  performAndValidateAlgorithmInstructions(const std::string &outputDirPath);
+    int  performAndValidateAlgorithmInstructions(const std::string &cargoFilePath);
 
     void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    bool validateInstructionLine(const std::vector<std::string> &instructionLine);
+    Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
 
     void loadAlgorithms(const std::string &dirPath);
 

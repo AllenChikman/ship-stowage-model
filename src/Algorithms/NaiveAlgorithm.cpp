@@ -4,9 +4,9 @@
 #include <sstream>
 #include "filesystem"
 #include "NaiveAlgorithm.h"
-#include "Utils.h"
-#include "Ship.h"
-#include "WeightBalanceCalculator.h"
+#include "../Common/Utils.h"
+#include "../Common/Ship.h"
+#include "../Interfaces/WeightBalanceCalculator.h"
 
 
 

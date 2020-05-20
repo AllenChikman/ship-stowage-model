@@ -2,20 +2,17 @@
 #include <vector>
 #include <iterator>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <string>
 #include <map>
 //#include <dlfcn.h>
 
-#include "Utils.h"
 #include "Simulation.h"
-#include "NaiveAlgorithm.h"
-#include "filesystem"
-#include "AbstractAlgorithm.h"
-#include "AlgorithmRegistrar.h"
+#include "../Common/Utils.h"
+#include "../Algorithms/NaiveAlgorithm.h"
 
+#include "filesystem"
+#include "AlgorithmRegistrar.h"
 
 
 // Ex1 functions for reference
@@ -366,7 +363,13 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 
     std::ofstream outputFile;
     outputFile.open(outputFileFullPath);
-    outputFile << "RERULTS, short_travel, long_travel, complex_travel, Sum, Num Errors\n";
+
+    outputFile << "RERULTS" << CSV_DELIM;
+    for (const auto &travelPath : allTravels)
+    {
+        outputFile << travelPath << CSV_DELIM;
+    }
+    outputFile << "Sum, Num Errors\n";
 
     for (const auto &algoScore : algoScoreVec)
     {
@@ -376,11 +379,15 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
         std::tie(algoName, sumOfOperations, sumOfErrors);
 
         outputFile << algoName << CSV_DELIM;
-        for (const auto &travelResultPair : algorithmTravelResults[algoName])
+
+
+        for (const auto &travelName: allTravels)
         {
-            const std::string &travelName = travelResultPair.first;
-            int numOfOperations = travelResultPair.second;
-            outputFile << travelName << CSV_DELIM << numOfOperations << CSV_DELIM;
+            const bool travelInAlgo = algorithmTravelResults[algoName].find(travelName) !=
+                                      algorithmTravelResults[algoName].end();
+
+            int numOfOperations = (travelInAlgo) ? algorithmTravelResults[algoName][travelName] : -1;
+            outputFile << CSV_DELIM << numOfOperations << CSV_DELIM;
         }
 
         outputFile << sumOfOperations << CSV_DELIM << sumOfErrors << "\n";
@@ -486,7 +493,7 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 
 
 
-int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirPath)
+int Simulation::performAndValidateAlgorithmInstructions(const string &cargoFilePath)
 {
     /* The simulator will check the following
      * legal output format
@@ -499,19 +506,23 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
      *
      * */
 
-    return 0;
     vector<vector<string>> vecLines;
-    readToVecLine(outputDirPath, vecLines);
+    readToVecLine(cargoFilePath, vecLines);
     int instructionCounter = 0;
     bool encounteredErrors = false;
 
     for (const auto &vecLine : vecLines)
     {
-        if (!validateInstructionLine(vecLine))
+        const Errors errorCode = validateInstructionLine(vecLine);
+        if (errorCode != 0)
         {
             encounteredErrors = true;
+            if (ErrorHandle::isFatalError(errorCode))
+                return -1;
+
 
         }
+        Crane::performValidLineCommand(vecLine);
         instructionCounter++;
 
 
@@ -529,7 +540,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
     // TODO: turn a algorithm path to a algorithm
 
-    const string algoPath;
+    const string algoPath = "algo1./file.txt";
     //std::unique_ptr <AbstractAlgorithm> loadedAlgoPtr = algorithmFactories[0]();
     // init simulator for this travel
     initTravel(travelDirPath);
@@ -553,7 +564,6 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         const bool cargoFileExists = popRouteFileSet(currInputPath);
 
         // call algorithms' get instruction for cargo
-        /*getInstructionsForCargo(currInputPath, currOutputPath, shipPlan, port, routeTravelStack,cargoFileExists);*/
         const int algorithmReturnFlag = algorithm.getInstructionsForCargo(currInputPath, currOutputPath);
 
         // validations regarding the last port and existence of expected file
@@ -563,13 +573,15 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         validateIfAlgorithmSucceeded(algorithmReturnFlag, currInputPath);
 
         // Go through the instruction output of the algorithm and approve every move
-        const int numOfOperations = performAndValidateAlgorithmInstructions(outputDirPath);
-        const string algoName = getPathFileName(algoPath);
+        const int numOfOperations = performAndValidateAlgorithmInstructions(currOutputPath);
+        //const string algoName = getPathFileName(algoPath);
+        const string algoName = getDirectoryOfPath(algoPath);
         const string travelName = getDirectoryOfPath(curTravelFolder);
         algorithmTravelResults[algoName][travelName] = numOfOperations;
     }
 
     validateAllCargoFilesWereUsed();
+
 
 }
 
@@ -582,11 +594,13 @@ void Simulation::runAlgorithmOnTravels(const string &travelsRootDir,
     putDirFileListToVec(travelsRootDir, travelDirPaths);
     for (const auto &travelFolder :travelDirPaths)
     {
+        allTravels.push_back(travelFolder);
         runAlgorithmTravelPair(travelFolder, algorithm, outputDirPath);
         log("Travel Finished Successfully!!!");
     }
 
-//    writeSimulationOutput(outputDirPath);
+    (void)outputDirPath;
+    //writeSimulationOutput(outputDirPath);
 }
 
 

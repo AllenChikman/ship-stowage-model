@@ -8,7 +8,8 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "AbstractAlgorithm.h"
+#include "../Interfaces/AbstractAlgorithm.h"
+#include "../Common/EnviormentConfig.h"
 
 #ifdef LINUX_ENV
 #include "iostream"
