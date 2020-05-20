@@ -1,7 +1,5 @@
 #include <string>
 #include "WeightBalanceCalculator.h"
-#include "../Common/Ship.h"
-#include "../Common/Utils.h"
 
 
 

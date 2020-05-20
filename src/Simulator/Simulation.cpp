@@ -4,86 +4,15 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include "filesystem"
 #include <map>
-//#include <dlfcn.h>
 
 #include "Simulation.h"
+#include "AlgorithmRegistrar.h"
 #include "../Common/Utils.h"
 #include "../Algorithms/NaiveAlgorithm.h"
 
-#include "filesystem"
-#include "AlgorithmRegistrar.h"
 
-
-// Ex1 functions for reference
-
-/*
-bool Simulation::startTravel(const string &travelDir)
-{
-    if (!initTravel(travelDir))
-    {
-        log("Failed to init the travel - Ignoring this travel simulation ", MessageSeverity::ERROR);
-        return false;
-    }
-
-    NaiveAlgorithm algorithm;
-    algorithm.readShipPlan(travelDir + "/shipPlan.csv");
-    algorithm.readShipRoute(travelDir + "/routeFile.csv");
-
-    string currInputPath;
-    string currOutputPath;
-    string portStr;
-    unsigned numOfVisits;
-    bool lastPortVisit;
-
-    vector<SeaPortCode> routeTravelStack(shipRoute.rbegin(), shipRoute.rend());
-
-    for (const SeaPortCode &port : shipRoute)
-    {
-        portStr = port.toStr();
-        numOfVisits = (visitedPorts.find(port.toStr()) == visitedPorts.end()) ? 0 : visitedPorts[portStr];
-        visitedPorts[portStr] = ++numOfVisits;
-        std::tie(currInputPath, currOutputPath) = getPortFilePaths(port, numOfVisits);
-        lastPortVisit = isLastPortVisit(port);
-        const bool cargoFileExists = popRouteFileSet(currInputPath);
-        if (cargoFileExists && lastPortVisit)
-        {
-            log("Last visited port should not have a file for it", MessageSeverity::WARNING);
-        }
-
-        if (!cargoFileExists && !lastPortVisit)
-        {
-            log("This port visit has no file for it (expected: " + currInputPath + "). Unloading Only",
-                MessageSeverity::WARNING);
-        }
-
-        if (!algorithm.getInstructionsForCargo(currInputPath, currOutputPath))
-        {
-            log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
-        }
-
-        routeTravelStack.pop_back();
-    }
-
-    validateAllCargoFilesWereUsed();
-
-    return true;
-}
-*/
-
-/*void Simulation::runAlgorithm()
-{
-    vector<string> travelDirPaths;
-    putDirFileListToVec(rootFolder, travelDirPaths);
-    for (const auto &travelFolder :travelDirPaths)
-    {
-        if (startTravel(travelFolder))
-        {
-            log("Travel Finished Successfully!!!");
-        }
-    }
-
-}*/
 
 
 // Simulation private class method implementation
@@ -94,18 +23,13 @@ std::pair<string, string> Simulation::getPortFilePaths(const string &outputDir,
     const string &inputFileName = port.toStr(true);
     const string &outputFileName = port.toStr();
 
-    const string middlePart = "_" + std::to_string(numOfVisits);
+    const string visitsStr = "_" + std::to_string(numOfVisits);
 
-    string inputPath = curTravelFolder + '/' + inputFileName + middlePart + ".cargo_data";
-    string outputPath = outputDir + '/' + outputFileName + middlePart + ".crane_instructions";
+    string inputPath = curTravelFolder + '/' + inputFileName + visitsStr + ".cargo_data";
+    string outputPath = outputDir + '/' + outputFileName + visitsStr + ".crane_instructions";
 
     return std::make_pair(inputPath, outputPath);
 
-}
-
-void Simulation::createOutputDirectory()
-{
-    createDirIfNotExists(curTravelFolder + "/output");
 }
 
 void Simulation::updateRouteMap()
@@ -172,8 +96,6 @@ bool Simulation::initTravel(const string &travelDir)
     cargoFilesSet.clear();
     routeMap.clear();
     simValidator.clear();
-
-    createOutputDirectory();
 
     bool isSuccessful = true;
     isSuccessful &= readShipPlan(getShipPlanFilePath());
@@ -313,7 +235,7 @@ bool Simulation::readShipRoute(const string &path)
 /////// EX2 Part
 
 
-void writeToErrorFile (const string &errorDirectoryPath, const string &errorFilePath, const string &text)
+void writeToErrorFile(const string &errorDirectoryPath, const string &errorFilePath, const string &text)
 {
     //if there were errors create the error directory
     createDirIfNotExists(errorDirectoryPath);
@@ -418,17 +340,17 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
 
 void Simulation::handleCargoFileExistence(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
 {
-    if (!cargoFileExists && !lastPortVisit)
+
+    if (!cargoFileExists)
     {
         createEmptyFile(currInputPath);
-        log("This port visit has no file for it (expected: " + currInputPath + "). Creating empty file",
-            MessageSeverity::WARNING);
-    }
-    if (cargoFileExists && lastPortVisit)
-    {
-        log("Last visited port should not have a file for it", MessageSeverity::WARNING);
-    }
+        if (!lastPortVisit)
+        {
+            log("This port visit has no file for it (expected: " + currInputPath + "). Creating empty file",
+                MessageSeverity::WARNING);
+        }
 
+    }
 
 }
 

@@ -1,10 +1,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <algorithm>
 #include <sstream>
 #include <iterator>
 #include <filesystem>
+
 #include "Utils.h"
 
 
@@ -105,16 +105,6 @@ vector<string> splitByDelimiter(const string &line, char delimiter)
     }
 
     return res;
-}
-
-vector<string> splitByWhiteSpace(const string &line)
-{
-    vector<string> tokens;
-    std::istringstream iss(line);
-    copy(std::istream_iterator<string>(iss),
-         std::istream_iterator<string>(),
-         std::back_inserter(tokens));
-    return tokens;
 }
 
 

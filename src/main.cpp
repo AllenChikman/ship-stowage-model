@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+
 #include "Simulator/Simulation.h"
 #include "Common/Utils.h"
 #include "Algorithms/NaiveAlgorithm.h"

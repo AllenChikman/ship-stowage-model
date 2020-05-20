@@ -63,8 +63,6 @@ private:
 
     std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; } //TODO: any suffix will work here
 
-    void createOutputDirectory();
-
     void updateVisitedPortsMap(const SeaPortCode &port);
 
     void updateRouteMap();
@@ -101,13 +99,6 @@ public:
 
     void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
                                 const std::string &outputDirPath);
-
-
-    // EX1 functions - for reference
-
-/*    bool startTravel(const std::string &travelName);
-
-    void runAlgorithm();*/
 
 };
 
