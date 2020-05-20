@@ -9,6 +9,7 @@
 #include <memory>
 #include <functional>
 #include "../Interfaces/AbstractAlgorithm.h"
+#include "../Common/EnviormentConfig.h"
 
 #ifdef LINUX_ENV
 #include "iostream"

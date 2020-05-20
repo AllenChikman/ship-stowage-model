@@ -6,6 +6,8 @@
 #define SHIP_STOWAGE_MODEL_317624278_B_H
 
 #include "NaiveAlgorithm.h"
+#include "../Common/EnviormentConfig.h"
+#include "../Interfaces/AlgorithmRegistration.h"
 
 class _317624278_b : public NaiveAlgorithm
 {

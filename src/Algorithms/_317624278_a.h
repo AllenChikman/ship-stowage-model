@@ -7,10 +7,11 @@
 
 
 #include "NaiveAlgorithm.h"
+#include "../Common/EnviormentConfig.h"
+#include "../Interfaces/AlgorithmRegistration.h"
 
 class _317624278_a : public NaiveAlgorithm
 {
-
 };
 
 
