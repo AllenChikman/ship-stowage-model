@@ -27,7 +27,7 @@ private:
     std::vector<SeaPortCode> shipRoute; // read ship route
 
     // mapping between a port and number of times it has been visited so far.
-    // Used for getting the updated cargo path (and also detecting if werwe in the last port)
+    // Used for getting the updated cargo path (and also detecting if we're in the last port)
     std::unordered_map<std::string, unsigned> visitedPorts = {};
 
     // A map between each port and how many time it appears in the DIRECTORY (regardless of the run)
@@ -102,6 +102,9 @@ public:
 
     void runAlgorithm();*/
 
+    bool checkUnload(const string& id, XYCord xyCord);
+
+    bool checkLoad(const string &id, XYCord xyCord);
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

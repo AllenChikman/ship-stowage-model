@@ -485,11 +485,6 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 }
 
 
-bool Simulation::validateInstructionLine(const vector<string> &instructionLine)
-{
-    (void) instructionLine;
-    return true;
-}
 
 int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirPath)
 {
@@ -518,7 +513,6 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &outputDirP
 
         }
         instructionCounter++;
-//        Crane::(shipPlan);
 
 
     }
@@ -626,4 +620,85 @@ void Simulation::loadAlgorithms(const string &dirPath)
 
     }
 
+}
+
+//Or's functions:
+
+bool Simulation::checkUnload(const string& id, XYCord xyCord)
+{
+    std::ostringstream msg;
+    // check if container can be unloaded from the ship with the given coordinates
+    unsigned maxFloor = shipPlan->getUpperCellsMat()[xyCord] -1;
+    if(maxFloor == -1) //i.e there are no containers in that coordinate
+    {
+        msg << "No Containers to unload in that coordinate";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
+    }
+    auto containerOnShip =  shipPlan->getCargo()[xyCord][maxFloor];
+    if(containerOnShip->getID() != id)
+    {
+        msg << "Container isn't on the top floor. Cannot unload container.";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
+    }
+
+    //check if container's dest port is compatible with current port
+    string containerPort = containerOnShip->getDestinationPort().toStr();
+    //TODO: check if containerPort == curPort -> ask Allen for the curPort field
+
+    //container has passed all simulator validations and can be unloaded
+    Crane::performUnload(shipPlan, xyCord);
+    return true;
+}
+
+bool Simulation::checkLoad(const string& id, XYCord xyCord)
+{
+    std::ostringstream msg;
+
+    // check if container has any duplicates on ship
+    if(!simValidator.validateDuplicateIDOnShip(id, shipPlan))
+    {
+        msg << "Rejecting Container. It's id has a duplicate on ship.";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
+    }
+
+    // check if container id has illegal ISO 6346 format
+    if(!simValidator.validateContainerID(id))
+    {
+        msg << "Rejecting Container. It's id has illegal format.";
+        log(msg.str(), MessageSeverity::WARNING);
+        return false;
+    }
+
+    //check if ship is full
+    if(!simValidator.validateShipFull(shipPlan))
+    {
+
+    }
+    return true;
+}
+bool Simulation::validateInstructionLine(const vector<string> &instructionLine)
+{
+    std::ostringstream msg;
+    /* instructionLine.size() = 4
+     * [0] = U/L/M/R
+     * [1] = id
+     * [2] = x cord
+     * [3] = y cord
+     * */
+    string cmd = instructionLine[0];
+    string id = instructionLine[1];
+    unsigned xCord = std::stoul(instructionLine[2]);
+    unsigned yCord = std::stoul(instructionLine[3]);
+    XYCord xyCord = {xCord, yCord};
+    if(cmd == "U")
+    {
+        return checkUnload(id, xyCord);
+    }
+    if(cmd == "L")
+    {
+    }
+    return true;
 }

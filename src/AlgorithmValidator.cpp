@@ -211,24 +211,21 @@ bool AlgorithmValidator::validateDuplicateIDOnPort(const std::vector<Container> 
     return true;
 }
 
-bool AlgorithmValidator::validateDuplicateIDOnShip(const vector<Container> &containers, const std::shared_ptr<ShipPlan> &shipPlan) {
+bool AlgorithmValidator::validateDuplicateIDOnShip(const string &containerID, const std::shared_ptr<ShipPlan> &shipPlan) {
     std::ostringstream msg;
     auto xyCords = shipPlan->getShipXYCordsVec();
-    for(auto &container : containers)
+    for (auto xyCord : xyCords)
     {
-        for (auto xyCord : xyCords)
+        auto maxFloor = shipPlan->getUpperCellsMat()[xyCord];
+        for (unsigned floor = 0; floor < maxFloor; floor++)
         {
-            auto maxFloor = shipPlan->getUpperCellsMat()[xyCord];
-            for (unsigned floor = 0; floor < maxFloor; floor++)
+            auto shipContainer = shipPlan->getCargo()[xyCord][floor];
+            if (shipContainer->getID() == containerID)
             {
-                auto shipContainer = shipPlan->getCargo()[xyCord][floor];
-                if (shipContainer->getID() == container.getID())
-                {
-                    msg << "Containers at port: ID already on ship " << container.getID() << "   " << shipContainer->getID();
-                    log(msg.str(), MessageSeverity::Reject);
-                    errorHandle.reportError(Errors::duplicateIDOnShip);
-                    return false;
-                }
+                msg << "Containers at port: ID already on ship ";
+                log(msg.str(), MessageSeverity::Reject);
+                errorHandle.reportError(Errors::duplicateIDOnShip);
+                return false;
             }
         }
     }

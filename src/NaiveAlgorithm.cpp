@@ -432,9 +432,14 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     {
         clearDuplicatedContainers(portContainers);
     }
-    if (!validator.validateDuplicateIDOnShip(portContainers, shipPlan))
+    for(auto &container : portContainers)
     {
-       clearDuplicatedContainers(portContainers, shipPlan);
+        string containerID = container.getID();
+        if (!validator.validateDuplicateIDOnShip(containerID, shipPlan))
+        {
+            clearDuplicatedContainers(portContainers, shipPlan);
+            break;
+        }
     }
 
     SeaPortCode curSeaPortCode = travelRouteStack.back();

@@ -39,6 +39,8 @@ void putDirFileListToVec(const string &curPath, vector<string> &dirVec, const st
 
 void strCleanWhitespaces(string &str);
 
+vector<string> splitByDelimiter(const string &line, char delimiter);
+
 string getDirectoryOfPath(const string &fullPath);
 
 string getPathFileName(const string &fullPath);
