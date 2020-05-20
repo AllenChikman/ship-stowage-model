@@ -31,7 +31,6 @@ $(EXEC): $(OBJS)
 	$(COMP) $(OBJS) $(CPP_LINK_FLAG) -o $@
 $(OBJS):
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp -o $@
-#a rule for building a simple c++ source file
 
 clean:
 	rm -f $(OBJS) $(EXEC)
