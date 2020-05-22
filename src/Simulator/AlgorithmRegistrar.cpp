@@ -37,9 +37,11 @@ bool AlgorithmRegistrar::loadSharedObject(const std::string &path) {
 #ifdef LINUX_ENV
     std::unique_ptr<void, DlCloser> handle(dlopen(path.c_str(), RTLD_LAZY));
     if (!handle) {
+        std::cout << "failed to load: " << path << std::endl;
         return false;
     }
 
+    std::cout << "loaded: " << path << std::endl;
     handles.push_back(std::move(handle));
 #endif
     (void)path;  // ignore unused parameter

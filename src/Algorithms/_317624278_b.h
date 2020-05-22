@@ -11,6 +11,7 @@
 
 class _317624278_b : public NaiveAlgorithm
 {
+public:
     _317624278_b() : NaiveAlgorithm()
     {
         setSecondAlgorithm();

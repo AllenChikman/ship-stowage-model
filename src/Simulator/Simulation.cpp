@@ -474,18 +474,21 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
 
     // init simulator for this travel
-    auto shipPlanErrCode = readShipPlan(shipPlanPath);
+    const auto shipPlanErrCode = readShipPlan(shipPlanPath);
     if (ErrorHandle::isFatalError(shipPlanErrCode)) { return; }
 
-    auto shipRouteErrCode = readShipRoute(shipRoutePath);
+    const auto shipRouteErrCode = readShipRoute(shipRoutePath);
     if (ErrorHandle::isFatalError(shipRouteErrCode)) { return; }
 
     // Add the current travel to the travel names
     allTravelsNames.insert(travelName);
 
     // init algorithm for this travel
-    algoPtr->readShipPlan(shipPlanPath);
-    algoPtr->readShipRoute(shipRoutePath);
+    const auto algoPlanErrCode  = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
+    if (ErrorHandle::isFatalError(algoPlanErrCode)) { return; }
+
+    const auto algoRouteErrCode  = algoPtr->readShipRoute(shipRoutePath); //TODO: report error in simulator
+    if (ErrorHandle::isFatalError(algoRouteErrCode)) { return; }
 
     // construct the new algorithm-travel pair output dir
     const string newOutputDir = outputDirPath + "/" + algoName + "_" + travelName + "__crane_instructions";
@@ -588,6 +591,7 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
         const auto algoFactory = registrar.getLast();
         const auto factoryNamePair = std::make_pair(algoFactory, algoFileName);
 
+        std::cout << "loaded algorithm: " << algoFileName << std::endl;
         loadedAlgorithmFactories.push_back(factoryNamePair);
 
     }
@@ -791,9 +795,9 @@ bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort)
     for(auto xyCord : xyCordVec)
     {
         unsigned maxOccupiedFloor = shipPlan->getUpperCellsMat()[xyCord];
-        for (int i = 0; i < maxOccupiedFloor; i++)
+        for (unsigned i = 0; i < maxOccupiedFloor; i++)
         {
-            if (cargo[xyCord][maxOccupiedFloor]->getDestinationPort().toStr() == curPort.toStr())
+            if (cargo[xyCord][i]->getDestinationPort().toStr() == curPort.toStr())
             {
                 msg << "Algorithm didn't unload all containers at their dest port.";
                 log(msg.str(), MessageSeverity::ERROR);
