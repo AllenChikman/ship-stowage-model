@@ -23,7 +23,7 @@ INTERFACE_OBJS = $\
 
 OBJS = $(ALGORITHM_OBJS) $(COMMON_OBJS) $(INTERFACE_OBJS)
 
-CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -fvisibility=hidden
+CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden -fPIC
 CPP_LINK_FLAG = -shared
 
 all: $(SHARED_OBJS)
