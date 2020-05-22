@@ -1,7 +1,0 @@
-<num floors>, <num containers in dimension X>, <num containers in dimension Y>
-# Allen the king
-<X position>, <Y position>, <actual number of floors in this position>
-<X position>, <Y position>, <actual number of floors in this position>
-<X position>, <Y position>, <actual number of floors in this position>
-<X position>, <Y position>, <actual number of floors in this position>
-<X position>, <Y position>, <actual number of floors in this position>
