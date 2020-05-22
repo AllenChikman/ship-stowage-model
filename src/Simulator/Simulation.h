@@ -86,7 +86,7 @@ private:
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort);
+    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
 
     bool validateLoad(const std::string &id, XYCord xyCord, const vector<string> &portContainerLine);
 
@@ -94,8 +94,8 @@ private:
 
     bool validateMove(const std::string &id);
 
-    bool validateInstructionLine(const std::vector<std::string> &instructionLine,
-                                 const std::vector<std::string> &portContainerLine, const SeaPortCode &curPort);
+    bool validateInstructionLine(const vector<string> &instructionLine, const std::unordered_map<string,vector<vector<string>>> &idLinesMap,
+                                 const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
 
     void handleCargoFileExistence(const std::string &currInputPath, bool cargoFileExists, bool lastPortVisit);
 
@@ -118,6 +118,11 @@ public:
                                 const std::string &outputDirPath);
 
     bool allContainersUnloadedAtPort(const SeaPortCode &code);
+
+    void placeRejectsAtEnd(vector<vector<string>> &vecLinesInstructions);
+
+    bool validateInstruction(const vector<string> &instruction, const vector<vector<string>> &idLines,
+                             const SeaPortCode &curPort);
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

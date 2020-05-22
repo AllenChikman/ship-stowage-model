@@ -400,7 +400,8 @@ bool AlgorithmValidator::validateContainerWeight(const string &weight)
     return true;
 }
 
-bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const vector<SeaPortCode> &travelRouteStack)
+bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const vector<SeaPortCode> &travelRouteStack,
+                                                   bool containerToLoad)
 {
     std::ostringstream msg;
     auto curSeaPortCode = travelRouteStack.back();
@@ -409,7 +410,15 @@ bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const
     {
         for (auto &port : travelRouteStack)
         {
-            if (port.toStr() == destPortCode.toStr() && (port.toStr() != curSeaPortCode.toStr())) { return true; }
+            if (port.toStr() == destPortCode.toStr())
+            {
+                if(!containerToLoad)
+                {
+                    return true;
+                }
+                return port.toStr() != curSeaPortCode.toStr();
+            }
+
         }
 
     }
@@ -423,7 +432,8 @@ bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const
 }
 
 bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &line,
-                                                   const std::vector<SeaPortCode> &travelRouteStack)
+                                                   const std::vector<SeaPortCode> &travelRouteStack,
+                                                   bool containerToLoad)
 {
     /* valid line should be at length 3 where
  * line[0] - container Id (string)
@@ -457,7 +467,7 @@ bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &li
             destPort = line[2];
             return validateContainerID(id) &&
                    validateContainerWeight(weight) &&
-                   validateContainerDestPort(destPort, travelRouteStack);
+                    validateContainerDestPort(destPort, travelRouteStack, containerToLoad);
     }
 
 }
@@ -506,6 +516,29 @@ bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipP
         log(msg.str(), MessageSeverity::Reject);
     }
     errorHandle.reportError(Errors::containersExceedShipCapacity);
+    return true;
+}
+
+
+bool AlgorithmValidator::validateDuplicateIDOnPort(const vector<vector<string>> &containersAtPort,
+                                                   const vector<string> &containerLine, unsigned pos)
+{
+    std::ostringstream msg;
+    string curContainerLineID = containerLine[0];
+    string tmpContainerLineID;
+    for(int i=0; i<pos; i++)
+    {
+        tmpContainerLineID = containersAtPort[i][0];
+        if(tmpContainerLineID == curContainerLineID)
+        {
+            msg <<"Containers at port: ID duplicate ID on port.";
+            if(userIsSimulator)
+            {
+                log(msg.str(), MessageSeverity::Reject);
+            }
+            return false;
+        }
+    }
     return true;
 }
 
