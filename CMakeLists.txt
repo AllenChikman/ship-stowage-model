@@ -4,7 +4,7 @@ project(ship_stowage_model)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ship_stowage_model
-        src/main.cpp
+        src/Simulator/main.cpp
         src/Algorithms/NaiveAlgorithm.cpp
         src/Algorithms/NaiveAlgorithm.h
         src/Interfaces/AbstractAlgorithm.h

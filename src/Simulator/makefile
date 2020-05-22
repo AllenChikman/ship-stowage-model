@@ -1,6 +1,7 @@
 COMP = g++-9.3.0
 
 SIMULATOR_OBJS = $\
+main.o $\
 Simulation.o $\
 AlgorithmRegistrar.o
 
