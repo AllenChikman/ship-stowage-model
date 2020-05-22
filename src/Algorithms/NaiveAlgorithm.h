@@ -13,8 +13,10 @@
 #include "../Interfaces/AbstractAlgorithm.h"
 #include "../Common/AlgorithmValidator.h"
 
-class NaiveAlgorithm : public AbstractAlgorithm{
+class NaiveAlgorithm : public AbstractAlgorithm
+{
 private:
+    bool useSecondAlgorithm = false;
     std::shared_ptr<ShipPlan> shipPlan;
     std::vector<SeaPortCode> travelRouteStack;
     WeightBalanceCalculator weightBalanceCalculator{};
@@ -25,17 +27,22 @@ private:
     std::unordered_map<std::string, unsigned> routeMap = {};
     std::unordered_set<std::string> cargoFilesSet = {};
 
+    XYCord chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan);
+
     bool popRouteFileSet(const std::string &currInputPath);
 
     void updateRouteMap();
 
     void updateRouteFileSet(const std::string &curTravelFolder);
 
-    int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath, std::ofstream &outputPath);
+    int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath,
+                                  std::ofstream &outputPath);
 
 public:
 
     explicit NaiveAlgorithm() = default;
+
+    void setSecondAlgorithm() { useSecondAlgorithm = true; }
 
     int readShipPlan(const std::string &full_path_and_file_name) override;
 
@@ -44,10 +51,10 @@ public:
     int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 
     void Unloading(std::vector<Container> &containersToUnload,
-            XYCord xyCord, std::ofstream &outputFile);
+                   XYCord xyCord, std::ofstream &outputFile);
 
     void Loading(std::vector<Container> &containersToLoad,
-                                 std::ofstream &outputFile);
+                 std::ofstream &outputFile);
 
     int getInstructionsForCargo(const std::string &inputFilePath,
                                 const std::string &outputFilePath) override;

@@ -163,6 +163,10 @@ void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
 //step1:
 XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
 {
+    /*
+    * this is the function finding the free cell of Algorithm1
+    * */
+
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
 
@@ -179,6 +183,42 @@ XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
 
     //Unreachable code
     return XYCord{0, 0};
+}
+
+
+XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
+{
+    /*
+     * this is the function finding the free cell of Algorithm2
+     * */
+
+    const auto shipXYCords = shipPlan->getShipXYCordsVec();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+
+    XYCord bestCord{0, 0};
+    unsigned lowestHeight = shipPlan->getMaxHeight();
+    unsigned availableFloor;
+
+    for (XYCord xyCord: shipXYCords)
+    {
+        availableFloor = upperCellsMat[xyCord];
+        if (availableFloor < lowestHeight)
+        {
+            lowestHeight = availableFloor;
+            bestCord = xyCord;
+        }
+    }
+
+    return bestCord;
+
+
+}
+
+XYCord NaiveAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
+{
+    return (useSecondAlgorithm) ?
+           findLowestFreeXYCord(shipPlan) :
+           findFreeXYCordsOnShipToLoad(shipPlan);
 }
 
 //step2:
@@ -198,7 +238,7 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
         else
         {
             cmd = Crane::Command::LOAD;
-            xyCord = findFreeXYCordsOnShipToLoad(shipPlan);
+            xyCord = chooseXYCordByAlgorithmType(shipPlan);
             Crane::performLoad(shipPlan, curContainerToLoad, xyCord);
         }
         dumpInstruction(outputFile, curContainerToLoad, cmd, xyCord);
@@ -209,21 +249,6 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
 //// Ex2
 
 
-void clearDuplicatedPorts(vector<string> &vec)
-{
-    unsigned pos = 1;
-    while (pos < vec.size())
-    {
-        if (vec[pos] == vec[pos - 1])
-        {
-            vec.erase(vec.begin() + pos);
-        }
-        else
-        {
-            pos++;
-        }
-    }
-}
 
 void clearDuplicatedContainers(vector<Container> &portContainers)
 {
@@ -386,6 +411,9 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
 
 int NaiveAlgorithm::readShipRoute(const std::string &path)
 {
+    // TODO: Or - the code has a bug. you are clearing duplicate ports from "vec" but you never use it
+    //  (you should clear it from somewhere else
+
     vector<string> vec;
     if (!readToVec(path, vec))
     {
@@ -404,7 +432,7 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
     }
     if (validator.validateSamePortInstancesConsecutively(vec))
     {
-        clearDuplicatedPorts(vec);
+        clearDuplicatedConsecutiveStrings(vec); //TODO: Or - bug
     }
     travelRouteStack = vector<SeaPortCode>(routeVec.rbegin(), routeVec.rend());
     updateRouteMap();
@@ -440,7 +468,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     {
         clearDuplicatedContainers(portContainers);
     }
-    for(auto &container : portContainers)
+    for (auto &container : portContainers)
     {
         string containerID = container.getID();
         if (!validator.validateDuplicateIDOnShip(containerID, shipPlan))
@@ -474,12 +502,9 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     }
 
     sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
-    if (!portContainers.empty())
+    for (auto &portContainer : portContainers)
     {
-        for (auto &portContainer : portContainers)
-        {
-            containersToLoad.push_back(portContainer);
-        }
+        containersToLoad.push_back(portContainer);
     }
     Loading(containersToLoad, outputFile);
     travelRouteStack.pop_back();
