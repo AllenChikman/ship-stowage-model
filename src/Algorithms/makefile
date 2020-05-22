@@ -16,12 +16,10 @@ COMMON_OBJS = $\
 ../Common/Port.o $\
 ../Common/Utils.o $\
 ../Common/Container.o $\
-../Common/ErrorHandling.o $\
 ../Common/AlgorithmValidator.o
 
 INTERFACE_OBJS = $\
 ../Interfaces/WeightBalanceCalculator.o $\
-../Interfaces/AlgorithmRegistration.o $\
 
 OBJS = $(ALGORITHM_OBJS) $(COMMON_OBJS) $(INTERFACE_OBJS)
 
