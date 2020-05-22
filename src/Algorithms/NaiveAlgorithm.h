@@ -20,7 +20,7 @@ private:
     std::shared_ptr<ShipPlan> shipPlan;
     std::vector<SeaPortCode> travelRouteStack;
     WeightBalanceCalculator weightBalanceCalculator{};
-    AlgorithmValidator validator;
+    AlgorithmValidator validator = AlgorithmValidator(false);
 
     // from simulation
 

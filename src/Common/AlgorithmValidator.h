@@ -15,12 +15,13 @@ class AlgorithmValidator
 {
 public:
     ErrorHandle errorHandle;
+    bool userIsSimulator ; //i.e simulator = 1,  or algorithm = 0
 
     int getErrorBits() { return errorHandle.getErrorBits(); }
 
     void clear() { errorHandle.clear(); }
 
-    explicit AlgorithmValidator() : errorHandle(ErrorHandle()) {}
+    AlgorithmValidator(bool userIsSimulator) : errorHandle(ErrorHandle()), userIsSimulator(userIsSimulator) {}
 
     bool validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors);
 
@@ -58,6 +59,11 @@ public:
     bool validateContainerAtLastPort(const std::string &travelPath);
 
     bool validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan);
+
+    bool validateDuplicateXYCordsWithDifferentData(const std::vector<std::vector<std::string>> &vecLines,
+                                                        std::vector<std::vector<std::string>> &validVecLines);
+
+    void filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines);
 };
 
 

@@ -250,7 +250,7 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
 
 
 
-void clearDuplicatedContainers(vector<Container> &portContainers)
+void clearDuplicatedContainers(vector<Container> &portContainers, std::ofstream &outputFile)
 {
     for (unsigned i = 0; i < portContainers.size() - 1; i++)
     {
@@ -259,6 +259,7 @@ void clearDuplicatedContainers(vector<Container> &portContainers)
         {
             if (portContainers[i].getID() == portContainers[j].getID())
             {
+                dumpInstruction(outputFile, portContainers[j], Crane::Command::REJECT, XYCord{0,0});
                 portContainers.erase(portContainers.begin() + j);
                 continue;
             }
@@ -391,9 +392,15 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
     shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
+    vector<vector<string>> validVecLines;
+    if(!validator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
+    {
+        return validator.getErrorBits();
+    }
+
     for (const auto &vecLine : vecLines)
     {
-        if (!validator.validateShipPlanFloorsFormat(vecLine)) { continue; }
+//        if (!validator.validateShipPlanFloorsFormat(vecLine)) { continue; }
         x = stringToUInt(vecLine[0]);
         y = stringToUInt(vecLine[1]);
         numOfFloors = stringToUInt(vecLine[2]);
@@ -411,9 +418,6 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
 
 int NaiveAlgorithm::readShipRoute(const std::string &path)
 {
-    // TODO: Or - the code has a bug. you are clearing duplicate ports from "vec" but you never use it
-    //  (you should clear it from somewhere else
-
     vector<string> vec;
     if (!readToVec(path, vec))
     {
@@ -422,23 +426,24 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
     }
 
     vector<SeaPortCode> routeVec;
-    if (validator.validateAmountOfValidPorts(vec))
+    if (!validator.validateAmountOfValidPorts(vec))
     {
-        for (const auto &portSymbol : vec)
-        {
-            if (validator.validatePortFormat(portSymbol))
-                routeVec.emplace_back(portSymbol);
-        }
+        return validator.getErrorBits();
     }
-    if (validator.validateSamePortInstancesConsecutively(vec))
+    if (!validator.validateSamePortInstancesConsecutively(vec))
     {
-        clearDuplicatedConsecutiveStrings(vec); //TODO: Or - bug
+        clearDuplicatedConsecutiveStrings(vec);
+    }
+    for (const auto &portSymbol : vec)
+    {
+        if (validator.validatePortFormat(portSymbol))
+            routeVec.emplace_back(portSymbol);
     }
     travelRouteStack = vector<SeaPortCode>(routeVec.rbegin(), routeVec.rend());
     updateRouteMap();
     updateRouteFileSet(getDirectoryOfPath(path));
 
-    return validator.getErrorBits();
+    return 0;   //if we came here, there are no fatal errors. TODO: manage error handler
 }
 
 int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
@@ -466,7 +471,7 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
 
     if (!validator.validateDuplicateIDOnPort(portContainers))
     {
-        clearDuplicatedContainers(portContainers);
+        clearDuplicatedContainers(portContainers, outputFile);
     }
     for (auto &container : portContainers)
     {

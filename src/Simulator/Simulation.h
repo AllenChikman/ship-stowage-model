@@ -48,7 +48,7 @@ private:
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
 
-    AlgorithmValidator simValidator;
+    AlgorithmValidator simValidator = AlgorithmValidator(true);
 
     typedef std::function<std::unique_ptr<AbstractAlgorithm>()> AlgorithmFactory;
     std::vector<std::pair<AlgorithmFactory, std::string>> loadedAlgorithmFactories;
@@ -117,6 +117,7 @@ public:
                                 std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
                                 const std::string &outputDirPath);
 
+    bool allContainersUnloadedAtPort(const SeaPortCode &code);
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

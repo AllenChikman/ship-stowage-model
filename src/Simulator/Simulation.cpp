@@ -81,7 +81,7 @@ void Simulation::validateAllCargoFilesWereUsed()
     for (const auto &file : cargoFilesSet)
     {
         // TODO: write to error file
-        // TODO: Check if the files corespond to a stop in the route file or not
+        // TODO: Check if the files correspond to a stop in the route file or not
         log("File: " + file + " was not used and ignored (not in route or too many files for port)",
             MessageSeverity::WARNING);
     }
@@ -181,9 +181,16 @@ int Simulation::readShipPlan(const string &path)
     shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
-    for (const auto &vecLine : vecLines)
+    vector<vector<string>> validVecLines;
+
+    if(!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
     {
-        if (!simValidator.validateShipPlanFloorsFormat(vecLine)) { continue; }
+        return simValidator.getErrorBits();
+    }
+
+    for (const auto &vecLine : validVecLines)
+    {
+//        if (!simValidator.validateShipPlanFloorsFormat(vecLine)) { continue; }
         x = stringToUInt(vecLine[0]);
         y = stringToUInt(vecLine[1]);
         numOfFloors = stringToUInt(vecLine[2]);
@@ -208,22 +215,23 @@ int Simulation::readShipRoute(const string &path)
         return simValidator.getErrorBits();
     }
 
-    if (simValidator.validateAmountOfValidPorts(vec))
+    if (!simValidator.validateAmountOfValidPorts(vec))
     {
-        for (const auto &portSymbol : vec)
-        {
-            if (simValidator.validatePortFormat(portSymbol))
-                shipRoute.emplace_back(portSymbol);
-        }
+        return simValidator.getErrorBits();
     }
-    if (simValidator.validateSamePortInstancesConsecutively(vec))
+    if (!simValidator.validateSamePortInstancesConsecutively(vec))
     {
-        //TODO: Or - clear duplicates consecutive PORTS from shipRoute
+        clearDuplicatedConsecutiveStrings(vec);
+    }
+    for (const auto &portSymbol : vec)
+    {
+        if (simValidator.validatePortFormat(portSymbol))
+            shipRoute.emplace_back(portSymbol);
     }
     updateRouteMap();
     updateRouteFileSet();
 
-    return simValidator.getErrorBits();
+    return 0;
 }
 
 
@@ -430,6 +438,10 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
         }
 
         instructionCounter++;
+    }
+    if(!allContainersUnloadedAtPort(curPort))
+    {
+        return -1;
     }
     return instructionCounter;
 }
@@ -690,9 +702,8 @@ bool Simulation::validateReject(const string &id, const std::vector<std::string>
     bool shipNotFull = !simValidator.validateShipFull(shipPlan);
 
     //check if there are no containers with further destports
+
     //container has passed all simulator validations and can be loaded!
-    msg << "Container passed!. It really is rejected.";
-    log(msg.str(), MessageSeverity::INFO);
     bool isAllValid = validContainerProperties && nonDuplicatesOnShip && shipNotFull;
     return !(isAllValid);
 }
@@ -770,4 +781,25 @@ const string Simulation::getRouteFilePath()
             //TODO: Or - report proper error of more than 1 route file Found
             return "";
     }
+}
+
+bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort)
+{
+    std::ostringstream msg;
+    CargoMat cargo = shipPlan->getCargo();
+    vector<XYCord> xyCordVec = shipPlan->getShipXYCordsVec();
+    for(auto xyCord : xyCordVec)
+    {
+        unsigned maxOccupiedFloor = shipPlan->getUpperCellsMat()[xyCord];
+        for (int i = 0; i < maxOccupiedFloor; i++)
+        {
+            if (cargo[xyCord][maxOccupiedFloor]->getDestinationPort().toStr() == curPort.toStr())
+            {
+                msg << "Algorithm didn't unload all containers at their dest port.";
+                log(msg.str(), MessageSeverity::ERROR);
+                return false;
+            }
+        }
+    }
+    return true;
 }
