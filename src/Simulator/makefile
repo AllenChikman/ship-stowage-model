@@ -10,7 +10,6 @@ COMMON_OBJS = $\
 ../Common/Port.o $\
 ../Common/Utils.o $\
 ../Common/Container.o $\
-../Common/ErrorHandling.o $\
 ../Common/AlgorithmValidator.o
 
 INTERFACE_OBJS = $\
