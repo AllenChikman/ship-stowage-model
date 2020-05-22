@@ -579,6 +579,7 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
         if (!registrar.loadSharedObject(soFilePath))
         {
             //TODO: report loading error
+            std::cout << "Unable to load algorithm: " << getPathFileName(soFilePath, true) << std::endl;
             continue;
         }
 
@@ -587,6 +588,9 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
         if (addedAlgorithms != 1)
         {
             //TODO: report {addedAlgorithms} so files were registered, while expecting only 1 file.
+            std::cout << addedAlgorithms<< " algorithms registered. "
+                                           "Unable to load algorithm: " <<
+                                           getPathFileName(soFilePath, true) << std::endl;
             continue;
         }
 

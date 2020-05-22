@@ -150,7 +150,7 @@ bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<
     std::ostringstream msg;
     unsigned x_i, x_j, y_i, y_j, numOfFloors_i, numOfFloors_j;
     filterInvalidVecLines(vecLines, validVecLines);
-    for(unsigned i=0; i<vecLines.size()-1; i++)
+    for(unsigned i=0; i<vecLines.size()-1; i++) // TODO: or - bug
     {
         x_i= stringToUInt(vecLines[i][0]);
         y_i = stringToUInt(vecLines[i][1]);
