@@ -41,7 +41,6 @@ bool AlgorithmRegistrar::loadSharedObject(const std::string &path) {
         return false;
     }
 
-    std::cout << "loaded: " << path << std::endl;
     handles.push_back(std::move(handle));
 #endif
     (void)path;  // ignore unused parameter

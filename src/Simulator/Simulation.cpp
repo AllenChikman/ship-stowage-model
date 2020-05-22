@@ -565,6 +565,9 @@ void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const stri
 void Simulation::loadAlgorithms(const string &algorithmsRootDit)
 {
 
+    logStartingDecorator();
+    std::cout << "Loading Algorithms: " << std::endl;
+
     vector<string> algoFilesVec;
     putDirFileListToVec(algorithmsRootDit, algoFilesVec, ".so");
 
@@ -591,10 +594,12 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
         const auto algoFactory = registrar.getLast();
         const auto factoryNamePair = std::make_pair(algoFactory, algoFileName);
 
-        std::cout << "loaded algorithm: " << algoFileName << std::endl;
         loadedAlgorithmFactories.push_back(factoryNamePair);
+        std::cout << "Loaded algorithm: " << algoFileName << std::endl;
 
     }
+
+    std::cout << "Algorithms loading is finished: " << std::endl;
 
 }
 
