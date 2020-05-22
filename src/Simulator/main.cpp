@@ -3,7 +3,6 @@
 
 #include "Simulation.h"
 #include "../Common/Utils.h"
-#include "../Algorithms/NaiveAlgorithm.h"
 
 bool SetSimulatorCmdParams(char **argv, int argc,
                            std::string &travel_path,
@@ -65,7 +64,7 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
 
     /*For tests pass to the cmd arguments the next line:*/
@@ -74,7 +73,7 @@ int main()
     string algorithmsDir(R"(./)");
     string outputDir((R"(./)"));
 
-    if (!SetSimulatorCmdParams(__argv, __argc, travelDir, algorithmsDir, outputDir))
+    if (!SetSimulatorCmdParams(argv, argc, travelDir, algorithmsDir, outputDir))
     {
         return EXIT_FAILURE;
     }

@@ -10,9 +10,13 @@
 #include "Simulation.h"
 #include "AlgorithmRegistrar.h"
 #include "../Common/Utils.h"
+#include "../Common/Port.h"
+
+#ifndef LINUX_ENV
+
 #include "../Algorithms/NaiveAlgorithm.h"
 
-
+#endif
 
 
 // Simulation private class method implementation
@@ -401,11 +405,11 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
     vector<vector<string>> vecLinesPort;
     vector<vector<string>> vecLinesInstructions;
 
-//    if (!readToVecLine(portFilePath, vecLinesPort))
-//    {
-//        simValidator.errorHandle.reportError(Errors::containerFileCannotBeRead);
-//        return false;
-//    }
+    if (!readToVecLine(portFilePath, vecLinesPort))
+    {
+        simValidator.errorHandle.reportError(Errors::containerFileCannotBeRead);
+        return false;
+    }
 
     readToVecLine(instructionsFilePath, vecLinesInstructions);
 
@@ -586,7 +590,7 @@ bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCo
     std::ostringstream msg;
     // check if container can be unloaded from the ship with the given coordinates
     unsigned maxFloor = shipPlan->getUpperCellsMat()[xyCord] - 1;
-    if (maxFloor == -1) //i.e there are no containers in that coordinate
+    if (maxFloor == 0) //i.e there are no containers in that coordinate
     {
         msg << "No Containers to unload in that coordinate";
         log(msg.str(), MessageSeverity::WARNING);
@@ -665,6 +669,7 @@ bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<stri
 bool Simulation::validateMove(const string &id)
 {
     //TODO: implement
+    (void) id;
     return true;
 }
 
