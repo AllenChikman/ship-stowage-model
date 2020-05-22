@@ -33,9 +33,13 @@ bool readToVecLine(const string &path, vector<vector<string>> &vecLines);
 
 bool readToVec(const string &path, vector<string> &vec);
 
+void clearDuplicatedConsecutiveStrings(vector<string> &strVec);
+
 void createDirIfNotExists(const string &path);
 
 void putDirFileListToVec(const string &curPath, vector<string> &dirVec, const string &extent = "");
+
+void putSubDirectoriesToVec(const string &curPath, vector<string> &dirVec);
 
 void strCleanWhitespaces(string &str);
 

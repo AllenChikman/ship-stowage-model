@@ -166,6 +166,27 @@ bool readToVec(const string &path, vector<string> &vec)
     return true;
 }
 
+
+// vector manipulations
+
+void clearDuplicatedConsecutiveStrings(vector<string> &strVec)
+{
+    unsigned pos = 1;
+    while (pos < strVec.size())
+    {
+        if (strVec[pos] == strVec[pos - 1])
+        {
+            strVec.erase(strVec.begin() + pos);
+        }
+        else
+        {
+            pos++;
+        }
+    }
+}
+
+
+
 // filesystem functions
 
 void createDirIfNotExists(const string &path)
@@ -183,6 +204,7 @@ void putDirFileListToVec(const string &curPath, vector<string> &dirFileVec, cons
     for (const auto &entry : std::filesystem::directory_iterator(curPath))
     {
         const string path = entry.path().string();
+        // TODO: might be edge cases in which the extention will appear in the middle of the file name
         if (!extent.empty() && path.find(extent) == string::npos) { continue; }
         dirFileVec.push_back(path);
     }
@@ -209,4 +231,14 @@ void createEmptyFile(const string &fullPath)
 {
     std::ofstream outfile(fullPath);
     outfile.close();
+}
+
+void putSubDirectoriesToVec(const string &curPath, vector<string> &dirVec)
+{
+    for (const auto &entry : std::filesystem::directory_iterator(curPath))
+    {
+        const string path = entry.path().string();
+        if (!entry.is_directory()) { continue; }
+        dirVec.push_back(path);
+    }
 }
