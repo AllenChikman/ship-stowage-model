@@ -12,33 +12,41 @@
 #include "Utils.h"
 
 
-bool checkShipPlanLineFormat(const std::vector<std::string> &line) {
+bool checkShipPlanLineFormat(const std::vector<std::string> &line)
+{
     bool valid = true;
-    if (line.size() != 3) {
+    if (line.size() != 3)
+    {
         valid = false;
     }
-    for (auto &word : line) {
-        try {
+    for (auto &word : line)
+    {
+        try
+        {
             std::stoul(word);
         }
-        catch (std::invalid_argument const &e) {
+        catch (std::invalid_argument const &e)
+        {
             valid = false;
         }
     }
     return valid;
 }
 
-bool AlgorithmValidator::validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors) {
+bool AlgorithmValidator::validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors)
+{
     std::ostringstream msg;
     bool valid = true;
 
-    if (numOfFloors >= maximalHeight) {
+    if (numOfFloors >= maximalHeight)
+    {
         msg << "Number of floors is not smaller than the maximal height "
             << maximalHeight << " in [" << x << "][" << y << "]";
         valid = false;
     }
 
-    if (!valid) {
+    if (!valid)
+    {
         log(msg.str(), MessageSeverity::WARNING);
         errorHandle.reportError(Errors::floorsExceedMaxHeight);
         return false;
@@ -46,15 +54,18 @@ bool AlgorithmValidator::validateShipHeightInput(unsigned maximalHeight, unsigne
     return true;
 }
 
-bool AlgorithmValidator::validateShipXYCords(unsigned width, unsigned length, unsigned x, unsigned y) {
+bool AlgorithmValidator::validateShipXYCords(unsigned width, unsigned length, unsigned x, unsigned y)
+{
     std::ostringstream msg;
     bool valid = true;
-    if (x >= width || y >= length) {
+    if (x >= width || y >= length)
+    {
         msg << "[" << x << "][" << y << "]" << " coordinate is out of bounds (ship plan size is:" <<
             "[" << width << "][" << length << "]";
         valid = false;
     }
-    if (!valid) {
+    if (!valid)
+    {
         log(msg.str(), MessageSeverity::WARNING);
         errorHandle.reportError(Errors::posExceedsXYLimits);
         return false;
@@ -62,11 +73,13 @@ bool AlgorithmValidator::validateShipXYCords(unsigned width, unsigned length, un
     return true;
 }
 
-bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<string> &shipFloor) {
+bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<string> &shipFloor)
+{
     std::ostringstream msg;
     bool valid = checkShipPlanLineFormat(shipFloor);
 
-    if (!valid) {
+    if (!valid)
+    {
         errorHandle.reportError(Errors::badLineFormatAfterFirstLine);
         msg << "Bad line format after first line";
         log(msg.str(), MessageSeverity::WARNING);
@@ -75,11 +88,13 @@ bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<string> 
     return true;
 }
 
-bool AlgorithmValidator::validateShipPlanFirstLine(std::vector<string> &firstFloor) {
+bool AlgorithmValidator::validateShipPlanFirstLine(std::vector<string> &firstFloor)
+{
     std::ostringstream msg;
     bool valid = true;
     valid = checkShipPlanLineFormat(firstFloor);
-    if (!valid) {
+    if (!valid)
+    {
         errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         msg << "Fatal Error: Bad first line format";
         log(msg.str(), MessageSeverity::ERROR);
@@ -88,14 +103,16 @@ bool AlgorithmValidator::validateShipPlanFirstLine(std::vector<string> &firstFlo
     return true;
 }
 
-bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shipPlanFilePath) {
+bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shipPlanFilePath)
+{
     std::ostringstream msg;
     // Open the File
     std::ifstream in;
     in.open(shipPlanFilePath.c_str());
 
     // Check if object is valid
-    if (!in) {
+    if (!in)
+    {
         msg << "Cannot open the File: " + shipPlanFilePath;
         log(msg.str(), MessageSeverity::ERROR);
         errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
@@ -104,15 +121,18 @@ bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shi
     return true;
 }
 
-bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vector<string> &routeVec) {
+bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vector<string> &routeVec)
+{
     std::ostringstream msg;
 
 
-    for (size_t i = 1; i < routeVec.size(); i++) {
+    for (size_t i = 1; i < routeVec.size(); i++)
+    {
         auto prevPort = routeVec[i - 1];
         auto port = routeVec[i];
 
-        if (port == prevPort) {
+        if (port == prevPort)
+        {
             msg << port + " appears twice or more consecutively.";
             log(msg.str(), MessageSeverity::WARNING);
             errorHandle.reportError(Errors::portAppearsMoreThanOnceConsecutively);
@@ -123,10 +143,12 @@ bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vecto
     return true;
 }
 
-bool AlgorithmValidator::validatePortFormat(const string &port) {
+bool AlgorithmValidator::validatePortFormat(const string &port)
+{
     std::ostringstream msg;
     bool valid = SeaPortCode::isValidCode(port);
-    if (!valid) {
+    if (!valid)
+    {
         msg << "Bad port symbol format.";
         log(msg.str(), MessageSeverity::WARNING);
         errorHandle.reportError(Errors::wrongSeaPortCode);
@@ -135,7 +157,8 @@ bool AlgorithmValidator::validatePortFormat(const string &port) {
     return true;
 }
 
-bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &shipRouteFilePath) {
+bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &shipRouteFilePath)
+{
     std::ostringstream msg;
     bool valid = true;
 
@@ -150,9 +173,11 @@ bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &s
     std::vector<string> vec;
 
     // Read the next line from File until it reaches the end.
-    while (std::getline(in, line)) {
+    while (std::getline(in, line))
+    {
         // Line contains string of length > 0 then save it in std::vector
-        if (!line.empty() && line[0] != '#') {
+        if (!line.empty() && line[0] != '#')
+        {
             strCleanWhitespaces(line);
             vec.push_back(line);
         }
@@ -160,7 +185,8 @@ bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &s
     valid = vec.empty();
     in.close();
 
-    if (!valid) {
+    if (!valid)
+    {
         msg << "Cannot open the File: " + shipRouteFilePath;
         log(msg.str(), MessageSeverity::ERROR);
         errorHandle.reportError(Errors::emptyFileOrRouteFileCannotBeRead);
@@ -170,36 +196,54 @@ bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &s
     return true;
 }
 
-bool AlgorithmValidator::validateAmountOfValidPorts(const vector<string> &routeVec) {
-    std::ostringstream msg;
+bool AlgorithmValidator::validateAmountOfValidPorts(const vector<string> &routeVec)
+{
     int validPorts = 0;
-    for (auto &port : routeVec) {
-        if (SeaPortCode::isValidCode(port)) {
+    for (auto &port : routeVec)
+    {
+        if (SeaPortCode::isValidCode(port))
+        {
             validPorts++;
         }
     }
-    if (validPorts <= 1) {
-        msg << "File with only a single valid port.";
-        log(msg.str(), MessageSeverity::ERROR);
-        errorHandle.reportError(Errors::atMostOneValidPort);
-        return false;
+
+    switch (validPorts)
+    {
+        case 0:
+            log("File with no valid ports.", MessageSeverity::ERROR);
+            errorHandle.reportError(Errors::atMostOneValidPort);
+            return false;
+
+        case 1:
+            log("File with only a single valid port.", MessageSeverity::ERROR);
+            errorHandle.reportError(Errors::atMostOneValidPort);
+            return false;
+
+        default:
+            return true;
     }
-    return true;
 }
 
-bool AlgorithmValidator::validateDuplicateIDOnPort(const std::vector<Container> &containersAtPort) {
+bool AlgorithmValidator::validateDuplicateIDOnPort(const std::vector<Container> &containersAtPort)
+{
     std::ostringstream msg;
     std::unordered_map<string, unsigned> idMap = {};
-    for (auto &container : containersAtPort) {
-        if (idMap.find(container.getID()) == idMap.end()) {
+    for (auto &container : containersAtPort)
+    {
+        if (idMap.find(container.getID()) == idMap.end())
+        {
             idMap.insert(make_pair(container.getID(), 1));
-        } else {
+        }
+        else
+        {
             idMap[container.getID()]++;
         }
     }
-    for (auto &temp_id : idMap) {
+    for (auto &temp_id : idMap)
+    {
         auto id = temp_id.first;
-        if (idMap[id] > 1) {
+        if (idMap[id] > 1)
+        {
             msg << "Duplicated ID on port.";
             log(msg.str(), MessageSeverity::WARNING);
             errorHandle.reportError(Errors::duplicateIDOnPort);
@@ -211,7 +255,8 @@ bool AlgorithmValidator::validateDuplicateIDOnPort(const std::vector<Container> 
     return true;
 }
 
-bool AlgorithmValidator::validateDuplicateIDOnShip(const string &containerID, const std::shared_ptr<ShipPlan> &shipPlan) {
+bool AlgorithmValidator::validateDuplicateIDOnShip(const string &containerID, const std::shared_ptr<ShipPlan> &shipPlan)
+{
     std::ostringstream msg;
     auto xyCords = shipPlan->getShipXYCordsVec();
     for (auto xyCord : xyCords)
@@ -232,11 +277,13 @@ bool AlgorithmValidator::validateDuplicateIDOnShip(const string &containerID, co
     return true;
 }
 
-bool AlgorithmValidator::validateContainerID(const string &id) {
+bool AlgorithmValidator::validateContainerID(const string &id)
+{
     // id doesn't exist
     std::ostringstream msg;
     size_t properIDLen = 11;
-    if (id.size() != properIDLen) {
+    if (id.size() != properIDLen)
+    {
         msg << "Containers at port: bad line format, ID cannot be read.";
         log(msg.str(), MessageSeverity::WARNING);
         errorHandle.reportError(Errors::ContainerIDCannotBeRead);
@@ -245,7 +292,8 @@ bool AlgorithmValidator::validateContainerID(const string &id) {
 
     // id exists but has wrong format
     Container tmpContainer(id, 0, SeaPortCode("null"));  //TODO :consult with Allen
-    if (!tmpContainer.isValidID()) {
+    if (!tmpContainer.isValidID())
+    {
         msg << "Containers at port: illegal ID check ISO 6346";
         log(msg.str(), MessageSeverity::Reject);
         errorHandle.reportError(Errors::badContainerID);
@@ -254,10 +302,13 @@ bool AlgorithmValidator::validateContainerID(const string &id) {
     return true;
 }
 
-bool AlgorithmValidator::validateContainerWeight(const string &weight) {
+bool AlgorithmValidator::validateContainerWeight(const string &weight)
+{
     std::ostringstream msg;
-    for (char i : weight) {
-        if (!isdigit(i)) {
+    for (char i : weight)
+    {
+        if (!isdigit(i))
+        {
             msg << "Containers at port: bad line format, missing or bad weight.";
             log(msg.str(), MessageSeverity::Reject);
             errorHandle.reportError(Errors::badContainerWeight);
@@ -267,12 +318,15 @@ bool AlgorithmValidator::validateContainerWeight(const string &weight) {
     return true;
 }
 
-bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const vector<SeaPortCode> &travelRouteStack) {
+bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const vector<SeaPortCode> &travelRouteStack)
+{
     std::ostringstream msg;
     auto curSeaPortCode = travelRouteStack.back();
     auto destPortCode = SeaPortCode(destPort);
-    if (SeaPortCode::isValidCode(destPortCode.toStr())) {
-        for (auto &port : travelRouteStack) {
+    if (SeaPortCode::isValidCode(destPortCode.toStr()))
+    {
+        for (auto &port : travelRouteStack)
+        {
             if (port.toStr() == destPortCode.toStr() && (port.toStr() != curSeaPortCode.toStr())) { return true; }
         }
 
@@ -284,7 +338,8 @@ bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const
 }
 
 bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &line,
-                                                   const std::vector<SeaPortCode> &travelRouteStack) {
+                                                   const std::vector<SeaPortCode> &travelRouteStack)
+{
     /* valid line should be at length 3 where
  * line[0] - container Id (string)
  * line[1] - numOf.. (unsigned int)
@@ -293,7 +348,8 @@ bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &li
 
     auto lineSize = line.size();
     string id, weight, destPort;
-    switch (lineSize) {
+    switch (lineSize)
+    {
         case 0:
             //unreachable code
             return false;
@@ -321,14 +377,16 @@ bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &li
 
 }
 
-bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &containersAtPortFile) {
+bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &containersAtPortFile)
+{
     std::ostringstream msg;
     // Open the File
     std::ifstream in;
     in.open(containersAtPortFile.c_str());
 
     // Check if object is valid
-    if (!in) {
+    if (!in)
+    {
         msg << "Cannot open the File: " << containersAtPortFile;
         log(msg.str(), MessageSeverity::ERROR);
         errorHandle.reportError(Errors::containerFileCannotBeRead);
@@ -337,17 +395,20 @@ bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &c
     return true;
 }
 
-bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath) {
+bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath)
+{
     (void) shipRouteFilePath;
     return false;
 }
 
-bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan) {
+bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan)
+{
     std::ostringstream msg;
     const auto upperCellsMat = shipPlan->getUpperCellsMat();
     const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
 
-    for (XYCord cord: shipXYCordVec) {
+    for (XYCord cord: shipXYCordVec)
+    {
         unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
         if (upperCellsMat[cord] < numOfFloors) { return false; }
     }

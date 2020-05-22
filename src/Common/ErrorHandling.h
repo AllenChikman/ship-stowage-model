@@ -46,7 +46,7 @@ public:
 
     void reportError(Errors error) { errorBits |= error; }
 
-    static unsigned isFatalError(unsigned errorCode)
+    static bool isFatalError(int errorCode)
     {
         // in case
         unsigned fatalErrors = BadFirstLineOrShipPlanFileCannotBeRead | duplicatedXYWithDifferentData |
