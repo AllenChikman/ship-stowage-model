@@ -13,6 +13,7 @@
 #include "../Common/Ship.h"
 #include "../Interfaces/AbstractAlgorithm.h"
 #include "../Common/AlgorithmValidator.h"
+#include "../Common/EnviormentConfig.h"
 
 class Simulation
 {
@@ -22,7 +23,7 @@ private:
     // saving the current travel folder
     std::string curTravelFolder;
 
-    // initialized in initTravel Function
+    // initialized in initSimulationTravelState Function
     std::shared_ptr<ShipPlan> shipPlan; // read ship plan
     std::vector<SeaPortCode> shipRoute; // read ship route
 
@@ -47,21 +48,21 @@ private:
 
     AlgorithmValidator simValidator;
 
-    std::vector<std::function<std::unique_ptr<AbstractAlgorithm>()>> algorithmFactories;
-    std::vector<std::string> algorithmNames;
+    typedef std::function<std::unique_ptr<AbstractAlgorithm>()> AlgorithmFactory;
+    std::vector<std::pair<AlgorithmFactory, std::string>> loadedAlgorithmFactories;
 
     bool isLastPortVisit(const SeaPortCode &port)
     {
-        const std::string& portStr = port.toStr();
+        const std::string &portStr = port.toStr();
         return routeMap[portStr] == visitedPorts[portStr] && portStr == shipRoute.back().toStr();
     }
 
     std::pair<std::string, std::string> getPortFilePaths
-    (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
+            (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
-    std::string getShipPlanFilePath() { return curTravelFolder + "/shipPlan.csv"; } //TODO: any suffix will work here
+    const string getShipPlanFilePath();
 
-    std::string getRouteFilePath() { return curTravelFolder + "/routeFile.csv"; } //TODO: any suffix will work here
+    const string getRouteFilePath();
 
     void updateVisitedPortsMap(const SeaPortCode &port);
 
@@ -73,11 +74,13 @@ private:
 
     void validateAllCargoFilesWereUsed();
 
-    bool initTravel(const std::string &travelName);
+    void initSimulationTravelState(const std::string &travelDir);
 
-    int performAndValidateAlgorithmInstructions(const std::string &portFilePath , const std::string &instructionsFilePath, const SeaPortCode &curPort);
+    int
+    performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+                                            const SeaPortCode &curPort);
 
-    void getSortedResultVec(std::vector<std::tuple<std::string,int,int>>& algoScore);
+    void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
@@ -89,25 +92,27 @@ private:
 
     bool validateMove(const std::string &id);
 
-    bool validateInstructionLine(const std::vector <std::string> &instructionLine, const std::vector <std::string> &portContainerLine, const SeaPortCode &curPort);
-    void handleCargoFileExistence(const std::string &currInputPath , bool cargoFileExists , bool lastPortVisit);
+    bool validateInstructionLine(const std::vector<std::string> &instructionLine,
+                                 const std::vector<std::string> &portContainerLine, const SeaPortCode &curPort);
+
+    void handleCargoFileExistence(const std::string &currInputPath, bool cargoFileExists, bool lastPortVisit);
 
     Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
 
     void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
 
-    void loadAlgorithms(const std::string &dirPath);
-
 public:
 
-    bool readShipPlan(const std::string &path);
+    int readShipPlan(const std::string &path);
 
-    bool readShipRoute(const std::string &path);
+    int readShipRoute(const std::string &path);
 
-    void runAlgorithmOnTravels(const std::string &travelsRootDir,
-                                           AbstractAlgorithm &algorithm, const std::string &outputDirPath = "./");
+    void loadAlgorithms(const std::string &algorithmsRootDit);
 
-    void runAlgorithmTravelPair(const std::string &travelDirPath, AbstractAlgorithm &algorithm,
+    void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath);
+
+    void runAlgorithmTravelPair(const std::string &travelDirPath,
+                                std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
                                 const std::string &outputDirPath);
 
 };
