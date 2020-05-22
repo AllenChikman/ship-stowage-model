@@ -465,7 +465,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     if (ErrorHandle::isFatalError(shipRouteErrCode)) { return; }
 
     // Add the current travel to the travel names
-    allTravelsNames.push_back(travelName);
+    allTravelsNames.insert(travelName);
 
     // init algorithm for this travel
     algoPtr->readShipPlan(shipPlanPath);
@@ -526,7 +526,7 @@ void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const stri
 #ifndef LINUX_ENV
     AlgorithmFactory mock;
     loadedAlgorithmFactories.emplace_back(mock, "algo1");
-    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
+    loadedAlgorithmFactories.emplace_back(mock, "algo2");
 
 #endif
 

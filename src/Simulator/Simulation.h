@@ -9,7 +9,9 @@
 #include <string>
 #include <unordered_map>
 #include <map>
+#include <set>
 #include <unordered_set>
+
 #include "../Common/Ship.h"
 #include "../Interfaces/AbstractAlgorithm.h"
 #include "../Common/AlgorithmValidator.h"
@@ -41,7 +43,7 @@ private:
     std::unordered_set<std::string> cargoFilesSet = {};
 
     // saving the results (number of operations) of each pair
-    std::vector<std::string> allTravelsNames;
+    std::set<std::string> allTravelsNames;
 
     typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
     ResultsPairMap algorithmTravelResults = {};
