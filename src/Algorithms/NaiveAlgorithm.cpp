@@ -303,7 +303,7 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
     }
     for (const auto &lineVec : vecLines)
     {
-        if (validator.validateContainerFromFile(lineVec, travelRouteStack))
+        if (validator.validateContainerFromFile(lineVec, travelRouteStack, true))
         {
             ContainersVec.emplace_back(Container(lineVec));
         }

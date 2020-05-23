@@ -78,24 +78,23 @@ private:
 
     void initSimulationTravelState(const std::string &travelDir);
 
-    int
-    performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+    int performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
                                             const SeaPortCode &curPort);
 
     void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort);
+    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
 
     bool validateLoad(const std::string &id, XYCord xyCord, const vector<string> &portContainerLine);
 
     bool validateReject(const string &id, const std::vector<std::string> &portContainerLine);
 
-    bool validateMove(const std::string &id);
+    bool validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L);
 
-    bool validateInstructionLine(const std::vector<std::string> &instructionLine,
-                                 const std::vector<std::string> &portContainerLine, const SeaPortCode &curPort);
+    bool validateInstructionLine(const vector<string> &instructionLine, const std::unordered_map<string,vector<vector<string>>> &idLinesMap,
+                                 const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
 
     void handleCargoFileExistence(const std::string &currInputPath, bool cargoFileExists, bool lastPortVisit);
 
@@ -118,6 +117,8 @@ public:
                                 const std::string &outputDirPath);
 
     bool allContainersUnloadedAtPort(const SeaPortCode &code);
+
+
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H

@@ -17,11 +17,11 @@ enum Command
     LOAD, UNLOAD, REJECT, MOVE
 };
 
-    void performUnload(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord);
+    std::optional<Container> performUnload(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord);
 
-    void performLoad(const std::shared_ptr<ShipPlan> &shipPlan, const Container &container, const XYCord &xyCord);
+    void performLoad(const std::shared_ptr<ShipPlan> &shipPlan, const std::optional<Container> &container, const XYCord &xyCord);
 
-    void preformMove();
+    void performMove(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord_U, const XYCord &xyCord_L);
 
 }
 
