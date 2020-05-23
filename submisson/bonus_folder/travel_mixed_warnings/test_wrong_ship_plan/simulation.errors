@@ -1,0 +1,138 @@
+Errors File
+[LOG TYPE] REPORTER [portIndex/routeLen][PORT] Error description.
+===================================================
+Travel Name: curr
+[Error][Simulator][Route] Empty file or file cannot be read altogether
+Travel skipped..
+
+===================================================
+Travel Name: test_invalid_travel
+[Error][Simulator][Route] Empty file or file cannot be read altogether
+Travel skipped..
+
+===================================================
+Travel Name: test_no_route_file
+[Error][Simulator][Route] Empty file or file cannot be read altogether
+Travel skipped..
+
+===================================================
+Travel Name: test_no_ship_plan
+[Error][Simulator][ShipPlan] Bad first line or file cannot be read altogether
+Travel skipped..
+
+===================================================
+Travel Name: test_index
+[Warning][Simulator][ABCDE][1/5] port file is not found in dir.
+[Warning][Simulator][ABCDJ][4/5] port file is not found in dir.
+---------------------------------------------------
+Errors reported by _205580947_a
+[Warning][_205580947_a][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_a][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_a Grade: 100
+===================================================
+Errors reported by _205580947_b
+[Warning][_205580947_b][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_b][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_b Grade: 100
+===================================================
+===================================================
+Travel Name: test_recurrent_ports_travel
+[Warning][Simulator][ABCDE][1/5][Container] Bad line format, missing or bad port destination
+[Warning][Simulator][ABCDE][3/5][Container] Duplicate ID on port
+[Warning][Simulator][ABCDE][3/5][Container] Bad line format, missing or bad port destination
+[Warning][Simulator][ABCDE][3/5][Container] Illegal ID check ISO 6346
+[Warning][Simulator][ABCDJ][4/5][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+Errors reported by _205580947_a
+[Warning][_205580947_a][ABCDE][1/5][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_a][ABCDF][2/5][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_a][ABCDE][3/5][Container] Duplicate ID on port
+[Warning][_205580947_a][ABCDE][3/5][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_a][ABCDE][3/5][Container] Illegal ID check ISO 6346
+[Warning][_205580947_a][ABCDE][3/5][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_a][ABCDJ][4/5][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+[Info] _205580947_a Grade: 100
+===================================================
+Errors reported by _205580947_b
+[Warning][_205580947_b][ABCDE][1/5][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_b][ABCDF][2/5][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_b][ABCDE][3/5][Container] Duplicate ID on port
+[Warning][_205580947_b][ABCDE][3/5][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_b][ABCDE][3/5][Container] Illegal ID check ISO 6346
+[Warning][_205580947_b][ABCDE][3/5][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_b][ABCDJ][4/5][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+[Info] _205580947_b Grade: 100
+===================================================
+===================================================
+Travel Name: test_ship_overloading_travel
+[Warning][Simulator][ABCDE][1/3][Container] Duplicate ID on port
+[Warning][Simulator][ABCDE][1/3][Container] Bad line format, missing or bad port destination
+[Warning][Simulator][ABCDE][1/3][Container] Illegal ID check ISO 6346
+[Warning][Simulator][ABCDF][2/3][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+Errors reported by _205580947_a
+[Warning][_205580947_a][ABCDE][1/3][Container] Duplicate ID on port
+[Warning][_205580947_a][ABCDE][1/3][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_a][ABCDE][1/3][Container] Illegal ID check ISO 6346
+[Warning][_205580947_a][ABCDE][1/3][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_a][ABCDF][2/3][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+[Info] _205580947_a Grade: 100
+===================================================
+Errors reported by _205580947_b
+[Warning][_205580947_b][ABCDE][1/3][Container] Duplicate ID on port
+[Warning][_205580947_b][ABCDE][1/3][Container] Bad line format, missing or bad port destination
+[Warning][_205580947_b][ABCDE][1/3][Container] Illegal ID check ISO 6346
+[Warning][_205580947_b][ABCDE][1/3][Container] Total containers amount exceeds ship capacity
+[Warning][_205580947_b][ABCDF][2/3][Container] Bad line format, missing or bad port destination
+---------------------------------------------------
+[Info] _205580947_b Grade: 100
+===================================================
+===================================================
+Travel Name: test_wrong_ship_plan
+[Warning][Warning][Simulator][ShipPlan] A position has an equal number of floors
+[Warning][Warning][Simulator][ShipPlan] A given position exceeds the X/Y ship limits
+[Warning][Simulator][ABCDE][1/5] port file is not found in dir.
+[Warning][Simulator][ABCDJ][4/5] port file is not found in dir.
+---------------------------------------------------
+Errors reported by _205580947_a
+[Warning][[_205580947_a]][ShipPlan] A position has an equal number of floors
+[Warning][[_205580947_a]][ShipPlan] A given position exceeds the X/Y ship limits
+[Warning][_205580947_a][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_a][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_a Grade: 100
+===================================================
+Errors reported by _205580947_b
+[Warning][[_205580947_b]][ShipPlan] A position has an equal number of floors
+[Warning][[_205580947_b]][ShipPlan] A given position exceeds the X/Y ship limits
+[Warning][_205580947_b][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_b][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_b Grade: 100
+===================================================
+===================================================
+Travel Name: ‏‏test_dup_loc
+[Warning][Warning][Simulator][ShipPlan] Bad line format after first line or duplicate x,y appearance with same data 
+[Warning][Simulator][ABCDE][1/5] port file is not found in dir.
+[Warning][Simulator][ABCDJ][4/5] port file is not found in dir.
+---------------------------------------------------
+Errors reported by _205580947_a
+[Warning][[_205580947_a]][ShipPlan] Bad line format after first line or duplicate x,y appearance with same data 
+[Warning][_205580947_a][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_a][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_a Grade: 100
+===================================================
+Errors reported by _205580947_b
+[Warning][[_205580947_b]][ShipPlan] Bad line format after first line or duplicate x,y appearance with same data 
+[Warning][_205580947_b][ABCDE][1/5][Container] File cannot be read altogether
+[Warning][_205580947_b][ABCDJ][4/5][Container] File cannot be read altogether
+---------------------------------------------------
+[Info] _205580947_b Grade: 100
+===================================================
+===================================================

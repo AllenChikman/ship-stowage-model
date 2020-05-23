@@ -1,0 +1,2 @@
+# The target of this test is to verify that only in the second visit to ABCDE, we will load this package.
+ABCU1834565,    20, ABCDJ

@@ -1,0 +1,31 @@
+### Bonus
+
+All the resources related to the bonus are inside the `bonus` directory.
+
+Under the bonus root you will find several sub-directories, each show different perspective of our cool error handling.
+In addition you will find our ErrorHandling header that shows the elegant way we manage the errors.
+
+
+All those travels should be ran with our algorithms (their .so are in the bonus directory).
+If desired, it can be ran also with different so files and see their results
+
+What makes our error handling special:
+- It is very informative and well organized, and allows to debug problems very easily.
+- Errors are numbered and documented properly, with respect do the requirements and their indices
+- cool and formatted logging
+- There is a special feature that allows see all the algorithms' return code error, for each call to the .so files.
+It is a cool way to see (and for us to debug) how each algorithm reacted to each port/ship route/ship plan file.
+
+### How to make all this beauty work?
+- cd ./bonus_folder
+- ./run_all_travels.sh
+
+And that's it. the script will run everything for you. Just go inside the results folder and you'll be able to see
+the cool behaviour in each category:
+
+* fatal errors will not invoke the algorithm - and present the errors organized in an folder error
+* specific_warning will show that the algorithm indeed return the expected code for SINGLE EACH BIT ERROR
+* mixed warning will show how the algorithm collects all the errors and then reports them nicely.
+* and finally, a valid travels to show that the algorithm can run on happy paths.
+
+Hope that will do :)
