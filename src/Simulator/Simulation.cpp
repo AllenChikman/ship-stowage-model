@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "filesystem"
 #include <map>
+#include <bitset>
 
 #include "Simulation.h"
 #include "AlgorithmRegistrar.h"
@@ -183,7 +184,7 @@ int Simulation::readShipPlan(const string &path)
 
     vector<vector<string>> validVecLines;
 
-    if(!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
+    if (!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
     {
         return simValidator.getErrorBits();
     }
@@ -246,6 +247,26 @@ void writeToErrorFile(const string &errorDirectoryPath, const string &errorFileP
     std::ofstream errorFile(errorFilePath, std::ios_base::app);
     errorFile << text << std::endl;
     errorFile.close();
+
+}
+
+void writeToAlgoErroCode(const string &outputDirPath, const string &travelName, int algorithmReturnCode)
+{
+
+    string msg;
+    for (int i = 0; i <= 18; i++)
+    {
+        int err = 1u << i;
+        if ((err & algorithmReturnCode) == err)
+        {
+            msg += std::to_string(i) + ", ";
+        }
+    }
+    createDirIfNotExists(outputDirPath);
+    std::ofstream algoCodeFile(outputDirPath + "/algoReturnCode.txt", std::ios_base::app);
+    if (msg.empty()) { msg = "0"; }
+    algoCodeFile << travelName << ": " << msg << std::endl;
+    algoCodeFile.close();
 
 }
 
@@ -600,11 +621,16 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     allTravelsNames.insert(travelName);
 
     // init algorithm for this travel
-    const auto algoPlanErrCode  = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
+    const auto algoPlanErrCode = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
     if (ErrorHandle::isFatalError(algoPlanErrCode)) { return; }
 
-    const auto algoRouteErrCode  = algoPtr->readShipRoute(shipRoutePath); //TODO: report error in simulator
+    const auto algoRouteErrCode = algoPtr->readShipRoute(shipRoutePath); //TODO: report error in simulator
     if (ErrorHandle::isFatalError(algoRouteErrCode)) { return; }
+
+#ifndef LINUX_ENV
+    writeToAlgoErroCode(outputDirPath, travelName + " ship plan code: ", algoPlanErrCode);
+    writeToAlgoErroCode(outputDirPath, travelName + " ship route code: ", algoRouteErrCode);
+#endif
 
     // construct the new algorithm-travel pair output dir
     const string newOutputDir = outputDirPath + "/" + algoName + "_" + travelName + "__crane_instructions";
@@ -633,6 +659,11 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         // call algorithms' get instruction for cargo
         const int algorithmReturnCode = algoPtr->getInstructionsForCargo(currInputPath, currOutputPath);
 
+#ifndef LINUX_ENV
+        writeToAlgoErroCode(outputDirPath, travelName + " cargo file: " + port.toStr(), algorithmReturnCode);
+        continue;
+#endif
+
         // handle return code of the Algorithm
         handleAlgorithmReturnCode(algorithmReturnCode, currInputPath);
 
@@ -658,7 +689,7 @@ void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const stri
 #ifndef LINUX_ENV
     AlgorithmFactory mock;
     loadedAlgorithmFactories.emplace_back(mock, "algo1");
-    loadedAlgorithmFactories.emplace_back(mock, "algo2");
+    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
 
 #endif
 
@@ -694,9 +725,9 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit) {
 
         if (addedAlgorithms != 1) {
             //TODO: report {addedAlgorithms} so files were registered, while expecting only 1 file.
-            std::cout << addedAlgorithms<< " algorithms registered. "
-                                           "Unable to load algorithm: " <<
-                                           getPathFileName(soFilePath, true) << std::endl;
+            std::cout << addedAlgorithms << " algorithms registered. "
+                                            "Unable to load algorithm: " <<
+                      getPathFileName(soFilePath, true) << std::endl;
             continue;
         }
 
