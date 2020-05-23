@@ -78,8 +78,7 @@ private:
 
     void initSimulationTravelState(const std::string &travelDir);
 
-    int
-    performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+    int performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
                                             const SeaPortCode &curPort);
 
     void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
@@ -92,7 +91,7 @@ private:
 
     bool validateReject(const string &id, const std::vector<std::string> &portContainerLine);
 
-    bool validateMove(const std::string &id);
+    bool validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L);
 
     bool validateInstructionLine(const vector<string> &instructionLine, const std::unordered_map<string,vector<vector<string>>> &idLinesMap,
                                  const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
@@ -119,10 +118,7 @@ public:
 
     bool allContainersUnloadedAtPort(const SeaPortCode &code);
 
-    void placeRejectsAtEnd(vector<vector<string>> &vecLinesInstructions);
 
-    bool validateInstruction(const vector<string> &instruction, const vector<vector<string>> &idLines,
-                             const SeaPortCode &curPort);
 };
 
 #endif //SHIP_STOWAGE_MODEL_SIMULATION_H
