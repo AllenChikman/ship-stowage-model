@@ -50,9 +50,20 @@ void compareOutput(const string &travelPath)
 
 // prints
 
+
+void writeToErrorFile(const string &message, MessageSeverity severity, const string &errorFilePath)
+{
+    auto errorDirectoryPath = getDirectoryOfPath(errorFilePath);
+    createDirIfNotExists(errorDirectoryPath);
+    std::ofstream errorFile(errorFilePath, std::ios_base::app);
+    log(message, severity, errorFile);
+    errorFile.close();
+
+}
+
+
 void log(const string &message, MessageSeverity severity, std::ostream &outputStream)
 {
-    //TODO: re-implement
     string severityStr;
     switch (severity)
     {

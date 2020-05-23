@@ -38,7 +38,6 @@ void performMove(const std::shared_ptr<ShipPlan> &shipPlan, const XYCord &xyCord
     auto container = performUnload(shipPlan, xyCord_U);
     performLoad(shipPlan, container, xyCord_L);
 
-
 }
 
 

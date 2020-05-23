@@ -20,7 +20,7 @@ enum Errors
     emptyFileOrRouteFileCannotBeRead = 1u << 7u,          // fatal
     atMostOneValidPort = 1u << 8u,                        // fatal
 
-    reserved2 = 1u << 9u,
+    reserved = 1u << 9u,
 
     duplicateIDOnPort = 1u << 10u,                        // reject (container)
     duplicateIDOnShip = 1u << 11u,                        // reject (container)
@@ -28,7 +28,7 @@ enum Errors
     badContainerDestPort = 1u << 13u,                     // reject (container)
     ContainerIDCannotBeRead = 1u << 14u,                  // ignore
     badContainerID = 1u << 15u,                           // reject (container)
-    containerFileCannotBeRead = 1u << 16u,                // ingnore
+    containerFileCannotBeRead = 1u << 16u,                // ignore
     lastPortHasContainersWaiting = 1u << 17u,             // reject (container)
     containersExceedShipCapacity = 1u << 18u              // reject (container)
 

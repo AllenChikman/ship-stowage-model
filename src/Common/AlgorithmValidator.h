@@ -15,13 +15,18 @@ class AlgorithmValidator
 {
 public:
     ErrorHandle errorHandle;
+    std::string errorFilePath;
     bool userIsSimulator; //i.e simulator = 1,  or algorithm = 0
+
+    void setErrorFile(const std::string &path) { errorFilePath = path; }
 
     int getErrorBits() { return errorHandle.getErrorBits(); }
 
     void clear() { errorHandle.clear(); }
 
-    AlgorithmValidator(bool userIsSimulator) : errorHandle(ErrorHandle()), userIsSimulator(userIsSimulator) {}
+    explicit AlgorithmValidator(bool userIsSimulator) :
+            errorHandle(ErrorHandle()),
+            userIsSimulator(userIsSimulator) {}
 
     bool validateShipHeightInput(unsigned maximalHeight, unsigned x, unsigned y, unsigned numOfFloors);
 

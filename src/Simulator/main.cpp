@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     Simulation sim;
 
 #ifdef LINUX_ENV
-    sim.loadAlgorithms(algorithmsDir);
+    sim.loadAlgorithms(algorithmsDir, outputDir);
 #endif
 
     sim.runAlgorithmsOnTravels(travelDir, outputDir);

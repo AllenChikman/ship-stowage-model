@@ -22,6 +22,9 @@ enum class MessageSeverity
     Reject
 };
 
+
+void writeToErrorFile(const string &message, MessageSeverity severity, const string &errorFilePath);
+
 void logStartingDecorator(std::ostream &outputStream = std::cout);
 
 void log(const string &message, MessageSeverity severity = MessageSeverity::INFO,

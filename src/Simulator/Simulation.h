@@ -61,9 +61,9 @@ private:
     std::pair<std::string, std::string> getPortFilePaths
             (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
-    const string getShipPlanFilePath(int &status);
+    const std::string getShipPlanFilePath(int &status);
 
-    const string getRouteFilePath(int &status);
+    const std::string getRouteFilePath(int &status);
 
     void updateVisitedPortsMap(const SeaPortCode &port);
 
@@ -77,14 +77,16 @@ private:
 
     void initSimulationTravelState(const std::string &travelDir);
 
-    int performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+    int
+    performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
                                             const SeaPortCode &curPort);
 
     void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
 
     void writeSimulationOutput(const std::string &outputFilePath);
 
-    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
+    bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort,
+                        std::vector<std::vector<std::string>> &moveContainers);
 
     bool validateLoad(const std::string &id, XYCord xyCord, const vector<string> &portContainerLine);
 
@@ -92,12 +94,12 @@ private:
 
     bool validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L);
 
-    bool validateInstructionLine(const vector<string> &instructionLine, const std::unordered_map<string,vector<vector<string>>> &idLinesMap,
+    bool validateInstructionLine(const vector<string> &instructionLine,
+                                 const std::unordered_map<string, vector<vector<string>>> &idLinesMap,
                                  const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers);
 
     void handleCargoFileExistence(const std::string &currInputPath, bool cargoFileExists, bool lastPortVisit);
 
-    Errors validateInstructionLine(const std::vector<std::string> &instructionLine);
 
     void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
 
@@ -107,7 +109,7 @@ public:
 
     int readShipRoute(const std::string &path);
 
-    void loadAlgorithms(const std::string &algorithmsRootDit);
+    void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
 
     void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath);
 
