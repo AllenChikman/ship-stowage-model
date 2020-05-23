@@ -34,7 +34,6 @@ private:
     std::unordered_map<std::string, unsigned> visitedPorts = {};
 
     // A map between each port and how many time it appears in the DIRECTORY (regardless of the run)
-    // used for the last port check. TODO: might be redundant
     std::unordered_map<std::string, unsigned> routeMap = {};
 
     // keeping track of all cargo files in the cargo directory

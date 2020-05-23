@@ -164,7 +164,7 @@ int Simulation::readShipPlan(const string &path)
         return simValidator.getErrorBits();
     }
 
-    if(vecLines.empty())
+    if (vecLines.empty())
     {
         simValidator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         return simValidator.getErrorBits();
@@ -189,12 +189,13 @@ int Simulation::readShipPlan(const string &path)
     shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
-    vector<vector<string>> validVecLines;
 
-    if (!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines,
-                                                                validVecLines)) { return simValidator.getErrorBits(); }
+    if (!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines))
+    {
+        return simValidator.getErrorBits();
+    }
 
-    for (const auto &vecLine : validVecLines)
+    for (const auto &vecLine : vecLines)
     {
         if (!simValidator.validateShipPlanFloorsFormat(vecLine)) { continue; }
         x = stringToUInt(vecLine[0]);
@@ -237,7 +238,7 @@ int Simulation::readShipRoute(const string &path)
     updateRouteMap();
     updateRouteFileSet();
 
-    return 0;
+    return simValidator.getErrorBits();
 }
 
 
@@ -269,6 +270,7 @@ void writeToAlgoErroCode(const string &outputDirPath, const string &travelName, 
     }
     createDirIfNotExists(outputDirPath);
     std::ofstream algoCodeFile(outputDirPath + "/algoReturnCode.txt", std::ios_base::app);
+
     if (msg.empty()) { msg = "0"; }
     algoCodeFile << travelName << ": " << msg << std::endl;
     algoCodeFile.close();
@@ -627,10 +629,10 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     int status = 0;
 
     const string shipPlanPath = getShipPlanFilePath(status);
-    if(status == -1) { return; }
+    if (status == -1) { return; }
 
     const string shipRoutePath = getRouteFilePath(status);
-    if(status == -1) { return; }
+    if (status == -1) { return; }
 
     // init simulator for this travel
     const auto shipPlanErrCode = readShipPlan(shipPlanPath);
@@ -644,15 +646,11 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
     // init algorithm for this travel
     const auto algoPlanErrCode = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
-#ifndef LINUX_ENV
     writeToAlgoErroCode(outputDirPath, travelName + " ship plan code: ", algoPlanErrCode);
-#endif
     if (ErrorHandle::isFatalError(algoPlanErrCode)) { return; }
 
     const auto algoRouteErrCode = algoPtr->readShipRoute(shipRoutePath); //TODO: report error in simulator
-#ifndef LINUX_ENV
     writeToAlgoErroCode(outputDirPath, travelName + " ship route code: ", algoRouteErrCode);
-#endif
     if (ErrorHandle::isFatalError(algoRouteErrCode)) { return; }
 
 
@@ -683,11 +681,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
         // call algorithms' get instruction for cargo
         const int algorithmReturnCode = algoPtr->getInstructionsForCargo(currInputPath, currOutputPath);
-
-#ifndef LINUX_ENV
         writeToAlgoErroCode(outputDirPath, travelName + " cargo file: " + port.toStr(), algorithmReturnCode);
-        continue;
-#endif
 
         // handle return code of the Algorithm
         handleAlgorithmReturnCode(algorithmReturnCode, currInputPath);
@@ -747,7 +741,7 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
 
         if (!registrar.loadSharedObject(soFilePath))
         {
-            //TODO: report loading error
+            //TODO: report to error file
             std::cout << "Unable to load algorithm: " << getPathFileName(soFilePath, true) << std::endl;
             continue;
         }
@@ -756,7 +750,7 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit)
 
         if (addedAlgorithms != 1)
         {
-            //TODO: report {addedAlgorithms} so files were registered, while expecting only 1 file.
+            //TODO: report to error file
             std::cout << addedAlgorithms << " algorithms registered. "
                                             "Unable to load algorithm: " <<
                       getPathFileName(soFilePath, true) << std::endl;

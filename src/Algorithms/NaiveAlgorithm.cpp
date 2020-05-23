@@ -399,8 +399,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
     shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
-    vector<vector<string>> validVecLines;
-    if(!validator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
+    if(!validator.validateDuplicateXYCordsWithDifferentData(vecLines))
     {
         return validator.getErrorBits();
     }

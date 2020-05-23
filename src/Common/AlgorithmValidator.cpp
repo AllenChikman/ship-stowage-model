@@ -146,8 +146,7 @@ bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shi
     return true;
 }
 
-bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<vector<string>> &vecLines,
-                                                                   vector<vector<string>> &validVecLines)
+bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<vector<string>> &vecLines)
 {
 
     auto numOfLines = static_cast<unsigned int>(vecLines.size());
@@ -368,7 +367,7 @@ bool AlgorithmValidator::validateContainerID(const string &id)
     }
 
     // id exists but has wrong format
-    Container tmpContainer(id, 0, SeaPortCode("null"));  //TODO :consult with Allen
+    Container tmpContainer(id, 0, SeaPortCode("XXXXX"));
     if (!tmpContainer.isValidID())
     {
         msg << "Containers at port: illegal ID check ISO 6346";

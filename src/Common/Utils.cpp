@@ -204,7 +204,6 @@ void putDirFileListToVec(const string &curPath, vector<string> &dirFileVec, cons
     for (const auto &entry : std::filesystem::directory_iterator(curPath))
     {
         const string path = entry.path().string();
-        // TODO: might be edge cases in which the extention will appear in the middle of the file name
         if (!extent.empty() && path.find(extent) == string::npos) { continue; }
         dirFileVec.push_back(path);
     }

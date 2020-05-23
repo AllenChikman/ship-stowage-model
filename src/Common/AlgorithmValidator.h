@@ -65,8 +65,7 @@ public:
 
     bool validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan);
 
-    bool validateDuplicateXYCordsWithDifferentData(const std::vector<std::vector<std::string>> &vecLines,
-                                                   std::vector<std::vector<std::string>> &validVecLines);
+    bool validateDuplicateXYCordsWithDifferentData(const std::vector<std::vector<std::string>> &vecLines);
 
     void filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines);
 };
