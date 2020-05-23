@@ -33,9 +33,10 @@ bool checkShipPlanLineFormat(const std::vector<std::string> &line)
     return valid;
 }
 
-void AlgorithmValidator::filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines)
+void
+AlgorithmValidator::filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines)
 {
-    for(auto vecLine : vecLines)
+    for (const auto &vecLine : vecLines)
     {
         if (!validateShipPlanFloorsFormat(vecLine)) { continue; }
         validVecLines.push_back(vecLine);
@@ -56,7 +57,7 @@ bool AlgorithmValidator::validateShipHeightInput(unsigned maximalHeight, unsigne
 
     if (!valid)
     {
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::WARNING);
         }
@@ -78,7 +79,7 @@ bool AlgorithmValidator::validateShipXYCords(unsigned width, unsigned length, un
     }
     if (!valid)
     {
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::WARNING);
         }
@@ -97,7 +98,7 @@ bool AlgorithmValidator::validateShipPlanFloorsFormat(const std::vector<string> 
     {
         errorHandle.reportError(Errors::badLineFormatAfterFirstLine);
         msg << "Bad line format after first line";
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::WARNING);
         }
@@ -115,7 +116,7 @@ bool AlgorithmValidator::validateShipPlanFirstLine(std::vector<string> &firstFlo
     {
         errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         msg << "Fatal Error: Bad first line format";
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::ERROR);
         }
@@ -135,7 +136,7 @@ bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shi
     if (!in)
     {
         msg << "Cannot open the File: " + shipPlanFilePath;
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::ERROR);
         }
@@ -145,33 +146,33 @@ bool AlgorithmValidator::validateReadingShipPlanFileAltogether(const string &shi
     return true;
 }
 
-bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines)
+bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<vector<string>> &vecLines,
+                                                                   vector<vector<string>> &validVecLines)
 {
-    std::ostringstream msg;
-    unsigned x_i, x_j, y_i, y_j, numOfFloors_i, numOfFloors_j;
-    filterInvalidVecLines(vecLines, validVecLines);
-    for(unsigned i=0; i<vecLines.size()-1; i++) // TODO: or - bug
+
+    auto numOfLines = static_cast<unsigned int>(vecLines.size());
+    for (int i = 0; i < numOfLines; i++)
     {
-        x_i= stringToUInt(vecLines[i][0]);
-        y_i = stringToUInt(vecLines[i][1]);
-        numOfFloors_i = stringToUInt(vecLines[i][2]);
-        for(unsigned j=i+1; j<vecLines.size(); j++)
+        const auto firstLine = vecLines[i];
+        for (int j = i + 1; j < numOfLines; j++)
         {
-            x_j = stringToUInt(vecLines[j][0]);
-            y_j = stringToUInt(vecLines[j][1]);
-            numOfFloors_j = stringToUInt(vecLines[j][2]);
-            if(x_i == x_j && y_i == y_j && numOfFloors_i != numOfFloors_j)
+            const auto secondLine = vecLines[j];
+            if (firstLine.size() == 3 && secondLine.size() == 3 &&
+                firstLine[0] == secondLine[0] &&
+                firstLine[1] == secondLine[1] &&
+                firstLine[2] != secondLine[2])
             {
-                msg << " Ship plan: travel error - duplicate x,y appearance with different data.";
-                if(userIsSimulator)
+                errorHandle.reportError(Errors::duplicatedXYWithDifferentData);
+                if (userIsSimulator)
                 {
-                    log(msg.str(), MessageSeverity::ERROR);
-                    errorHandle.reportError(Errors::duplicatedXYWithDifferentData);
-                    return false;
+                    log(" Ship plan: travel error - duplicate x,y appearance with different data.",
+                        MessageSeverity::ERROR);
                 }
+                return false;
             }
         }
     }
+
     return true;
 }
 
@@ -187,7 +188,7 @@ bool AlgorithmValidator::validateSamePortInstancesConsecutively(const std::vecto
         if (port == prevPort)
         {
             msg << port + " appears twice or more consecutively.";
-            if(userIsSimulator)
+            if (userIsSimulator)
             {
                 log(msg.str(), MessageSeverity::WARNING);
             }
@@ -206,7 +207,7 @@ bool AlgorithmValidator::validatePortFormat(const string &port)
     if (!valid)
     {
         msg << "Bad port symbol format.";
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::WARNING);
         }
@@ -247,7 +248,7 @@ bool AlgorithmValidator::validateOpenReadShipRouteFileAltogether(const string &s
     if (!valid)
     {
         msg << "Cannot open the File: " + shipRouteFilePath;
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::ERROR);
         }
@@ -272,7 +273,7 @@ bool AlgorithmValidator::validateAmountOfValidPorts(const vector<string> &routeV
     switch (validPorts)
     {
         case 0:
-            if(userIsSimulator)
+            if (userIsSimulator)
             {
                 log("File with no valid ports.", MessageSeverity::ERROR);
             }
@@ -280,7 +281,7 @@ bool AlgorithmValidator::validateAmountOfValidPorts(const vector<string> &routeV
             return false;
 
         case 1:
-            if(userIsSimulator)
+            if (userIsSimulator)
             {
                 log("File with only a single valid port.", MessageSeverity::ERROR);
             }
@@ -313,7 +314,7 @@ bool AlgorithmValidator::validateDuplicateIDOnPort(const std::vector<Container> 
         if (idMap[id] > 1)
         {
             msg << "Duplicated ID on port.";
-            if(userIsSimulator)
+            if (userIsSimulator)
             {
                 log(msg.str(), MessageSeverity::WARNING);
             }
@@ -338,7 +339,7 @@ bool AlgorithmValidator::validateDuplicateIDOnShip(const string &containerID, co
             if (shipContainer->getID() == containerID)
             {
                 msg << "Containers at port: ID already on ship ";
-                if(userIsSimulator)
+                if (userIsSimulator)
                 {
                     log(msg.str(), MessageSeverity::Reject);
                 }
@@ -358,7 +359,7 @@ bool AlgorithmValidator::validateContainerID(const string &id)
     if (id.size() != properIDLen)
     {
         msg << "Containers at port: bad line format, ID cannot be read.";
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::WARNING);
         }
@@ -371,7 +372,7 @@ bool AlgorithmValidator::validateContainerID(const string &id)
     if (!tmpContainer.isValidID())
     {
         msg << "Containers at port: illegal ID check ISO 6346";
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::Reject);
         }
@@ -389,7 +390,7 @@ bool AlgorithmValidator::validateContainerWeight(const string &weight)
         if (!isdigit(i))
         {
             msg << "Containers at port: bad line format, missing or bad weight.";
-            if(userIsSimulator)
+            if (userIsSimulator)
             {
                 log(msg.str(), MessageSeverity::Reject);
             }
@@ -412,7 +413,7 @@ bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const
         {
             if (port.toStr() == destPortCode.toStr())
             {
-                if(!containerToLoad)
+                if (!containerToLoad)
                 {
                     return true;
                 }
@@ -423,7 +424,7 @@ bool AlgorithmValidator::validateContainerDestPort(const string &destPort, const
 
     }
     msg << "Containers at port: bad line format, missing or bad port dest.";
-    if(userIsSimulator)
+    if (userIsSimulator)
     {
         log(msg.str(), MessageSeverity::Reject);
     }
@@ -467,7 +468,7 @@ bool AlgorithmValidator::validateContainerFromFile(const std::vector<string> &li
             destPort = line[2];
             return validateContainerID(id) &&
                    validateContainerWeight(weight) &&
-                    validateContainerDestPort(destPort, travelRouteStack, containerToLoad);
+                   validateContainerDestPort(destPort, travelRouteStack, containerToLoad);
     }
 
 }
@@ -483,7 +484,7 @@ bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &c
     if (!in)
     {
         msg << "Cannot open the File: " << containersAtPortFile;
-        if(userIsSimulator)
+        if (userIsSimulator)
         {
             log(msg.str(), MessageSeverity::ERROR);
         }
@@ -493,10 +494,16 @@ bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &c
     return true;
 }
 
-bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath)
+bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath,
+        const vector<SeaPortCode> &travelRouteStack)
 {
-    (void) shipRouteFilePath;
-    return false;
+    const bool isLastPort = travelRouteStack.size() == 1;
+    if(isLastPort && !isEmpty(shipRouteFilePath))
+    {
+        errorHandle.reportError(Errors::lastPortHasContainersWaiting);
+        return false;
+    }
+    return true;
 }
 
 bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan)
@@ -511,7 +518,7 @@ bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipP
         if (upperCellsMat[cord] < numOfFloors) { return false; }
     }
     msg << "Containers at port: total containers amount exceeds ship capacity.";
-    if(userIsSimulator)
+    if (userIsSimulator)
     {
         log(msg.str(), MessageSeverity::Reject);
     }
@@ -526,13 +533,13 @@ bool AlgorithmValidator::validateDuplicateIDOnPort(const vector<vector<string>> 
     std::ostringstream msg;
     string curContainerLineID = containerLine[0];
     string tmpContainerLineID;
-    for(int i=0; i<pos; i++)
+    for (int i = 0; i < pos; i++)
     {
         tmpContainerLineID = containersAtPort[i][0];
-        if(tmpContainerLineID == curContainerLineID)
+        if (tmpContainerLineID == curContainerLineID)
         {
-            msg <<"Containers at port: ID duplicate ID on port.";
-            if(userIsSimulator)
+            msg << "Containers at port: ID duplicate ID on port.";
+            if (userIsSimulator)
             {
                 log(msg.str(), MessageSeverity::Reject);
             }
@@ -541,4 +548,3 @@ bool AlgorithmValidator::validateDuplicateIDOnPort(const vector<vector<string>> 
     }
     return true;
 }
-

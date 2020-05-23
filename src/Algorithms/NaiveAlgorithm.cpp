@@ -373,6 +373,13 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
         validator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         return validator.getErrorBits();
     }
+
+    if(vecLines.empty())
+    {
+        validator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
+        return validator.getErrorBits();
+    }
+
     auto shipPlanData = vecLines[0];
 
     if (!validator.validateShipPlanFirstLine(shipPlanData))
@@ -400,7 +407,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
 
     for (const auto &vecLine : vecLines)
     {
-//        if (!validator.validateShipPlanFloorsFormat(vecLine)) { continue; }
+        if (!validator.validateShipPlanFloorsFormat(vecLine)) { continue; }
         x = stringToUInt(vecLine[0]);
         y = stringToUInt(vecLine[1]);
         numOfFloors = stringToUInt(vecLine[2]);
@@ -418,6 +425,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
 
 int NaiveAlgorithm::readShipRoute(const std::string &path)
 {
+    validator.clear();
     vector<string> vec;
     if (!readToVec(path, vec))
     {
@@ -443,7 +451,7 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
     updateRouteMap();
     updateRouteFileSet(getDirectoryOfPath(path));
 
-    return 0;   //if we came here, there are no fatal errors. TODO: manage error handler
+    return validator.getErrorBits();
 }
 
 int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
@@ -455,15 +463,14 @@ int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculat
 int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
                                             const std::string &outputFilePath)
 {
+    validator.clear();
     std::ofstream outputFile(outputFilePath);
 
     const bool cargoFileExists = popRouteFileSet(inputFilePath);
     vector<Container> portContainers;
     if (cargoFileExists)
     {
-        // TODO: File alwaus exists. just check if last port and if there are container waiting
-        validator.validateContainerAtLastPort(inputFilePath);
-
+        validator.validateContainerAtLastPort(inputFilePath, travelRouteStack);
         const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
         const auto isFatal = (errorCode & Errors::containerFileCannotBeRead) != 0;
         if (isFatal) { validator.getErrorBits(); }

@@ -163,6 +163,13 @@ int Simulation::readShipPlan(const string &path)
         simValidator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         return simValidator.getErrorBits();
     }
+
+    if(vecLines.empty())
+    {
+        simValidator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
+        return simValidator.getErrorBits();
+    }
+
     auto shipPlanData = vecLines[0];
 
     if (!simValidator.validateShipPlanFirstLine(shipPlanData))
@@ -184,14 +191,12 @@ int Simulation::readShipPlan(const string &path)
 
     vector<vector<string>> validVecLines;
 
-    if (!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines, validVecLines))
-    {
-        return simValidator.getErrorBits();
-    }
+    if (!simValidator.validateDuplicateXYCordsWithDifferentData(vecLines,
+                                                                validVecLines)) { return simValidator.getErrorBits(); }
 
     for (const auto &vecLine : validVecLines)
     {
-//        if (!simValidator.validateShipPlanFloorsFormat(vecLine)) { continue; }
+        if (!simValidator.validateShipPlanFloorsFormat(vecLine)) { continue; }
         x = stringToUInt(vecLine[0]);
         y = stringToUInt(vecLine[1]);
         numOfFloors = stringToUInt(vecLine[2]);
@@ -415,38 +420,45 @@ void Simulation::updateVisitedPortsMap(const SeaPortCode &port)
     }
 }
 
-void placeRejectsAtEnd(vector<vector<string>> &vecLinesInstructions) {
+void placeRejectsAtEnd(vector<vector<string>> &vecLinesInstructions)
+{
     vector<vector<string>> tmpRejectsVec;
     vector<string> instruction;
     char cmd;
     unsigned cnt = 0;
-    while (cnt < vecLinesInstructions.size()) {
+    while (cnt < vecLinesInstructions.size())
+    {
         instruction = vecLinesInstructions[cnt];
         cmd = instruction[0][0];
-        if (cmd != 'R') {
+        if (cmd != 'R')
+        {
             cnt++;
             continue;
         }
         vecLinesInstructions.erase(vecLinesInstructions.begin() + cnt);
         tmpRejectsVec.push_back(instruction);
     }
-    for (auto &rejectIns : tmpRejectsVec) {
+    for (auto &rejectIns : tmpRejectsVec)
+    {
         vecLinesInstructions.push_back(rejectIns);
     }
 }
 
-void createIDtoPortLinesMapping(const vector<vector<string>> &containersVecLines, std::unordered_map<string, vector<vector<string>>> &idLinesMap) {
+void createIDtoPortLinesMapping(const vector<vector<string>> &containersVecLines,
+                                std::unordered_map<string, vector<vector<string>>> &idLinesMap)
+{
     string curContainerLineID;
 //    bool duplicatedID = false;
 //    unsigned linesSize = containersVecLines.size();
     for (auto &curContainerLine : containersVecLines)
     {
         curContainerLineID = curContainerLine[0];
-        if(curContainerLineID.size() != 11)      //TODO replace with proper function
+        if (curContainerLineID.size() != 11)      //TODO replace with proper function
         {
             continue;
         }
-        if (idLinesMap.find(curContainerLineID) == idLinesMap.end()) {
+        if (idLinesMap.find(curContainerLineID) == idLinesMap.end())
+        {
             vector<vector<string>> idLines;
             idLinesMap.insert(make_pair(curContainerLineID, idLines));
         }
@@ -469,8 +481,10 @@ void createIDtoPortLinesMapping(const vector<vector<string>> &containersVecLines
     }
 }
 
-bool Simulation::validateInstructionLine(const vector<string> &instructionLine, const std::unordered_map<string,vector<vector<string>>> &idLinesMap,
-                                         const SeaPortCode &curPort, vector<vector<string>> &moveContainers) {
+bool Simulation::validateInstructionLine(const vector<string> &instructionLine,
+                                         const std::unordered_map<string, vector<vector<string>>> &idLinesMap,
+                                         const SeaPortCode &curPort, vector<vector<string>> &moveContainers)
+{
     /* instructionLine.size() = 4
      * [0] = U/L/M/R
      * [1] = id
@@ -485,24 +499,26 @@ bool Simulation::validateInstructionLine(const vector<string> &instructionLine, 
     XYCord xyCord_L;
 
     XYCord xyCord = {xCord, yCord};
-    switch (cmd) {
+    switch (cmd)
+    {
         case 'U':
             return validateUnload(id, xyCord, curPort, moveContainers);
         case 'L':
-            for(auto &container : moveContainers)
+            for (auto &container : moveContainers)
             {
-                if(instructionLine[1] == container[0])
+                if (instructionLine[1] == container[0])
                 {
                     return validateLoad(id, xyCord, container);
                 }
             }
-            for(auto &idLines : idLinesMap)
+            for (auto &idLines : idLinesMap)
             {
                 string portContainerId = idLines.first;
                 vector<vector<string>> lines = idLines.second;
                 if (instructionLine[1] == portContainerId)
                 {
-                    return validateLoad(id, xyCord, lines[0]); //because after pos 0 the lines should definitely be rejected- duplicates
+                    return validateLoad(id, xyCord,
+                                        lines[0]); //because after pos 0 the lines should definitely be rejected- duplicates
                 }
             }
         case 'M':
@@ -511,13 +527,13 @@ bool Simulation::validateInstructionLine(const vector<string> &instructionLine, 
             xyCord_L = {xL, yL};
             return validateMove(id, xyCord, curPort, xyCord_L);
         case 'R':
-            for(auto &idLines : idLinesMap)
+            for (auto &idLines : idLinesMap)
             {
                 bool validInstruction = false;
                 string portContainerId = idLines.first;
                 vector<vector<string>> lines = idLines.second;
-                if (instructionLine[1] != portContainerId) { continue;}
-                for(auto &line : lines)
+                if (instructionLine[1] != portContainerId) { continue; }
+                for (auto &line : lines)
                 {
                     validInstruction = validInstruction || validateReject(id, line);
                 }
@@ -543,7 +559,8 @@ bool Simulation::validateInstructionLine(const vector<string> &instructionLine, 
 //}
 
 int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePath, const string &instructionsFilePath,
-                                                        const SeaPortCode &curPort) {
+                                                        const SeaPortCode &curPort)
+{
 /* The simulator will check the following
  * legal output format
  * x,y legal coordinates
@@ -552,7 +569,7 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
  * Valid Container Id
  * */
     bool errorFlag = false;
-    std::unordered_map<string,vector<vector<string>>> idLinesMap;
+    std::unordered_map<string, vector<vector<string>>> idLinesMap;
     vector<vector<string>> vecLinesPort;
     vector<vector<string>> vecLinesInstructions;
     vector<vector<string>> moveContainers;
@@ -576,18 +593,19 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
         }
     }
 
-    if(!errorFlag){instructionCounter++;}
+    if (!errorFlag) { instructionCounter++; }
 
     if (!allContainersUnloadedAtPort(curPort))
     {
         errorFlag = true;
     }
-    return errorFlag ? -1: instructionCounter;
+    return errorFlag ? -1 : instructionCounter;
 }
 
 void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
                                         std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
-                                        const string &outputDirPath) {
+                                        const string &outputDirPath)
+{
 
 #ifdef LINUX_ENV
     std::unique_ptr<AbstractAlgorithm> algoPtr = std::get<0>(algoFactoryNamePair)();
@@ -606,9 +624,13 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     initSimulationTravelState(travelDirPath);
 
     // get shipPlan and shipRoute file paths
-    const string shipPlanPath = getShipPlanFilePath();
-    const string shipRoutePath = getRouteFilePath();
+    int status = 0;
 
+    const string shipPlanPath = getShipPlanFilePath(status);
+    if(status == -1) { return; }
+
+    const string shipRoutePath = getRouteFilePath(status);
+    if(status == -1) { return; }
 
     // init simulator for this travel
     const auto shipPlanErrCode = readShipPlan(shipPlanPath);
@@ -622,15 +644,17 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
     // init algorithm for this travel
     const auto algoPlanErrCode = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
+#ifndef LINUX_ENV
+    writeToAlgoErroCode(outputDirPath, travelName + " ship plan code: ", algoPlanErrCode);
+#endif
     if (ErrorHandle::isFatalError(algoPlanErrCode)) { return; }
 
     const auto algoRouteErrCode = algoPtr->readShipRoute(shipRoutePath); //TODO: report error in simulator
-    if (ErrorHandle::isFatalError(algoRouteErrCode)) { return; }
-
 #ifndef LINUX_ENV
-    writeToAlgoErroCode(outputDirPath, travelName + " ship plan code: ", algoPlanErrCode);
     writeToAlgoErroCode(outputDirPath, travelName + " ship route code: ", algoRouteErrCode);
 #endif
+    if (ErrorHandle::isFatalError(algoRouteErrCode)) { return; }
+
 
     // construct the new algorithm-travel pair output dir
     const string newOutputDir = outputDirPath + "/" + algoName + "_" + travelName + "__crane_instructions";
@@ -641,7 +665,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     const string errorFile = errorDirectory + "/" + algoName + "_" + travelName + ".errors";
 
     // traverse each port
-    for (const SeaPortCode &port : shipRoute) {
+    for (const SeaPortCode &port : shipRoute)
+    {
         // update visited ports map
         updateVisitedPortsMap(port);
 
@@ -679,7 +704,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
 }
 
-void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath) {
+void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath)
+{
 
     createDirIfNotExists(outputDirPath);
 
@@ -693,8 +719,10 @@ void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const stri
 
 #endif
 
-    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories) {
-        for (const auto &travelFolder :travelDirPaths) {
+    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
+    {
+        for (const auto &travelFolder :travelDirPaths)
+        {
             runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath);
             log("Travel Finished Successfully!!!");
         }
@@ -703,7 +731,8 @@ void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const stri
     writeSimulationOutput(outputDirPath);
 }
 
-void Simulation::loadAlgorithms(const string &algorithmsRootDit) {
+void Simulation::loadAlgorithms(const string &algorithmsRootDit)
+{
 
     logStartingDecorator();
     std::cout << "Loading Algorithms: " << std::endl;
@@ -713,9 +742,11 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit) {
 
     auto &registrar = AlgorithmRegistrar::getInstance();
 
-    for (auto &soFilePath: algoFilesVec) {
+    for (auto &soFilePath: algoFilesVec)
+    {
 
-        if (!registrar.loadSharedObject(soFilePath)) {
+        if (!registrar.loadSharedObject(soFilePath))
+        {
             //TODO: report loading error
             std::cout << "Unable to load algorithm: " << getPathFileName(soFilePath, true) << std::endl;
             continue;
@@ -723,7 +754,8 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit) {
 
         int addedAlgorithms = registrar.howManyAdded();  // how many algorithms were added
 
-        if (addedAlgorithms != 1) {
+        if (addedAlgorithms != 1)
+        {
             //TODO: report {addedAlgorithms} so files were registered, while expecting only 1 file.
             std::cout << addedAlgorithms << " algorithms registered. "
                                             "Unable to load algorithm: " <<
@@ -746,7 +778,9 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit) {
 
 //Or's functions:
 
-bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCode &curPort, std::vector<std::vector<std::string>> &moveContainers) {
+bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCode &curPort,
+                                std::vector<std::vector<std::string>> &moveContainers)
+{
     std::ostringstream msg;
 
     // check if container can be unloaded from the ship with the given coordinates
@@ -759,7 +793,8 @@ bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCo
     }
     unsigned maxOccupiedFloor = firstFreeFloor - 1;
     auto containerOnShip = shipPlan->getCargo()[xyCord][maxOccupiedFloor];
-    if (containerOnShip->getID() != id) {
+    if (containerOnShip->getID() != id)
+    {
         msg << "Container isn't on the top floor. Cannot unload container.";
         log(msg.str(), MessageSeverity::WARNING);
         return false;
@@ -767,7 +802,8 @@ bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCo
 
     //check if container's dest port is compatible with current port
     string containerPort = containerOnShip->getDestinationPort().toStr();
-    if (containerPort != curPort.toStr()) {
+    if (containerPort != curPort.toStr())
+    {
         vector<string> containerLine;
         containerLine.push_back(containerOnShip->getID());
         containerLine.push_back(std::to_string(containerOnShip->getWeight()));
@@ -794,14 +830,16 @@ bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<stri
     Container newContainer = Container(portContainerLine);
 
     // check if container has any duplicates on ship
-    if (!simValidator.validateDuplicateIDOnShip(id, shipPlan)) {
+    if (!simValidator.validateDuplicateIDOnShip(id, shipPlan))
+    {
 //        msg << "Rejecting Container. It's id has a duplicate on ship.";
 //        log(msg.str(), MessageSeverity::WARNING);
         return false;
     }
 
     //check if ship is full
-    if (simValidator.validateShipFull(shipPlan)) {
+    if (simValidator.validateShipFull(shipPlan))
+    {
 //        msg << "Ship is full. Cannot load container.";
 //        log(msg.str(), MessageSeverity::WARNING);
         return false;
@@ -810,7 +848,8 @@ bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<stri
     //check if ship is empty in given position
     unsigned freeSpot = shipPlan->getUpperCellsMat()[xyCord];
     unsigned maxHeight = shipPlan->getNumOfFloors(xyCord);
-    if (freeSpot == maxHeight) {
+    if (freeSpot == maxHeight)
+    {
 //        msg << "Position is full. Cannot load container to that position.";
 //        log(msg.str(), MessageSeverity::WARNING);
         return false;
@@ -820,24 +859,27 @@ bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<stri
     return true;
 }
 
-bool Simulation::validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L)
+bool
+Simulation::validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L)
 {
     vector<vector<string>> moveContainers;
-    if(!validateUnload(id, xyCord_U, curPort, moveContainers)) {return false;}
+    if (!validateUnload(id, xyCord_U, curPort, moveContainers)) { return false; }
     auto line = moveContainers[0];
-    if(!validateLoad(id, xyCord_L, line)) {return false;}
+    if (!validateLoad(id, xyCord_L, line)) { return false; }
 
     Crane::performMove(shipPlan, xyCord_U, xyCord_L);
     return true;
 
 }
 
-bool Simulation::validateReject(const string &id, const std::vector<std::string> &portContainerLine) {
+bool Simulation::validateReject(const string &id, const std::vector<std::string> &portContainerLine)
+{
     std::ostringstream msg;
 
     //check if container is invalid
     bool validContainerProperties = simValidator.validateContainerFromFile(portContainerLine,
-                                                                           shipRoute, false);   ///re-check with shipRoute
+                                                                           shipRoute,
+                                                                           false);   ///re-check with shipRoute
 
     // check if container has any duplicates on ship
     bool nonDuplicatesOnShip = simValidator.validateDuplicateIDOnShip(id, shipPlan);
@@ -852,46 +894,55 @@ bool Simulation::validateReject(const string &id, const std::vector<std::string>
     return !(isAllValid);
 }
 
-const string Simulation::getShipPlanFilePath() {
+const string Simulation::getShipPlanFilePath(int &status)
+{
     vector<string> shipPlansVec;
     putDirFileListToVec(curTravelFolder, shipPlansVec, ".ship_plan");
 
     auto numOfShipPlanFiles = shipPlansVec.size();
-    switch (numOfShipPlanFiles) {
+    switch (numOfShipPlanFiles)
+    {
         case 0:
-            //TODO: Or - report proper error of no shipPlans Found
+            simValidator.errorHandle.reportError(BadFirstLineOrShipPlanFileCannotBeRead);
+            status = -1;
+            std::cout << ("Didn't found any ship plan file. Terminating travel.") << std::endl;
             return "";
 
         case 1:
             return shipPlansVec[0];
 
         default:
-            //TODO: Or - report proper error of more than 1 shipPlans Found
-            return "";
+            std::cout << ("found more than one ship plan file. Taken the first.") << std::endl;
+            return shipPlansVec[0];
     }
 
 }
 
-const string Simulation::getRouteFilePath() {
+const string Simulation::getRouteFilePath(int &status)
+{
     vector<string> shipRoutesVec;
     putDirFileListToVec(curTravelFolder, shipRoutesVec, ".route");
 
     auto numOfRouteFiles = shipRoutesVec.size();
-    switch (numOfRouteFiles) {
+    switch (numOfRouteFiles)
+    {
         case 0:
-            //TODO: Or - report proper error of no route files Found
+            simValidator.errorHandle.reportError(emptyFileOrRouteFileCannotBeRead);
+            status = -1;
+            std::cout << ("Didn't found any ship route file. Terminating travel.") << std::endl;
             return "";
 
         case 1:
             return shipRoutesVec[0];
 
         default:
-            //TODO: Or - report proper error of more than 1 route file Found
-            return "";
+            std::cout << ("found more than one route file. Taken the first.") << std::endl;
+            return shipRoutesVec[0];
     }
 }
 
-bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort) {
+bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort)
+{
     std::ostringstream msg;
     CargoMat cargo = shipPlan->getCargo();
     vector<XYCord> xyCordVec = shipPlan->getShipXYCordsVec();

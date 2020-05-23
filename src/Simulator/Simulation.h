@@ -62,9 +62,9 @@ private:
     std::pair<std::string, std::string> getPortFilePaths
             (const std::string &outputDir, const SeaPortCode &port, int numOfVisits);
 
-    const string getShipPlanFilePath();
+    const string getShipPlanFilePath(int &status);
 
-    const string getRouteFilePath();
+    const string getRouteFilePath(int &status);
 
     void updateVisitedPortsMap(const SeaPortCode &port);
 

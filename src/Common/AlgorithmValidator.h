@@ -15,7 +15,7 @@ class AlgorithmValidator
 {
 public:
     ErrorHandle errorHandle;
-    bool userIsSimulator ; //i.e simulator = 1,  or algorithm = 0
+    bool userIsSimulator; //i.e simulator = 1,  or algorithm = 0
 
     int getErrorBits() { return errorHandle.getErrorBits(); }
 
@@ -61,12 +61,12 @@ public:
 
     bool validateReadingContainingFileAltogether(const std::string &containersAtPortFile);
 
-    bool validateContainerAtLastPort(const std::string &travelPath);
+    bool validateContainerAtLastPort(const std::string &shipRouteFilePath, const vector<SeaPortCode> &travelRouteStack);
 
     bool validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan);
 
     bool validateDuplicateXYCordsWithDifferentData(const std::vector<std::vector<std::string>> &vecLines,
-                                                        std::vector<std::vector<std::string>> &validVecLines);
+                                                   std::vector<std::vector<std::string>> &validVecLines);
 
     void filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines);
 };
