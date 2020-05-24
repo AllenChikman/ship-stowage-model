@@ -65,7 +65,7 @@ char getCraneCmdChar(Crane::Command cmd)
 }
 
 void dumpInstruction(std::ofstream &outputStream, const Container &container, const Crane::Command &cmd,
-                     const XYCord &xyCord)
+                     const XYCord &xyCord, int floorIdx)
 {
     auto id = container.getID();
     char op = getCraneCmdChar(cmd);
@@ -73,18 +73,22 @@ void dumpInstruction(std::ofstream &outputStream, const Container &container, co
     int y = (cmd == Crane::Command::REJECT) ? -1 : (int) xyCord.y;
     outputStream << op << CSV_DELIM
                  << id << CSV_DELIM
+                 << floorIdx << CSV_DELIM
                  << x << CSV_DELIM
                  << y << std::endl;
 }
 
-void dumpInstruction(std::ofstream &outputStream, const string &containerLine)
+void dumpInstruction(std::ofstream &outputStream, const string &containerId)
 {
     //only rejected containers
+
     int x = -1;
     int y = -1;
+    int floorIdx = -1;
     auto reject = " R ";
     outputStream << reject << CSV_DELIM
-                 << containerLine << CSV_DELIM
+                 << containerId << CSV_DELIM
+                 << floorIdx << CSV_DELIM
                  << x << CSV_DELIM
                  << y << std::endl;
 }
@@ -151,7 +155,9 @@ void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
             cmd = Crane::Command::UNLOAD;
             Crane::performUnload(shipPlan, xyCord);
         }
-        dumpInstruction(outputFile, container, cmd, xyCord);
+        auto floorIdx =
+                shipPlan->getUpperCellsMat()[xyCord] + shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(xyCord);
+        dumpInstruction(outputFile, container, cmd, xyCord, floorIdx);
     }
 }
 
@@ -241,7 +247,9 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
             xyCord = chooseXYCordByAlgorithmType(shipPlan);
             Crane::performLoad(shipPlan, curContainerToLoad, xyCord);
         }
-        dumpInstruction(outputFile, curContainerToLoad, cmd, xyCord);
+        const auto floorIdx =
+                shipPlan->getUpperCellsMat()[xyCord] + shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(xyCord);
+        dumpInstruction(outputFile, curContainerToLoad, cmd, xyCord, floorIdx - 1);
     }
 }
 
@@ -259,7 +267,7 @@ void clearDuplicatedContainers(vector<Container> &portContainers, std::ofstream 
         {
             if (portContainers[i].getID() == portContainers[j].getID())
             {
-                dumpInstruction(outputFile, portContainers[j], Crane::Command::REJECT, XYCord{0,0});
+                dumpInstruction(outputFile, portContainers[j], Crane::Command::REJECT, XYCord{0, 0}, -1);
                 portContainers.erase(portContainers.begin() + j);
                 continue;
             }
@@ -309,12 +317,12 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
         }
         else
         {
-            string containerLine = " ";
-            for (auto &word : lineVec)
+            //string containerLine = " ";
+/*            for (auto &word : lineVec)
             {
                 containerLine += word;
-            }
-            dumpInstruction(outputStream, containerLine);
+            }*/
+            dumpInstruction(outputStream, lineVec[0]);
         }
     }
 
@@ -374,7 +382,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
         return validator.getErrorBits();
     }
 
-    if(vecLines.empty())
+    if (vecLines.empty())
     {
         validator.errorHandle.reportError(Errors::BadFirstLineOrShipPlanFileCannotBeRead);
         return validator.getErrorBits();
@@ -399,7 +407,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
     shipPlan = std::make_shared<ShipPlan>(width, length, maximalHeight, WeightBalanceCalculator());
     CargoMat &cargoMat = shipPlan->getCargo();
 
-    if(!validator.validateDuplicateXYCordsWithDifferentData(vecLines))
+    if (!validator.validateDuplicateXYCordsWithDifferentData(vecLines))
     {
         return validator.getErrorBits();
     }

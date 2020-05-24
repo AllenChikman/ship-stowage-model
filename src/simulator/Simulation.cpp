@@ -118,7 +118,7 @@ const string Simulation::getShipPlanFilePath(int &status)
             simValidator.errorHandle.reportError(BadFirstLineOrShipPlanFileCannotBeRead);
             status = -1;
             writeToErrorFile("Didn't find any ship plan file. Terminating travel.",
-                    MessageSeverity::ERROR, simValidator.errorFilePath);
+                             MessageSeverity::ERROR, simValidator.errorFilePath);
             return "";
 
         case 1:
@@ -381,11 +381,16 @@ void Simulation::handleCargoFileExistence(const string &currInputPath, bool carg
 
 }
 
-void handleAlgorithmReturnCode(int algorithmReturnFlag, const string &currInputPath)
+void handleAlgorithmReturnCode(int algorithmReturnFlag, const string &currInputPath,
+                               const string &errorFile)
 {
-    if (algorithmReturnFlag)
+    if (algorithmReturnFlag != 0)
     {
-        log("Failed to get instruction for cargo from file: " + currInputPath, MessageSeverity::WARNING);
+        auto msg = "Algoithm get instructions return error code: " + std::to_string(algorithmReturnFlag) +
+                   +" from file: " + currInputPath;
+        log(msg, MessageSeverity::WARNING);
+
+        writeToErrorFile(msg, MessageSeverity::WARNING, errorFile);
     }
 }
 
@@ -503,7 +508,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         //writeToAlgoErroCode(outputDirPath, travelName + " cargo file: " + port.toStr(), algorithmReturnCode);
 
         // handle return code of the Algorithm
-        handleAlgorithmReturnCode(algorithmReturnCode, currInputPath);
+        handleAlgorithmReturnCode(algorithmReturnCode, currInputPath, errorFile);
 
         // Go through the instruction output of the algorithm and approve every move
         const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port);
@@ -876,46 +881,23 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
  * Valid Container Id - in advance
  * */
 
-    (void)portFilePath;
-    (void)curPort;
-    //bool errorFlag = false;
-    //std::unordered_map<string, vector<vector<string>>> idLinesMap;
-    //vector<vector<string>> vecLinesPort;
-    //vector<vector<string>> moveContainers;
+    (void) portFilePath;
+    (void) curPort;
 
     // TODO: check that every line in the file was rejected ignored or perforemd
-    // read lines from output of algo to vector
-/*
-    if (!readToVecLine(portFilePath, vecLinesPort))
-    {
-        simValidator.errorHandle.reportError(Errors::containerFileCannotBeRead);
-        return false;
-    }
-*/
-
-    //createIDtoPortLinesMapping(vecLinesPort, idLinesMap);
 
     // read output lines to vector
     vector<vector<string>> vecLinesInstructions;
     readToVecLine(instructionsFilePath, vecLinesInstructions);
 
-
-    //placeRejectsAtEnd(vecLinesInstructions);
-
-    int instructionCounter = static_cast<int>(vecLinesInstructions.size());
-/*    for (const auto &vecLineIns : vecLinesInstructions)
+    int instructionCounter = 0;
+    for (const auto &lineVec : vecLinesInstructions)
     {
-*//*        if (!validateInstructionLine(vecLineIns, idLinesMap, curPort, moveContainers))
+        if (!lineVec.empty() && lineVec[0] != "R")
         {
-            errorFlag = true;
-        }*//*
-        instructionCounter++;
-    }*/
+            instructionCounter++;
+        }
+    }
 
-
-    //if (!allContainersUnloadedAtPort(curPort)) { errorFlag = true; }
-
-    // TODO: check that every line in the file was rejected ignored or perforemd
-    //return errorFlag ? -1 : instructionCounter;
     return instructionCounter;
 }
