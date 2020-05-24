@@ -225,10 +225,9 @@ XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
 
 XYCord NaiveAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
 {
-/*    return (useSecondAlgorithm) ?
+    return (useSecondAlgorithm) ?
            findLowestFreeXYCord(shipPlan) :
-           findFreeXYCordsOnShipToLoad(shipPlan);*/
-    return findLowestFreeXYCord(shipPlan);
+           findFreeXYCordsOnShipToLoad(shipPlan);
 }
 
 //step2:
