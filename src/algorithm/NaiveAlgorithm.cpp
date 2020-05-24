@@ -202,15 +202,18 @@ XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
 
     XYCord bestCord{0, 0};
-    unsigned lowestHeight = shipPlan->getMaxHeight();
+    unsigned shipMaxHeight = shipPlan->getMaxHeight();
+    unsigned lowestHeight = shipMaxHeight;
     unsigned availableFloor;
 
     for (XYCord xyCord: shipXYCords)
     {
         availableFloor = upperCellsMat[xyCord];
-        if (availableFloor < lowestHeight)
+        const auto cordNumOfFloors = shipPlan->getNumOfFloors(xyCord);
+        const auto cordFreeFloors = shipMaxHeight - cordNumOfFloors + availableFloor;
+        if (cordFreeFloors < lowestHeight)
         {
-            lowestHeight = availableFloor;
+            lowestHeight = cordFreeFloors;
             bestCord = xyCord;
         }
     }
@@ -222,9 +225,10 @@ XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
 
 XYCord NaiveAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
 {
-    return (useSecondAlgorithm) ?
+/*    return (useSecondAlgorithm) ?
            findLowestFreeXYCord(shipPlan) :
-           findFreeXYCordsOnShipToLoad(shipPlan);
+           findFreeXYCordsOnShipToLoad(shipPlan);*/
+    return findLowestFreeXYCord(shipPlan);
 }
 
 //step2:
