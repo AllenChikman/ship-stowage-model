@@ -893,10 +893,28 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
     int instructionCounter = 0;
     for (const auto &lineVec : vecLinesInstructions)
     {
-        if (!lineVec.empty() && lineVec[0] != "R")
+        if (lineVec.empty()) { continue; }
+
+        if (lineVec[0] == "R")
         {
-            instructionCounter++;
+            instructionCounter += 0;
         }
+
+        else if (lineVec[0] == "M")
+        {
+            instructionCounter += 3;
+        }
+
+        else if (lineVec[0] == "L" || lineVec[0] == "U")
+        {
+            instructionCounter += 5;
+        }
+        else
+        {
+            // TODO: Unreachable code
+        }
+
+
     }
 
     return instructionCounter;
