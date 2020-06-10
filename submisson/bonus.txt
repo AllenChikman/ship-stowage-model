@@ -18,6 +18,8 @@ It is a cool way to see (and for us to debug) how each algorithm reacted to each
 
 ### How to make all this beauty work?
 - cd ./bonus_folder
+- chmod 777 run_all_travels.sh
+- chmod 777 simulator
 - ./run_all_travels.sh
 
 And that's it. the script will run everything for you. Just go inside the results folder and you'll be able to see
