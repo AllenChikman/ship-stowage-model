@@ -7,7 +7,8 @@
 bool SetSimulatorCmdParams(char **argv, int argc,
                            std::string &travel_path,
                            std::string &algorithm_path,
-                           std::string &output_path)
+                           std::string &output_path,
+                           unsigned &numOfThreads)
 {
     std::vector<std::string> args = std::vector<std::string>(static_cast<unsigned long long int>(argc - 1));
     for (size_t idx = 0; idx < static_cast<size_t>(argc) - 1; idx++) args[idx] = std::string(argv[idx + 1]);
@@ -37,6 +38,22 @@ bool SetSimulatorCmdParams(char **argv, int argc,
         {
             output_path = args[++idx];
         }
+        else if (args[idx] == "-num_threads")
+        {
+            try
+            {
+                int tempNumOfThreads = std::stoi(args[++idx]);
+                if (tempNumOfThreads <= 0) { throw std::invalid_argument(""); }
+
+                numOfThreads = static_cast<unsigned int>(tempNumOfThreads);
+            }
+            catch (std::invalid_argument const &e)
+            {
+                std::cout << "ERROR: -num_threads value should be a non-zero positive integer" << std::endl;
+                showHelp = true;
+                break;
+            }
+        }
         else
         {
             std::cout << "ERROR: Unknown argument:" << args[idx] << std::endl;
@@ -55,8 +72,9 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 
     if (showHelp || !travelPathFound)
     {
-        std::cout << "Usage: simulator [-travel_path <path>] [-algorithm_path <algorithm path>] [-output <output path>]"
-                  << std::endl;
+        std::cout
+                << "Usage: simulator [-travel_path <path>] [-algorithm_path <algorithm path>] [-output <output path>] [-num_threads <num>]"
+                << std::endl;
         return false;
     }
 
@@ -64,7 +82,7 @@ bool SetSimulatorCmdParams(char **argv, int argc,
 }
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 
     /*For tests pass to the cmd arguments the next line:*/
@@ -72,8 +90,9 @@ int main(int argc, char* argv[])
     string travelDir;
     string algorithmsDir(R"(./)");
     string outputDir((R"(./)"));
+    unsigned numOfThreads = 1;
 
-    if (!SetSimulatorCmdParams(argv, argc, travelDir, algorithmsDir, outputDir))
+    if (!SetSimulatorCmdParams(argv, argc, travelDir, algorithmsDir, outputDir, numOfThreads))
     {
         return EXIT_FAILURE;
     }
@@ -84,7 +103,7 @@ int main(int argc, char* argv[])
     sim.loadAlgorithms(algorithmsDir, outputDir);
 #endif
 
-    sim.runAlgorithmsOnTravels(travelDir, outputDir);
+    sim.runAlgorithmsOnTravels(travelDir, outputDir, numOfThreads);
 
     return EXIT_SUCCESS;
 }

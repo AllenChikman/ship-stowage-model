@@ -111,7 +111,7 @@ public:
 
     void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
 
-    void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath);
+    void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath,  unsigned numOfThreads);
 
     void runAlgorithmTravelPair(const std::string &travelDirPath,
                                 std::pair<AlgorithmFactory, string> &algoFactoryNamePair,

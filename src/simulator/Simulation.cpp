@@ -522,7 +522,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
 }
 
-void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath)
+void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir,
+        const string &outputDirPath,  unsigned numOfThreads)
 {
 
     createDirIfNotExists(outputDirPath);
