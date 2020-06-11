@@ -7,11 +7,13 @@
 #include "filesystem"
 #include <map>
 #include <bitset>
+#include <mutex>
 
 #include "Simulation.h"
 #include "AlgorithmRegistrar.h"
 #include "../common/Utils.h"
 #include "../common/Port.h"
+#include "../common/ctpl_stl.h"
 
 #ifndef LINUX_ENV
 
@@ -19,6 +21,8 @@
 
 #endif
 
+
+std::mutex mtx;
 
 // SimulationRun private class method implementation
 
@@ -950,22 +954,38 @@ void SimulationWrapper::run(const string &travelsRootDir, const string &outputDi
 
 #endif
 
+    ctpl::thread_pool p(numOfThreads);
     vector<RunResults> pairResultsVec;
+    std::vector<std::future<void>> results;
+
     for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
     {
         for (const auto &travelFolder :travelDirPaths)
         {
-            SimulationRun algoTravelRun;
-            RunResults pairResult{"", std::vector<std::tuple<std::string, std::string, int>>()};
+            //results.push_back(p.push(threadTask, travelFolder, loadedAlgoFactoryNamePair, outputDirPath, pairResultsVec));
+            results.push_back(p.push([&travelFolder, &loadedAlgoFactoryNamePair, &outputDirPath, &pairResultsVec](int id)
+            {
+                SimulationRun algoTravelRun;
+                std::cout << id << std::endl;
+                RunResults pairResult{"", std::vector<std::tuple<std::string, std::string, int>>()};
 
-            algoTravelRun.runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath, pairResult);
-            pairResultsVec.push_back(pairResult);
+                algoTravelRun.runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath, pairResult);
 
-            // get the results from the run and update the the members: allTravelsNames, algorithmTravelResults
+                mtx.lock();
+                pairResultsVec.push_back(pairResult);
+                mtx.unlock();
 
-            log("Travel Finished!!!");
+            }
+            ));
         }
     }
+
+    for (auto &res: results)
+    {
+        res.get();
+        log("Travel Finished!!!");
+    }
+
 
     // aggregate results
 
@@ -985,7 +1005,6 @@ void SimulationWrapper::run(const string &travelsRootDir, const string &outputDi
         }
 
     }
-
 
     writeSimulationOutput(outputDirPath);
 }
