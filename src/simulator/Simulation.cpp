@@ -20,10 +20,10 @@
 #endif
 
 
-// Simulation private class method implementation
+// SimulationRun private class method implementation
 
-std::pair<string, string> Simulation::getPortFilePaths(const string &outputDir,
-                                                       const SeaPortCode &port, int numOfVisits)
+std::pair<string, string> SimulationRun::getPortFilePaths(const string &outputDir,
+                                                          const SeaPortCode &port, int numOfVisits)
 {
     const string &inputFileName = port.toStr(true);
     const string &outputFileName = port.toStr();
@@ -37,7 +37,7 @@ std::pair<string, string> Simulation::getPortFilePaths(const string &outputDir,
 
 }
 
-void Simulation::updateRouteMap()
+void SimulationRun::updateRouteMap()
 {
     for (const auto &port : shipRoute)
     {
@@ -46,7 +46,7 @@ void Simulation::updateRouteMap()
     }
 }
 
-void Simulation::updateRouteFileSet()
+void SimulationRun::updateRouteFileSet()
 {
     vector<string> cargoFilesVec;
     putDirFileListToVec(curTravelFolder, cargoFilesVec, ".cargo_data");
@@ -56,7 +56,7 @@ void Simulation::updateRouteFileSet()
     }
 }
 
-bool Simulation::popRouteFileSet(const string &currInputPath)
+bool SimulationRun::popRouteFileSet(const string &currInputPath)
 {
     string pathToPop;
     std::filesystem::path p2 = currInputPath;
@@ -77,7 +77,7 @@ bool Simulation::popRouteFileSet(const string &currInputPath)
     return false;
 }
 
-void Simulation::validateAllCargoFilesWereUsed()
+void SimulationRun::validateAllCargoFilesWereUsed()
 {
     for (const auto &file : cargoFilesSet)
     {
@@ -88,7 +88,7 @@ void Simulation::validateAllCargoFilesWereUsed()
     }
 }
 
-void Simulation::initSimulationTravelState(const string &travelDir)
+void SimulationRun::initSimulationTravelState(const string &travelDir)
 {
     logStartingDecorator();
     log("Initializing travel...");
@@ -106,7 +106,7 @@ void Simulation::initSimulationTravelState(const string &travelDir)
 }
 
 
-const string Simulation::getShipPlanFilePath(int &status)
+const string SimulationRun::getShipPlanFilePath(int &status)
 {
     vector<string> shipPlansVec;
     putDirFileListToVec(curTravelFolder, shipPlansVec, ".ship_plan");
@@ -132,7 +132,7 @@ const string Simulation::getShipPlanFilePath(int &status)
 
 }
 
-const string Simulation::getRouteFilePath(int &status)
+const string SimulationRun::getRouteFilePath(int &status)
 {
     vector<string> shipRoutesVec;
     putDirFileListToVec(curTravelFolder, shipRoutesVec, ".route");
@@ -158,9 +158,9 @@ const string Simulation::getRouteFilePath(int &status)
 }
 
 
-// Simulation public class method implementation
+// SimulationRun public class method implementation
 
-int Simulation::readShipPlan(const string &path)
+int SimulationRun::readShipPlan(const string &path)
 {
     vector<vector<string>> vecLines;
     if (!readToVecLine(path, vecLines))
@@ -220,7 +220,7 @@ int Simulation::readShipPlan(const string &path)
 
 }
 
-int Simulation::readShipRoute(const string &path)
+int SimulationRun::readShipRoute(const string &path)
 {
     vector<string> vec;
     if (!readToVec(path, vec))
@@ -275,7 +275,8 @@ void writeToAlgoErroCode(const string &outputDirPath, const string &travelName, 
 }
 
 
-void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &algoScoreVec)
+/*
+void SimulationRun::getSortedResultVec(std::vector<std::tuple<string, int, int>> &algoScoreVec)
 {
 
     // fill algoScoreVec vector with result data
@@ -314,8 +315,9 @@ void Simulation::getSortedResultVec(std::vector<std::tuple<string, int, int>> &a
               });
 
 }
+*/
 
-void Simulation::writeSimulationOutput(const string &outputDirPath)
+/*void SimulationRun::writeSimulationOutput(const string &outputDirPath)
 {
 
     //sort first by error, than by num of operations
@@ -363,9 +365,9 @@ void Simulation::writeSimulationOutput(const string &outputDirPath)
     outputFile.close();
 
 
-}
+}*/
 
-void Simulation::handleCargoFileExistence(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
+void SimulationRun::handleCargoFileExistence(const string &currInputPath, bool cargoFileExists, bool lastPortVisit)
 {
 
     if (!cargoFileExists)
@@ -394,7 +396,7 @@ void handleAlgorithmReturnCode(int algorithmReturnFlag, const string &currInputP
     }
 }
 
-void Simulation::updateResults(const string &algoName, const string &travelName, int numOfOperations)
+/*void SimulationRun::updateResults(const string &algoName, const string &travelName, int numOfOperations)
 {
     const bool hadErrors = (algorithmTravelResults[algoName][travelName] == -1);
     const bool isError = (numOfOperations == -1);
@@ -409,9 +411,9 @@ void Simulation::updateResults(const string &algoName, const string &travelName,
         algorithmTravelResults[algoName][travelName] += numOfOperations;
     }
 
-}
+}*/
 
-void Simulation::updateVisitedPortsMap(const SeaPortCode &port)
+void SimulationRun::updateVisitedPortsMap(const SeaPortCode &port)
 {
     const string &portStr = port.toStr();
     if (visitedPorts.find(port.toStr()) != visitedPorts.end())
@@ -425,9 +427,9 @@ void Simulation::updateVisitedPortsMap(const SeaPortCode &port)
 }
 
 
-void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
-                                        std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
-                                        const string &outputDirPath)
+void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
+                                           std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
+                                           const string &outputDirPath, RunResults &pairResult)
 {
 
 #ifdef LINUX_ENV
@@ -468,7 +470,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
     if (ErrorHandle::isFatalError(shipRouteErrCode)) { return; }
 
     // Add the current travel to the travel names
-    allTravelsNames.insert(travelName);
+    //allTravelsNames.insert(travelName);
+    pairResult.travelName = travelName;
 
     // init algorithm for this travel
     const auto algoPlanErrCode = algoPtr->readShipPlan(shipPlanPath); //TODO: report error in simulator
@@ -514,7 +517,7 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
         const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port);
 
         // update results
-        updateResults(algoName, travelName, numOfOperations);
+        pairResult.scoreResults.emplace_back(algoName, travelName, numOfOperations);
     }
 
     validateAllCargoFilesWereUsed();
@@ -522,35 +525,8 @@ void Simulation::runAlgorithmTravelPair(const string &travelDirPath,
 
 }
 
-void Simulation::runAlgorithmsOnTravels(const string &travelsRootDir,
-        const string &outputDirPath,  unsigned numOfThreads)
-{
-
-    createDirIfNotExists(outputDirPath);
-
-    vector<string> travelDirPaths;
-    putSubDirectoriesToVec(travelsRootDir, travelDirPaths);
-
-#ifndef LINUX_ENV
-    AlgorithmFactory mock;
-    loadedAlgorithmFactories.emplace_back(mock, "algo1");
-    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
-
-#endif
-
-    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
-    {
-        for (const auto &travelFolder :travelDirPaths)
-        {
-            runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath);
-            log("Travel Finished!!!");
-        }
-    }
-
-    writeSimulationOutput(outputDirPath);
-}
-
-void Simulation::loadAlgorithms(const string &algorithmsRootDit, const string &outputDir)
+/*
+void SimulationRun::loadAlgorithms(const string &algorithmsRootDit, const string &outputDir)
 {
 
     logStartingDecorator();
@@ -597,13 +573,16 @@ void Simulation::loadAlgorithms(const string &algorithmsRootDit, const string &o
 
 }
 
+*/
+
+
 //Or's functions:
 
 
 
 
-bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCode &curPort,
-                                std::vector<std::vector<std::string>> &moveContainers)
+bool SimulationRun::validateUnload(const string &id, XYCord xyCord, const SeaPortCode &curPort,
+                                   std::vector<std::vector<std::string>> &moveContainers)
 {
     std::ostringstream msg;
 
@@ -640,7 +619,7 @@ bool Simulation::validateUnload(const string &id, XYCord xyCord, const SeaPortCo
     return true;
 }
 
-bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<string> &portContainerLine)
+bool SimulationRun::validateLoad(const string &id, XYCord xyCord, const vector<string> &portContainerLine)
 {
     std::ostringstream msg;
     //check container is valid
@@ -684,7 +663,8 @@ bool Simulation::validateLoad(const string &id, XYCord xyCord, const vector<stri
 }
 
 bool
-Simulation::validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort, const XYCord &xyCord_L)
+SimulationRun::validateMove(const string &id, const XYCord &xyCord_U, const SeaPortCode &curPort,
+                            const XYCord &xyCord_L)
 {
     vector<vector<string>> moveContainers;
     if (!validateUnload(id, xyCord_U, curPort, moveContainers)) { return false; }
@@ -696,7 +676,7 @@ Simulation::validateMove(const string &id, const XYCord &xyCord_U, const SeaPort
 
 }
 
-bool Simulation::validateReject(const string &id, const std::vector<std::string> &portContainerLine)
+bool SimulationRun::validateReject(const string &id, const std::vector<std::string> &portContainerLine)
 {
     std::ostringstream msg;
 
@@ -719,7 +699,7 @@ bool Simulation::validateReject(const string &id, const std::vector<std::string>
     return !(isAllValid);
 }
 
-bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort)
+bool SimulationRun::allContainersUnloadedAtPort(const SeaPortCode &curPort)
 {
     std::ostringstream msg;
     CargoMat cargo = shipPlan->getCargo();
@@ -741,9 +721,9 @@ bool Simulation::allContainersUnloadedAtPort(const SeaPortCode &curPort)
 }
 
 
-bool Simulation::validateInstructionLine(const vector<string> &instructionLine,
-                                         const std::unordered_map<string, vector<vector<string>>> &idLinesMap,
-                                         const SeaPortCode &curPort, vector<vector<string>> &moveContainers)
+bool SimulationRun::validateInstructionLine(const vector<string> &instructionLine,
+                                            const std::unordered_map<string, vector<vector<string>>> &idLinesMap,
+                                            const SeaPortCode &curPort, vector<vector<string>> &moveContainers)
 {
     /* instructionLine.size() = 4
      * [0] = U/L/M/R
@@ -871,8 +851,9 @@ void createIDtoPortLinesMapping(const vector<vector<string>> &containersVecLines
 }
 
 
-int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePath, const string &instructionsFilePath,
-                                                        const SeaPortCode &curPort)
+int
+SimulationRun::performAndValidateAlgorithmInstructions(const string &portFilePath, const string &instructionsFilePath,
+                                                       const SeaPortCode &curPort)
 {
 /* The simulator will check the following
  * legal output format - in advance
@@ -919,4 +900,239 @@ int Simulation::performAndValidateAlgorithmInstructions(const string &portFilePa
     }
 
     return instructionCounter;
+}
+
+
+/*
+void SimulationRun::runAlgorithmsOnTravels(const string &travelsRootDir,
+                                           const string &outputDirPath,  unsigned numOfThreads)
+{
+
+    createDirIfNotExists(outputDirPath);
+
+    vector<string> travelDirPaths;
+    putSubDirectoriesToVec(travelsRootDir, travelDirPaths);
+
+#ifndef LINUX_ENV
+    AlgorithmFactory mock;
+    loadedAlgorithmFactories.emplace_back(mock, "algo1");
+    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
+
+#endif
+
+    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
+    {
+        for (const auto &travelFolder :travelDirPaths)
+        {
+            runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath);
+            log("Travel Finished!!!");
+        }
+    }
+
+    writeSimulationOutput(outputDirPath);
+}
+*/
+
+
+/////// EX3 Part
+
+void SimulationWrapper::run(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads)
+{
+    createDirIfNotExists(outputDirPath);
+
+    vector<string> travelDirPaths;
+    putSubDirectoriesToVec(travelsRootDir, travelDirPaths);
+
+#ifndef LINUX_ENV
+    AlgorithmFactory mock;
+    loadedAlgorithmFactories.emplace_back(mock, "algo1");
+    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
+
+#endif
+
+    vector<RunResults> pairResultsVec;
+    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
+    {
+        for (const auto &travelFolder :travelDirPaths)
+        {
+            SimulationRun algoTravelRun;
+            RunResults pairResult{"", std::vector<std::tuple<std::string, std::string, int>>()};
+
+            algoTravelRun.runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath, pairResult);
+            pairResultsVec.push_back(pairResult);
+
+            // get the results from the run and update the the members: allTravelsNames, algorithmTravelResults
+
+            log("Travel Finished!!!");
+        }
+    }
+
+    // aggregate results
+
+    for (auto const &pairRes : pairResultsVec)
+    {
+        if (!pairRes.travelName.empty())
+        {
+            allTravelsNames.insert(pairRes.travelName);
+        }
+
+        for (auto const &scoreResTuple : pairRes.scoreResults)
+        {
+            string algoName, travelName;
+            int numOfOperations;
+            std::tie(algoName, travelName, numOfOperations) = scoreResTuple;
+            updateResults(algoName, travelName, numOfOperations);
+        }
+
+    }
+
+
+    writeSimulationOutput(outputDirPath);
+}
+
+void SimulationWrapper::loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir)
+{
+
+    logStartingDecorator();
+    log("Loading Algorithms:", MessageSeverity::INFO);
+
+    vector<string> algoFilesVec;
+    putDirFileListToVec(algorithmsRootDit, algoFilesVec, ".so");
+
+    auto &registrar = AlgorithmRegistrar::getInstance();
+
+    for (auto &soFilePath: algoFilesVec)
+    {
+
+        if (!registrar.loadSharedObject(soFilePath))
+        {
+            auto msg = "Unable to load algorithm: " + getPathFileName(soFilePath, true);
+            //writeToErrorFile(msg, MessageSeverity::ERROR, outputDir + "/errors/general.errors");
+            (void) msg;
+            (void) outputDir;
+            continue;
+        }
+
+        int addedAlgorithms = registrar.howManyAdded();  // how many algorithms were added
+
+        if (addedAlgorithms != 1)
+        {
+            auto msg = std::to_string(addedAlgorithms) + " algorithms registered. Unable to load algorithm: " +
+                       getPathFileName(soFilePath, true);
+            (void) msg;
+            (void) outputDir;
+            //writeToErrorFile(msg, MessageSeverity::ERROR, outputDir + "/errors/general.errors");
+            continue;
+        }
+
+        const string algoFileName = getPathFileName(soFilePath, true);
+        const auto algoFactory = registrar.getLast();
+        const auto factoryNamePair = std::make_pair(algoFactory, algoFileName);
+
+        loadedAlgorithmFactories.push_back(factoryNamePair);
+        log("Loaded algorithm: " + algoFileName, MessageSeverity::INFO);
+
+    }
+    log("Algorithms loading is finished: ", MessageSeverity::INFO);
+
+}
+
+void SimulationWrapper::writeSimulationOutput(const std::string &outputFilePath)
+{
+    //sort first by error, than by num of operations
+    std::vector<std::tuple<string, int, int>> algoScoreVec;
+    getSortedResultVec(algoScoreVec);
+
+    const std::string outputFileName = "simulation.results";
+    const std::string outputFileFullPath = outputFilePath + "/" + outputFileName;
+
+    //algorithmPathIdxMap
+
+    std::ofstream outputFile;
+    outputFile.open(outputFileFullPath);
+
+    outputFile << "RERULTS" << CSV_DELIM;
+    for (const auto &travelPath : allTravelsNames)
+    {
+        outputFile << travelPath << CSV_DELIM;
+    }
+    outputFile << "Sum, Num Errors\n";
+
+    for (const auto &algoScore : algoScoreVec)
+    {
+        std::string algoName;
+        int sumOfOperations, sumOfErrors;
+        std::tie(algoName, sumOfOperations, sumOfErrors) = algoScore;
+
+        outputFile << algoName << CSV_DELIM;
+
+
+        for (const auto &travelName: allTravelsNames)
+        {
+            const bool travelInAlgo = algorithmTravelResults[algoName].find(travelName) !=
+                                      algorithmTravelResults[algoName].end();
+
+            int numOfOperations = (travelInAlgo) ? algorithmTravelResults[algoName][travelName] : -1;
+            outputFile << numOfOperations << CSV_DELIM;
+        }
+
+        outputFile << sumOfOperations << CSV_DELIM << sumOfErrors << "\n";
+
+    }
+
+
+    outputFile.close();
+}
+
+void SimulationWrapper::getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScoreVec)
+{
+    // fill algoScoreVec vector with result data
+    for (const auto &algoTravelPair : algorithmTravelResults)
+    {
+        int operationsSum = 0;
+        int errorsSum = 0;
+        string algoName = algoTravelPair.first;
+        string travelName;
+
+        for (const auto &travelResultPair : algoTravelPair.second)
+        {
+            int travelOperations;
+            travelName = travelResultPair.first;
+            travelOperations = travelResultPair.second;
+            (travelOperations < 0) ? errorsSum++ : operationsSum += travelOperations;
+        }
+
+        algoScoreVec.emplace_back(algoName, operationsSum, errorsSum);
+    }
+
+    // sort the vector
+    std::sort(algoScoreVec.begin(), algoScoreVec.end(),
+              [](auto &left, auto &right)
+              {
+                  int leftNumOfErrors, leftNumOfOperations;
+                  int rightNumOfErrors, rightNumOfOperations;
+
+                  std::tie(std::ignore, leftNumOfErrors, leftNumOfOperations) = left;
+                  std::tie(std::ignore, rightNumOfErrors, rightNumOfOperations) = right;
+
+                  if (leftNumOfErrors != rightNumOfErrors)
+                      return leftNumOfErrors < rightNumOfErrors;
+
+                  return leftNumOfOperations < rightNumOfOperations;
+              });
+}
+
+void SimulationWrapper::updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations)
+{
+    const bool hadErrors = (algorithmTravelResults[algoName][travelName] == -1);
+    const bool isError = (numOfOperations == -1);
+
+    if (hadErrors || isError)
+    {
+        algorithmTravelResults[algoName][travelName] = -1;
+    }
+    else
+    {
+        algorithmTravelResults[algoName][travelName] += numOfOperations;
+    }
 }

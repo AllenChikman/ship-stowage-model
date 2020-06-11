@@ -17,7 +17,36 @@
 #include "../common/AlgorithmValidator.h"
 #include "../common/EnviormentConfig.h"
 
-class Simulation
+typedef std::function<std::unique_ptr<AbstractAlgorithm>()> AlgorithmFactory;
+typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
+
+struct RunResults
+{
+    std::string travelName;
+    std::vector<std::tuple<std::string, std::string, int>> scoreResults;
+};
+
+
+class SimulationWrapper
+{
+public:
+    std::vector<std::pair<AlgorithmFactory, std::string>> loadedAlgorithmFactories;
+    std::set<std::string> allTravelsNames;
+    ResultsPairMap algorithmTravelResults = {};
+
+    void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
+
+    void run(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads);
+
+    void writeSimulationOutput(const std::string &outputFilePath);
+
+    void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
+
+    void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
+
+};
+
+class SimulationRun
 {
 
 private:
@@ -41,16 +70,9 @@ private:
     // also we check this set at the end of each run to see what files we haven't used
     std::unordered_set<std::string> cargoFilesSet = {};
 
-    // saving the results (number of operations) of each pair
-    std::set<std::string> allTravelsNames;
-
-    typedef std::unordered_map<std::string, std::map<std::string, int>> ResultsPairMap;
-    ResultsPairMap algorithmTravelResults = {};
+    //ResultsPairMap algorithmTravelResults = {};
 
     AlgorithmValidator simValidator = AlgorithmValidator(true);
-
-    typedef std::function<std::unique_ptr<AbstractAlgorithm>()> AlgorithmFactory;
-    std::vector<std::pair<AlgorithmFactory, std::string>> loadedAlgorithmFactories;
 
     bool isLastPortVisit(const SeaPortCode &port)
     {
@@ -81,9 +103,6 @@ private:
     performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
                                             const SeaPortCode &curPort);
 
-    void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
-
-    void writeSimulationOutput(const std::string &outputFilePath);
 
     bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort,
                         std::vector<std::vector<std::string>> &moveContainers);
@@ -101,21 +120,19 @@ private:
     void handleCargoFileExistence(const std::string &currInputPath, bool cargoFileExists, bool lastPortVisit);
 
 
-    void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
-
 public:
 
     int readShipPlan(const std::string &path);
 
     int readShipRoute(const std::string &path);
 
-    void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
+    //void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
 
-    void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath,  unsigned numOfThreads);
+    //void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads);
 
-    void runAlgorithmTravelPair(const std::string &travelDirPath,
+    void runAlgorithmTravelPair(const string &travelDirPath,
                                 std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
-                                const std::string &outputDirPath);
+                                const string &outputDirPath, RunResults &pairResult);
 
     bool allContainersUnloadedAtPort(const SeaPortCode &code);
 

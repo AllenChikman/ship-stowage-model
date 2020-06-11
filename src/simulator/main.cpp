@@ -97,13 +97,13 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    Simulation sim;
+    SimulationWrapper sim;
 
 #ifdef LINUX_ENV
     sim.loadAlgorithms(algorithmsDir, outputDir);
 #endif
 
-    sim.runAlgorithmsOnTravels(travelDir, outputDir, numOfThreads);
+    sim.run(travelDir, outputDir, numOfThreads);
 
     return EXIT_SUCCESS;
 }
