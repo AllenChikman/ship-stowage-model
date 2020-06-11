@@ -22,6 +22,7 @@ add_executable(ship_stowage_model
         src/common/ErrorHandling.h
         src/common/AlgorithmValidator.cpp
         src/common/AlgorithmValidator.h
+        src/common/ctpl_stl.h
         src/interfaces/AlgorithmRegistration.h
         src/interfaces/AlgorithmRegistration.cpp
         src/simulator/AlgorithmRegistrar.cpp
