@@ -428,7 +428,7 @@ void SimulationRun::updateVisitedPortsMap(const SeaPortCode &port)
 
 
 void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
-                                           std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
+                                           const std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
                                            const string &outputDirPath, RunResults &pairResult)
 {
 

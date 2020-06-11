@@ -131,7 +131,7 @@ public:
     //void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads);
 
     void runAlgorithmTravelPair(const string &travelDirPath,
-                                std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
+                                const std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
                                 const string &outputDirPath, RunResults &pairResult);
 
     bool allContainersUnloadedAtPort(const SeaPortCode &code);
