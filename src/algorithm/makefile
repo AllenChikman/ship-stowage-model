@@ -9,7 +9,7 @@ FIRST_ALGO = _317624278_a.o
 SECOND_ALGO = _317624278_b.o
 
 ALGORITHM_OBJS = $\
-NaiveAlgorithm.o
+GoodAlgorithm.o
 
 
 COMMON_OBJS = $\
