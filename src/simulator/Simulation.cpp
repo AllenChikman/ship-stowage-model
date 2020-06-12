@@ -17,7 +17,7 @@
 
 #ifndef LINUX_ENV
 
-#include "../algorithm/NaiveAlgorithm.h"
+#include "../algorithm/GoodAlgorithm.h"
 
 #endif
 
@@ -441,7 +441,7 @@ void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
 #endif
 
 #ifndef LINUX_ENV
-    NaiveAlgorithm temp_algo;
+    GoodAlgorithm temp_algo;
     auto algoPtr = &temp_algo;
 #endif
 

@@ -5,14 +5,14 @@
 #ifndef SHIP_STOWAGE_MODEL_317624278_B_H
 #define SHIP_STOWAGE_MODEL_317624278_B_H
 
-#include "NaiveAlgorithm.h"
+#include "GoodAlgorithm.h"
 #include "../common/EnviormentConfig.h"
 #include "../interfaces/AlgorithmRegistration.h"
 
-class _317624278_b : public NaiveAlgorithm
+class _317624278_b : public GoodAlgorithm
 {
 public:
-    _317624278_b() : NaiveAlgorithm()
+    _317624278_b() : GoodAlgorithm()
     {
         setSecondAlgorithm();
     }

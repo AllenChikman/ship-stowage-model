@@ -6,11 +6,11 @@
 #define SHIP_STOWAGE_MODEL_317624278_A_H
 
 
-#include "NaiveAlgorithm.h"
+#include "GoodAlgorithm.h"
 #include "../common/EnviormentConfig.h"
 #include "../interfaces/AlgorithmRegistration.h"
 
-class _317624278_a : public NaiveAlgorithm
+class _317624278_a : public GoodAlgorithm
 {
 };
 

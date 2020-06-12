@@ -30,4 +30,7 @@ add_executable(ship_stowage_model
         src/algorithm/_317624278_a.cpp
         src/algorithm/_317624278_a.h
         src/algorithm/_317624278_b.cpp
-        src/algorithm/_317624278_b.h src/common/EnviormentConfig.h)
+        src/algorithm/_317624278_b.h
+        src/common/EnviormentConfig.h
+        src/algorithm/GoodAlgorithm.cpp
+        src/algorithm/GoodAlgorithm.h)

@@ -1,7 +1,5 @@
-/*
-#ifndef SHIP_STOWAGE_MODEL_STOWAGE_ALGORITHM_H
-#define SHIP_STOWAGE_MODEL_STOWAGE_ALGORITHM_H
-
+#ifndef SHIP_STOWAGE_MODEL_GOODALGORITHM_H
+#define SHIP_STOWAGE_MODEL_GOODALGORITHM_H
 
 #include <string>
 #include <memory>
@@ -14,7 +12,7 @@
 #include "../interfaces/AbstractAlgorithm.h"
 #include "../common/AlgorithmValidator.h"
 
-class NaiveAlgorithm : public AbstractAlgorithm
+class GoodAlgorithm : public AbstractAlgorithm
 {
 private:
     bool useSecondAlgorithm = false;
@@ -47,7 +45,7 @@ private:
 
 public:
 
-    explicit NaiveAlgorithm() = default;
+    explicit GoodAlgorithm() = default;
 
     void setSecondAlgorithm() { useSecondAlgorithm = true; }
 
@@ -62,5 +60,4 @@ public:
 
 };
 
-#endif //SHIP_STOWAGE_MODEL_STOWAGE_ALGORITHM_H
-*/
+#endif //SHIP_STOWAGE_MODEL_GOODALGORITHM_H

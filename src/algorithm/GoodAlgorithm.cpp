@@ -1,10 +1,9 @@
-/*
 #include <vector>
 #include <string>
 #include <sstream>
 #include "filesystem"
 
-#include "NaiveAlgorithm.h"
+#include "GoodAlgorithm.h"
 #include "../common/Utils.h"
 
 
@@ -70,13 +69,11 @@ void dumpInstruction(std::ofstream &outputStream, const string &containerId)
 }
 
 
-*/
 /*
  * Unloading steps
  * For each XYCord we apply 3 steps
  *
- * *//*
-
+ * */
 
 // Step 1 - Finding the lowest position of the container to be unloaded
 
@@ -117,7 +114,7 @@ void fillVecToLoadReload(vector<Container> &containersToUnload,
 
 
 // Step 3 - We Perform the unloading of the containers
-void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
+void GoodAlgorithm::Unloading(vector<Container> &containersToUnload,
                                XYCord xyCord, std::ofstream &outputFile)
 {
     bool shipUnbalanced = false;
@@ -150,11 +147,9 @@ void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
 
 XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
 {
-    */
-/*
+    /*
     * this is the function finding the free cell of Algorithm1
-    * *//*
-
+    * */
 
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
@@ -176,11 +171,9 @@ XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
 
 XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
 {
-    */
-/*
+    /*
      * this is the function finding the free cell of Algorithm2
-     * *//*
-
+     * */
 
     const auto shipXYCords = shipPlan->getShipXYCordsVec();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
@@ -207,7 +200,7 @@ XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
 
 }
 
-XYCord NaiveAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
+XYCord GoodAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
 {
     return (useSecondAlgorithm) ?
            findLowestFreeXYCord(shipPlan) :
@@ -241,7 +234,7 @@ void sortPortContainersByShipRoute(vector<Container> &portContainers, const vect
     }
 }
 
-void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
+void GoodAlgorithm::Loading(vector<Container> &containersToLoad,
                              std::ofstream &outputFile)
 {
     for (const auto &curContainerToLoad : containersToLoad)
@@ -310,7 +303,7 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
 
 // private header functions
 
-int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath,
+int GoodAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath,
                                               std::ofstream &outputStream)
 {
     vector<vector<string>> vecLines;
@@ -334,7 +327,7 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
     return validator.getErrorBits();
 }
 
-bool NaiveAlgorithm::popRouteFileSet(const string &currInputPath)
+bool GoodAlgorithm::popRouteFileSet(const string &currInputPath)
 {
     string pathToPop;
     std::filesystem::path p2 = currInputPath;
@@ -355,7 +348,7 @@ bool NaiveAlgorithm::popRouteFileSet(const string &currInputPath)
     return false;
 }
 
-void NaiveAlgorithm::updateRouteMap()
+void GoodAlgorithm::updateRouteMap()
 {
     for (const auto &port : travelRouteStack)
     {
@@ -364,7 +357,7 @@ void NaiveAlgorithm::updateRouteMap()
     }
 }
 
-void NaiveAlgorithm::updateRouteFileSet(const string &curTravelFolder)
+void GoodAlgorithm::updateRouteFileSet(const string &curTravelFolder)
 {
     vector<string> cargoFilesVec;
     putDirFileListToVec(curTravelFolder, cargoFilesVec, ".cargo_data");
@@ -378,7 +371,7 @@ void NaiveAlgorithm::updateRouteFileSet(const string &curTravelFolder)
 // API Functions
 
 
-int NaiveAlgorithm::readShipPlan(const std::string &path)
+int GoodAlgorithm::readShipPlan(const std::string &path)
 {
     vector<vector<string>> vecLines;
     if (!readToVecLine(path, vecLines))
@@ -435,7 +428,7 @@ int NaiveAlgorithm::readShipPlan(const std::string &path)
 
 }
 
-int NaiveAlgorithm::readShipRoute(const std::string &path)
+int GoodAlgorithm::readShipRoute(const std::string &path)
 {
     validator.clear();
     vector<string> vec;
@@ -466,13 +459,13 @@ int NaiveAlgorithm::readShipRoute(const std::string &path)
     return validator.getErrorBits();
 }
 
-int NaiveAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
+int GoodAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator)
 {
     (void) calculator;
     return 0;
 }
 
-int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
+int GoodAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
                                             const std::string &outputFilePath)
 {
     validator.clear();
@@ -535,4 +528,3 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     return validator.getErrorBits();
 
 }
-*/
