@@ -142,7 +142,10 @@ bool readToVecLine(const string &path, vector<vector<string>> &vecLines)
         if (!line.empty() && line[0] != '#')
         {
             strCleanWhitespaces(line);
-            vecLines.push_back(splitByDelimiter(line, ','));
+            if(!line.empty())
+            {
+                vecLines.push_back(splitByDelimiter(line, ','));
+            }
         }
     }
     in.close();
