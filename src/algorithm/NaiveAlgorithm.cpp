@@ -7,31 +7,7 @@
 #include "../common/Utils.h"
 
 
-void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
-                                   vector<Container> &containersToLoad)
-{
-    unsigned cur;
-    size_t routeSize = travelRouteStack.size();
-    for (size_t portPos = routeSize; portPos > 0; portPos--)
-    {
-        cur = 0;
-        auto &port = travelRouteStack[portPos - 1];
-        size_t containerSize = portContainers.size();
-        for (size_t i = 0; i < containerSize && !portContainers.empty(); i++)
-        {
-            if (portContainers[cur].getDestinationPort().toStr() == port.toStr())
-            {
-                containersToLoad.push_back(portContainers[cur]);
-                portContainers.erase(portContainers.begin() + cur);
-            }
-            else
-            {
-                cur++;
-            }
-        }
-
-    }
-}
+// Stub implementation for isBalanced - always approved
 
 bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container, XYCord cord = {0, 0})
 {
@@ -41,9 +17,8 @@ bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Contai
     return status == WeightBalanceCalculator::BalanceStatus::APPROVED;
 }
 
-/*
- * Write algorithm results to instruction file
- */
+
+// Dumping to instruction File
 
 char getCraneCmdChar(Crane::Command cmd)
 {
@@ -93,12 +68,15 @@ void dumpInstruction(std::ofstream &outputStream, const string &containerId)
                  << y << std::endl;
 }
 
-/* getInstructionsForCargo
- * first part:
- * unloading cargo
- */
 
-//step1:
+/*
+ * Unloading steps
+ * For each XYCord we apply 3 steps
+ *
+ * */
+
+// Step 1 - Finding the lowest position of the container to be unloaded
+
 unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
                                      unsigned numOfFloors, XYCord xyCord)
 {
@@ -113,7 +91,8 @@ unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode
     return numOfFloors;
 }
 
-//step2:
+// Step 2 - Before we perform the unloading we mark the ships to be reloaded back and put them in a vector
+
 void fillVecToLoadReload(vector<Container> &containersToUnload,
                          vector<Container> &containersToReload,
                          CargoMat &cargoMat,
@@ -132,7 +111,9 @@ void fillVecToLoadReload(vector<Container> &containersToUnload,
     }
 }
 
-//step3:
+
+
+// Step 3 - We Perform the unloading of the containers
 void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
                                XYCord xyCord, std::ofstream &outputFile)
 {
@@ -161,12 +142,9 @@ void NaiveAlgorithm::Unloading(vector<Container> &containersToUnload,
     }
 }
 
-/* getInstructionsForCargo
- * second part:
- * loading cargo
- */
 
-//step1:
+// Step 4 - We Perform the Loading To the containers
+
 XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
 {
     /*
@@ -190,7 +168,6 @@ XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
     //Unreachable code
     return XYCord{0, 0};
 }
-
 
 XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
 {
@@ -230,7 +207,33 @@ XYCord NaiveAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPla
            findFreeXYCordsOnShipToLoad(shipPlan);
 }
 
-//step2:
+
+void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
+                                   vector<Container> &containersToLoad)
+{
+    unsigned cur;
+    size_t routeSize = travelRouteStack.size();
+    for (size_t portPos = routeSize; portPos > 0; portPos--)
+    {
+        cur = 0;
+        auto &port = travelRouteStack[portPos - 1];
+        size_t containerSize = portContainers.size();
+        for (size_t i = 0; i < containerSize && !portContainers.empty(); i++)
+        {
+            if (portContainers[cur].getDestinationPort().toStr() == port.toStr())
+            {
+                containersToLoad.push_back(portContainers[cur]);
+                portContainers.erase(portContainers.begin() + cur);
+            }
+            else
+            {
+                cur++;
+            }
+        }
+
+    }
+}
+
 void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
                              std::ofstream &outputFile)
 {
@@ -256,10 +259,7 @@ void NaiveAlgorithm::Loading(vector<Container> &containersToLoad,
     }
 }
 
-
 //// Ex2
-
-
 
 void clearDuplicatedContainers(vector<Container> &portContainers, std::ofstream &outputFile)
 {
@@ -320,11 +320,6 @@ int NaiveAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, 
         }
         else
         {
-            //string containerLine = " ";
-/*            for (auto &word : lineVec)
-            {
-                containerLine += word;
-            }*/
             dumpInstruction(outputStream, lineVec[0]);
         }
     }
@@ -524,10 +519,8 @@ int NaiveAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
     }
 
     sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
-    for (auto &portContainer : portContainers)
-    {
-        containersToLoad.push_back(portContainer);
-    }
+
+    // 4th step: Load everything to the ship
     Loading(containersToLoad, outputFile);
     travelRouteStack.pop_back();
 
