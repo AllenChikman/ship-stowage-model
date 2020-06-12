@@ -318,7 +318,7 @@ int GoodAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, c
         {
             ContainersVec.emplace_back(Container(lineVec));
         }
-        else
+        else if ((validator.getErrorBits() & Errors::ContainerIDCannotBeRead) == 0)
         {
             dumpInstruction(outputStream, lineVec[0]);
         }
