@@ -19,17 +19,22 @@ bool checkShipPlanLineFormat(const std::vector<std::string> &line)
     {
         valid = false;
     }
+
     for (auto &word : line)
     {
         try
         {
-            std::stoul(word);
+            int res = std::stoi(word);
+            if (res < 0) { throw std::invalid_argument(""); }
         }
         catch (std::invalid_argument const &e)
         {
             valid = false;
+            break;
         }
+
     }
+
     return valid;
 }
 

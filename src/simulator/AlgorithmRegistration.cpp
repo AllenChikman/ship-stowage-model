@@ -1,4 +1,4 @@
-#include "AlgorithmRegistration.h"
+#include "../interfaces/AlgorithmRegistration.h"
 
 #include <utility>
 #include "../simulator/AlgorithmRegistrar.h"

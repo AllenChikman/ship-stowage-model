@@ -3,6 +3,7 @@ COMP = g++-9.3.0
 SIMULATOR_OBJS = $\
 main.o $\
 Simulation.o $\
+AlgorithmRegistration.o $\
 AlgorithmRegistrar.o
 
 
@@ -14,7 +15,6 @@ COMMON_OBJS = $\
 
 INTERFACE_OBJS = $\
 ../interfaces/WeightBalanceCalculator.o $\
-../interfaces/AlgorithmRegistration.o $\
 
 OBJS = $(SIMULATOR_OBJS) $(COMMON_OBJS) $(INTERFACE_OBJS)
 

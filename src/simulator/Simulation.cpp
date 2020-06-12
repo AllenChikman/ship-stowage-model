@@ -336,7 +336,7 @@ void SimulationRun::getSortedResultVec(std::vector<std::tuple<string, int, int>>
     std::ofstream outputFile;
     outputFile.open(outputFileFullPath);
 
-    outputFile << "RERULTS" << CSV_DELIM;
+    outputFile << "RESULTS" << CSV_DELIM;
     for (const auto &travelPath : allTravelsNames)
     {
         outputFile << travelPath << CSV_DELIM;
@@ -446,7 +446,7 @@ void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
 #endif
 
     // get algorithm and travel names
-    const string algoName = std::get<1>(algoFactoryNamePair);
+    const string &algoName = std::get<1>(algoFactoryNamePair);
     const string travelName = getPathFileName(travelDirPath);
 
     // get the error directory and file
@@ -741,7 +741,7 @@ bool SimulationRun::validateInstructionLine(const vector<string> &instructionLin
     unsigned xCord = stringToUInt(instructionLine[2]);
     unsigned yCord = stringToUInt(instructionLine[3]);
     unsigned xL, yL;
-    XYCord xyCord_L;
+    XYCord xyCord_L{};
 
     XYCord xyCord = {xCord, yCord};
     switch (cmd)
@@ -1001,6 +1001,7 @@ void SimulationWrapper::run(const string &travelsRootDir, const string &outputDi
             string algoName, travelName;
             int numOfOperations;
             std::tie(algoName, travelName, numOfOperations) = scoreResTuple;
+
             updateResults(algoName, travelName, numOfOperations);
         }
 
@@ -1070,7 +1071,7 @@ void SimulationWrapper::writeSimulationOutput(const std::string &outputFilePath)
     std::ofstream outputFile;
     outputFile.open(outputFileFullPath);
 
-    outputFile << "RERULTS" << CSV_DELIM;
+    outputFile << "RESULTS" << CSV_DELIM;
     for (const auto &travelPath : allTravelsNames)
     {
         outputFile << travelPath << CSV_DELIM;

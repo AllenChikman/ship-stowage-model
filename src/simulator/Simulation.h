@@ -29,6 +29,7 @@ struct RunResults
 
 class SimulationWrapper
 {
+    void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
 public:
     std::vector<std::pair<AlgorithmFactory, std::string>> loadedAlgorithmFactories;
     std::set<std::string> allTravelsNames;
@@ -39,8 +40,6 @@ public:
     void run(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads);
 
     void writeSimulationOutput(const std::string &outputFilePath);
-
-    void getSortedResultVec(std::vector<std::tuple<std::string, int, int>> &algoScore);
 
     void updateResults(const std::string &algoName, const std::string &travelName, int numOfOperations);
 
