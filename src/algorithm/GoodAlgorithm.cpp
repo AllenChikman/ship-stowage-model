@@ -468,23 +468,31 @@ int GoodAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 int GoodAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
                                             const std::string &outputFilePath)
 {
+    // clear all error bits
     validator.clear();
     std::ofstream outputFile(outputFilePath);
 
     const bool cargoFileExists = popRouteFileSet(inputFilePath);
     vector<Container> portContainers;
+
+    // if cargo files exists we:
+    // 1) validate if it the last port and not empty
+    // 2) parse the containers to vector
     if (cargoFileExists)
     {
         validator.validateContainerAtLastPort(inputFilePath, travelRouteStack);
         const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
         const auto isFatal = (errorCode & Errors::containerFileCannotBeRead) != 0;
-        if (isFatal) { validator.getErrorBits(); }
+        if (isFatal) { return  validator.getErrorBits(); }
     }
 
+    // validate if there are duplicate container Ids on port, and if so clear the redundant containers and reject them
     if (!validator.validateDuplicateIDOnPort(portContainers))
     {
         clearDuplicatedContainers(portContainers, outputFile);
     }
+
+    // validate if there are duplicate Ids on the ship, and if so clear the redundant containers and reject them
     for (auto &container : portContainers)
     {
         string containerID = container.getID();
@@ -495,6 +503,14 @@ int GoodAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
         }
     }
 
+
+    // Need to reject on ship full
+
+    //TODO
+
+    // Validations are over
+
+    // Normal flow starts
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     vector<Container> containersToLoad;
     vector<Container> containersToUnload;

@@ -502,7 +502,7 @@ bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRout
         const vector<SeaPortCode> &travelRouteStack)
 {
     const bool isLastPort = travelRouteStack.size() == 1;
-    if(isLastPort && !isEmpty(shipRouteFilePath))
+    if(isLastPort && !isFileEmpty(shipRouteFilePath))
     {
         errorHandle.reportError(Errors::lastPortHasContainersWaiting);
         return false;
