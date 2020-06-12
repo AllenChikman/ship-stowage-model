@@ -98,9 +98,8 @@ private:
 
     void initSimulationTravelState(const std::string &travelDir);
 
-    int
-    performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
-                                            const SeaPortCode &curPort);
+    int performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+                                                    const SeaPortCode &curPort, const vector<SeaPortCode> &travelRouteStack);
 
 
     bool validateUnload(const std::string &id, XYCord xyCord, const SeaPortCode &curPort,

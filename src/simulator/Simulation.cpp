@@ -492,7 +492,7 @@ void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
     createDirIfNotExists(newOutputDir);
 
 
-
+    vector<SeaPortCode> travelRouteStack = vector<SeaPortCode>(shipRoute.rbegin(), shipRoute.rend());
     // traverse each port
     for (const SeaPortCode &port : shipRoute)
     {
@@ -518,10 +518,14 @@ void SimulationRun::runAlgorithmTravelPair(const string &travelDirPath,
         handleAlgorithmReturnCode(algorithmReturnCode, currInputPath, errorFile);
 
         // Go through the instruction output of the algorithm and approve every move
-        const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port);
+        const int numOfOperations = performAndValidateAlgorithmInstructions(currInputPath, currOutputPath, port,
+                                                                            travelRouteStack);
 
         // update results
         pairResult.scoreResults.emplace_back(algoName, travelName, numOfOperations);
+
+        // pop the current port from stack
+        travelRouteStack.pop_back();
     }
 
     validateAllCargoFilesWereUsed();
@@ -856,8 +860,8 @@ void createIDtoPortLinesMapping(const vector<vector<string>> &containersVecLines
 
 
 int
-SimulationRun::performAndValidateAlgorithmInstructions(const string &portFilePath, const string &instructionsFilePath,
-                                                       const SeaPortCode &curPort)
+SimulationRun::performAndValidateAlgorithmInstructions(const std::string &portFilePath, const std::string &instructionsFilePath,
+                                                       const SeaPortCode &curPort, const vector<SeaPortCode> &travelRouteStack)
 {
 /* The simulator will check the following
  * legal output format - in advance
@@ -871,6 +875,7 @@ SimulationRun::performAndValidateAlgorithmInstructions(const string &portFilePat
     (void) curPort;
 
     // TODO: check that every line in the file was rejected ignored or perforemd
+
 
     // read output lines to vector
     vector<vector<string>> vecLinesInstructions;
@@ -903,39 +908,13 @@ SimulationRun::performAndValidateAlgorithmInstructions(const string &portFilePat
 
     }
 
+
+
+
     return instructionCounter;
 }
 
 
-/*
-void SimulationRun::runAlgorithmsOnTravels(const string &travelsRootDir,
-                                           const string &outputDirPath,  unsigned numOfThreads)
-{
-
-    createDirIfNotExists(outputDirPath);
-
-    vector<string> travelDirPaths;
-    putSubDirectoriesToVec(travelsRootDir, travelDirPaths);
-
-#ifndef LINUX_ENV
-    AlgorithmFactory mock;
-    loadedAlgorithmFactories.emplace_back(mock, "algo1");
-    //loadedAlgorithmFactories.emplace_back(mock, "algo2");
-
-#endif
-
-    for (auto &loadedAlgoFactoryNamePair :loadedAlgorithmFactories)
-    {
-        for (const auto &travelFolder :travelDirPaths)
-        {
-            runAlgorithmTravelPair(travelFolder, loadedAlgoFactoryNamePair, outputDirPath);
-            log("Travel Finished!!!");
-        }
-    }
-
-    writeSimulationOutput(outputDirPath);
-}
-*/
 
 
 /////// EX3 Part
