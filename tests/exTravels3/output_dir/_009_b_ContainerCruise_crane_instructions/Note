@@ -1,0 +1,5 @@
+lines in ILHFA_1.crane_instructions may be switched, i.e:
+L,ITKU0000019,2,0,0
+R,ITKU0000018,-1,-1,-1
+
+May also use other Reject formats, see: https://moodle.tau.ac.il/mod/forum/discuss.php?d=101604&parent=142383

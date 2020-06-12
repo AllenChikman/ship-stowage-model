@@ -1,0 +1,5 @@
+#If output_dir under simulator and more_travels in ../ you should be able to run your simulator 
+./simulator -output output_dir/ -algorithm_path ../algorithm -travel_path ../more_travels/ -num_threads 4
+#Simulator arguments can be in any order, i.e:
+#./simulator -num_threads 4 -travel_path ../more_travels -algorithm_path ../algorithm/ -output output_dir
+#* The omitted / after folder is intentional
