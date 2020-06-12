@@ -54,7 +54,7 @@ string getPathFileName(const string &fullPath, bool removeExtention = false);
 
 void createEmptyFile(const string &fullPath);
 
-bool isEmpty(const string &fullPath);
+bool isFileEmpty(const string &fullPath);
 
 #endif //SHIP_STOWAGE_MODEL_UTILS_H
 

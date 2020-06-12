@@ -256,7 +256,7 @@ void putSubDirectoriesToVec(const string &curPath, vector<string> &dirVec)
     }
 }
 
-bool isEmpty(const string &fullPath)
+bool isFileEmpty(const string &fullPath)
 {
     std::ifstream file(fullPath);
     return file.peek() == std::ifstream::traits_type::eof();
