@@ -6,18 +6,6 @@
 #include "GoodAlgorithm.h"
 #include "../common/Utils.h"
 
-
-// Stub implementation for isBalanced - always approved
-
-bool isBalanced(const std::shared_ptr<ShipPlan> &shipPlan, char op, const Container &container, XYCord cord = {0, 0})
-{
-    WeightBalanceCalculator::BalanceStatus status = shipPlan->getBalanceCalculator().tryOperation(op,
-                                                                                                  container.getWeight(),
-                                                                                                  cord.x, cord.y);
-    return status == WeightBalanceCalculator::BalanceStatus::APPROVED;
-}
-
-
 // Dumping to instruction File
 
 char getCraneCmdChar(Crane::Command cmd)
@@ -39,6 +27,22 @@ char getCraneCmdChar(Crane::Command cmd)
 
 }
 
+void dumpMoveInstruction(std::ofstream &outputStream, const Container &container,
+                         const XYCord &fromXYCord, int fromFloorIdx,
+                         const XYCord &toXYCord, int toFloorIdx)
+{
+    auto id = container.getID();
+    char op = getCraneCmdChar(Crane::Command::MOVE);
+    outputStream << op << CSV_DELIM
+                 << id << CSV_DELIM
+                 << fromFloorIdx << CSV_DELIM
+                 << fromXYCord.x << CSV_DELIM
+                 << fromXYCord.y << CSV_DELIM
+                 << toFloorIdx << CSV_DELIM
+                 << toXYCord.x << CSV_DELIM
+                 << toXYCord.y << std::endl;
+}
+
 void dumpInstruction(std::ofstream &outputStream, const Container &container, const Crane::Command &cmd,
                      const XYCord &xyCord, int floorIdx)
 {
@@ -53,14 +57,14 @@ void dumpInstruction(std::ofstream &outputStream, const Container &container, co
                  << y << std::endl;
 }
 
-void dumpInstruction(std::ofstream &outputStream, const string &containerId)
+void dumpRejectInstruction(std::ofstream &outputStream, const string &containerId)
 {
     //only rejected containers
 
     int x = -1;
     int y = -1;
     int floorIdx = -1;
-    auto reject = " R ";
+    auto reject = "R";
     outputStream << reject << CSV_DELIM
                  << containerId << CSV_DELIM
                  << floorIdx << CSV_DELIM
@@ -68,196 +72,6 @@ void dumpInstruction(std::ofstream &outputStream, const string &containerId)
                  << y << std::endl;
 }
 
-
-/*
- * Unloading steps
- * For each XYCord we apply 3 steps
- *
- * */
-
-// Step 1 - Finding the lowest position of the container to be unloaded
-
-unsigned findMinContainerPosToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
-                                     unsigned numOfFloors, XYCord xyCord)
-{
-
-    unsigned z = 0;
-    while (z < numOfFloors && cargoMat[xyCord][z])
-    {
-        const Container &curContainer = *cargoMat[xyCord][z];
-        if (curContainer.isBelongToPort(curSeaPortCode)) { return z; }
-        z++;
-    }
-    return numOfFloors;
-}
-
-// Step 2 - Before we perform the unloading we mark the ships to be reloaded back and put them in a vector
-
-void fillVecToLoadReload(vector<Container> &containersToUnload,
-                         vector<Container> &containersToReload,
-                         CargoMat &cargoMat,
-                         const SeaPortCode &port,
-                         const unsigned numOfFloors, XYCord xyCord, unsigned z)
-{
-    while (z < numOfFloors && cargoMat[xyCord][z])
-    {
-        Container curContainer = *cargoMat[xyCord][z];
-        if (!curContainer.isBelongToPort(port))
-        {
-            containersToReload.push_back(curContainer);
-        }
-        containersToUnload.insert(containersToUnload.begin(), *cargoMat[xyCord][z]);
-        z++;
-    }
-}
-
-
-
-// Step 3 - We Perform the unloading of the containers
-void GoodAlgorithm::Unloading(vector<Container> &containersToUnload,
-                               XYCord xyCord, std::ofstream &outputFile)
-{
-    bool shipUnbalanced = false;
-    Crane::Command cmd;
-
-    for (const auto &container: containersToUnload)
-    {
-        if (!isBalanced(shipPlan, 'U', container, xyCord))
-        {
-            shipUnbalanced = true;
-        }
-// Checking if the operation should be rejected
-        if (shipUnbalanced)
-        {
-            cmd = Crane::Command::REJECT;
-        }
-        else
-        {
-            cmd = Crane::Command::UNLOAD;
-            Crane::performUnload(shipPlan, xyCord);
-        }
-        auto floorIdx =
-                shipPlan->getUpperCellsMat()[xyCord] + shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(xyCord);
-        dumpInstruction(outputFile, container, cmd, xyCord, floorIdx);
-    }
-}
-
-
-// Step 4 - We Perform the Loading To the containers
-
-XYCord findFreeXYCordsOnShipToLoad(const std::shared_ptr<ShipPlan> &shipPlan)
-{
-    /*
-    * this is the function finding the free cell of Algorithm1
-    * */
-
-    const auto shipXYCords = shipPlan->getShipXYCordsVec();
-    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
-
-    unsigned numOfFloors;
-
-    for (XYCord xyCord: shipXYCords)
-    {
-        numOfFloors = shipPlan->getNumOfFloors(xyCord);
-        if (upperCellsMat[xyCord] < numOfFloors)
-        {
-            return xyCord;
-        }
-    }
-
-    //Unreachable code
-    return XYCord{0, 0};
-}
-
-XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
-{
-    /*
-     * this is the function finding the free cell of Algorithm2
-     * */
-
-    const auto shipXYCords = shipPlan->getShipXYCordsVec();
-    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
-
-    XYCord bestCord{0, 0};
-    unsigned shipMaxHeight = shipPlan->getMaxHeight();
-    unsigned lowestHeight = shipMaxHeight;
-    unsigned availableFloor;
-
-    for (XYCord xyCord: shipXYCords)
-    {
-        availableFloor = upperCellsMat[xyCord];
-        const auto cordNumOfFloors = shipPlan->getNumOfFloors(xyCord);
-        const auto cordFreeFloors = shipMaxHeight - cordNumOfFloors + availableFloor;
-        if (cordFreeFloors < lowestHeight)
-        {
-            lowestHeight = cordFreeFloors;
-            bestCord = xyCord;
-        }
-    }
-
-    return bestCord;
-
-
-}
-
-XYCord GoodAlgorithm::chooseXYCordByAlgorithmType(const std::shared_ptr<ShipPlan> &shipPlan)
-{
-    return (useSecondAlgorithm) ?
-           findLowestFreeXYCord(shipPlan) :
-           findFreeXYCordsOnShipToLoad(shipPlan);
-}
-
-
-void sortPortContainersByShipRoute(vector<Container> &portContainers, const vector<SeaPortCode> &travelRouteStack,
-                                   vector<Container> &containersToLoad)
-{
-    unsigned cur;
-    size_t routeSize = travelRouteStack.size();
-    for (size_t portPos = routeSize; portPos > 0; portPos--)
-    {
-        cur = 0;
-        auto &port = travelRouteStack[portPos - 1];
-        size_t containerSize = portContainers.size();
-        for (size_t i = 0; i < containerSize && !portContainers.empty(); i++)
-        {
-            if (portContainers[cur].getDestinationPort().toStr() == port.toStr())
-            {
-                containersToLoad.push_back(portContainers[cur]);
-                portContainers.erase(portContainers.begin() + cur);
-            }
-            else
-            {
-                cur++;
-            }
-        }
-
-    }
-}
-
-void GoodAlgorithm::Loading(vector<Container> &containersToLoad,
-                             std::ofstream &outputFile)
-{
-    for (const auto &curContainerToLoad : containersToLoad)
-    {
-        bool shipUnbalanced;
-        Crane::Command cmd;
-        XYCord xyCord = {0, 0};
-        shipUnbalanced = !isBalanced(shipPlan, 'L', curContainerToLoad); //optional
-        if (validator.validateShipFull(shipPlan) || shipUnbalanced)
-        {
-            cmd = Crane::Command::REJECT;
-        }
-        else
-        {
-            cmd = Crane::Command::LOAD;
-            xyCord = chooseXYCordByAlgorithmType(shipPlan);
-            Crane::performLoad(shipPlan, curContainerToLoad, xyCord);
-        }
-        const auto floorIdx =
-                shipPlan->getUpperCellsMat()[xyCord] + shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(xyCord);
-        dumpInstruction(outputFile, curContainerToLoad, cmd, xyCord, floorIdx - 1);
-    }
-}
 
 //// Ex2
 
@@ -301,10 +115,103 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
     }
 }
 
+
+//// Ex3
+
+// helper functions
+
+int getPortDistance(const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &destPort)
+{
+    int i = 0;
+    for (auto const &port : travelRouteStack)
+    {
+        if (port.toStr() == destPort.toStr())
+        {
+            return i;
+        }
+        i++;
+    }
+
+    return -1; //unreachable code
+}
+
+
+unsigned getNumberOfShipFreeCells(const std::shared_ptr<ShipPlan> &shipPlan)
+{
+    unsigned sum = 0;
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+
+    for (const XYCord cord : shipXYCordVec)
+    {
+        sum += shipPlan->getNumOfFloors(cord) - upperCellsMat[cord];
+    }
+
+    return sum;
+}
+
+
+unsigned getNumberOfContainersToBeUnloaded(const std::shared_ptr<ShipPlan> &shipPlan, const SeaPortCode &destPort)
+{
+    unsigned res = 0;
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+    const CargoMat & cargoMat = shipPlan->getCargo();
+
+    for (const XYCord cord : shipXYCordVec)
+    {
+        for (unsigned floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
+        {
+            const Container &curContainer = *cargoMat[cord][floorIdx];
+            if(curContainer.getDestinationPort().toStr() == destPort.toStr())
+            {
+                res ++;
+            }
+        }
+    }
+
+    return res;
+}
+
+
+void sortContainersVec(const vector<SeaPortCode> &travelRouteStack,
+                       vector<Container> &portContainers, bool reverse = false)
+{
+    // sort the vector
+    std::sort(portContainers.begin(), portContainers.end(),
+              [&travelRouteStack](Container &left, Container &right)
+              {
+                  return getPortDistance(travelRouteStack, left.getDestinationPort()) <
+                         getPortDistance(travelRouteStack, right.getDestinationPort());
+              });
+
+    if (reverse)
+    {
+        std::reverse(portContainers.begin(), portContainers.end());
+    }
+
+}
+
+
+unsigned findLowestContainerToUnload(const CargoMat &cargoMat, const SeaPortCode &curSeaPortCode,
+                                     unsigned numOfFloors, XYCord xyCord)
+{
+
+    unsigned z = 0;
+    while (z < numOfFloors && cargoMat[xyCord][z])
+    {
+        const Container &curContainer = *cargoMat[xyCord][z];
+        if (curContainer.isBelongToPort(curSeaPortCode)) { return z; }
+        z++;
+    }
+    return numOfFloors;
+}
+
+
 // private header functions
 
 int GoodAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, const string &inputPath,
-                                              std::ofstream &outputStream)
+                                             std::ofstream &outputStream)
 {
     vector<vector<string>> vecLines;
     if (!readToVecLine(inputPath, vecLines))
@@ -320,7 +227,7 @@ int GoodAlgorithm::parseInputToContainersVec(vector<Container> &ContainersVec, c
         }
         else if ((validator.getErrorBits() & Errors::ContainerIDCannotBeRead) == 0)
         {
-            dumpInstruction(outputStream, lineVec[0]);
+            dumpRejectInstruction(outputStream, lineVec[0]);
         }
     }
 
@@ -365,6 +272,113 @@ void GoodAlgorithm::updateRouteFileSet(const string &curTravelFolder)
     {
         cargoFilesSet.insert(path);
     }
+}
+
+void GoodAlgorithm::cleanAndRejectFarContainers(std::ofstream &outputFile, vector<Container> &portContainers)
+{
+    const int numOfFreeCells = static_cast<int>(getNumberOfShipFreeCells(shipPlan));
+    const int numberOfContainersToUnload = static_cast<int>(getNumberOfContainersToBeUnloaded(shipPlan,
+                                                                                              travelRouteStack.back()));
+    const int numberOfContainersToLoad = static_cast<int>(portContainers.size());
+    const int numOfElementsToRemove = numberOfContainersToLoad - (numOfFreeCells + numberOfContainersToUnload);
+
+    if (numOfElementsToRemove <= 0) { return; }
+
+    sortContainersVec(travelRouteStack, portContainers);
+    for (int i = 0; i < numOfElementsToRemove; i++)
+    {
+        auto curContainer = portContainers.back();
+        dumpRejectInstruction(outputFile, curContainer.getID());
+        portContainers.pop_back();
+    }
+}
+
+
+bool GoodAlgorithm::getBestCordForLoading(XYCord &currCord, bool excludeCurCord)
+{
+    SeaPortCode curSeaPortCode = travelRouteStack.back();
+    CargoMat &cargoMat = shipPlan->getCargo();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+
+    XYCord bestCord{};
+    int bestMinimalDistance = -1;
+
+    for (const XYCord cord : shipXYCordVec)
+    {
+        if (excludeCurCord && cord.x == currCord.x && cord.y == currCord.y) { continue; } // not the original cord
+
+        if (upperCellsMat[cord] == shipPlan->getNumOfFloors(cord)) { continue; } // if there is place in this cord
+
+        int cordMinimalDistance = static_cast<int>(travelRouteStack.size() + 1);
+        for (int floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
+        {
+            Container &curContainer = *cargoMat[cord][floorIdx];
+            int containerDistance = getPortDistance(travelRouteStack, curContainer.getDestinationPort());
+            if (containerDistance < cordMinimalDistance)
+            {
+                cordMinimalDistance = containerDistance;
+            }
+
+        }
+
+        if (cordMinimalDistance > bestMinimalDistance)
+        {
+            bestCord = cord;
+            bestMinimalDistance = cordMinimalDistance;
+        }
+
+    }
+
+    currCord = bestCord;
+    return bestMinimalDistance == -1;
+}
+
+
+bool GoodAlgorithm::performInstructionsValidations(const std::string &inputFilePath,
+                                                   std::ofstream &outputFile, vector<Container> &portContainers)
+{
+    // if cargo files exists we:
+    // 1) validate if it the last port and not empty
+    // 2) parse the containers to vector
+
+    const bool cargoFileExists = popRouteFileSet(inputFilePath);
+    if (cargoFileExists)
+    {
+        validator.validateContainerAtLastPort(inputFilePath, travelRouteStack);
+        const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
+        const auto isFatal = (errorCode & Errors::containerFileCannotBeRead) != 0;
+        if (isFatal) { return false; }
+    }
+
+    // validate if there are duplicate container Ids on port, and if so clear the redundant containers and reject them
+    if (!validator.validateDuplicateIDOnPort(portContainers))
+    {
+        clearDuplicatedContainers(portContainers, outputFile);
+    }
+
+    // validate if there are duplicate Ids on the ship, and if so clear the redundant containers and reject them
+    for (auto &container : portContainers)
+    {
+        string containerID = container.getID();
+        if (!validator.validateDuplicateIDOnShip(containerID, shipPlan))
+        {
+            clearDuplicatedContainers(portContainers, shipPlan);
+            break;
+        }
+    }
+
+
+    // validate ship full (based on number of free cells vs containersVec size)
+    unsigned numberOfFreeCells = getNumberOfShipFreeCells(shipPlan);
+    const auto curDestPort = travelRouteStack.back();
+    unsigned numberOfContainersToBeUnloaded = getNumberOfContainersToBeUnloaded(shipPlan, curDestPort);
+
+
+    validator.validateShipFull(numberOfFreeCells, numberOfContainersToBeUnloaded, portContainers);
+    cleanAndRejectFarContainers(outputFile, portContainers);
+
+    return true;
 }
 
 
@@ -465,82 +479,115 @@ int GoodAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
     return 0;
 }
 
+
 int GoodAlgorithm::getInstructionsForCargo(const std::string &inputFilePath,
-                                            const std::string &outputFilePath)
+                                           const std::string &outputFilePath)
 {
-    // clear all error bits
     validator.clear();
     std::ofstream outputFile(outputFilePath);
-
-    const bool cargoFileExists = popRouteFileSet(inputFilePath);
-    vector<Container> portContainers;
-
-    // if cargo files exists we:
-    // 1) validate if it the last port and not empty
-    // 2) parse the containers to vector
-    if (cargoFileExists)
-    {
-        validator.validateContainerAtLastPort(inputFilePath, travelRouteStack);
-        const auto errorCode = parseInputToContainersVec(portContainers, inputFilePath, outputFile);
-        const auto isFatal = (errorCode & Errors::containerFileCannotBeRead) != 0;
-        if (isFatal) { return  validator.getErrorBits(); }
-    }
-
-    // validate if there are duplicate container Ids on port, and if so clear the redundant containers and reject them
-    if (!validator.validateDuplicateIDOnPort(portContainers))
-    {
-        clearDuplicatedContainers(portContainers, outputFile);
-    }
-
-    // validate if there are duplicate Ids on the ship, and if so clear the redundant containers and reject them
-    for (auto &container : portContainers)
-    {
-        string containerID = container.getID();
-        if (!validator.validateDuplicateIDOnShip(containerID, shipPlan))
-        {
-            clearDuplicatedContainers(portContainers, shipPlan);
-            break;
-        }
-    }
-
-
-    // Need to reject on ship full
-
-    //TODO
-
-    // Validations are over
-
-    // Normal flow starts
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     vector<Container> containersToLoad;
-    vector<Container> containersToUnload;
 
-    CargoMat &cargoMat = shipPlan->getCargo();
-    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+    // perform all instruction validations ahead
+    bool isFatalError = !performInstructionsValidations(inputFilePath, outputFile, containersToLoad);
+    if (isFatalError) { return validator.getErrorBits(); }
 
-    unsigned z = 0;
-    for (const XYCord cord : shipXYCordVec)
-    {
-        // 1st step: Finding minimum container position on ship that needs to be unloaded
-        unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
-        z = findMinContainerPosToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
+    // Unloading
+    unloadAndMoveContainers(outputFile, containersToLoad);
 
-        // 2nd step: Preparing all containers above to be unloaded and marking the ones to be reloaded
-        fillVecToLoadReload(containersToUnload, containersToLoad, cargoMat,
-                            curSeaPortCode, numOfFloors, cord, z);
+    // Loading
+    loadContainers(outputFile, containersToLoad);
 
-        // 3rd step: Checking whether the unload operations can be executed, and if so - executing them
-        Unloading(containersToUnload, cord, outputFile);
-        containersToUnload.clear();
-    }
-
-    sortPortContainersByShipRoute(portContainers, travelRouteStack, containersToLoad);
-
-    // 4th step: Load everything to the ship
-    Loading(containersToLoad, outputFile);
     travelRouteStack.pop_back();
-
     outputFile.close();
     return validator.getErrorBits();
 
+}
+
+
+/// unloading
+
+void GoodAlgorithm::unloadAndMoveContainers(std::ofstream &outputFile, vector<Container> &containerToLoad)
+{
+    SeaPortCode curSeaPortCode = travelRouteStack.back();
+    CargoMat &cargoMat = shipPlan->getCargo();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+
+    for (const XYCord cord : shipXYCordVec)
+    {
+        unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
+        unsigned minFloorToUnload = findLowestContainerToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
+        unsigned upperContainerHeight = upperCellsMat[cord] - 1; // we assume we have at least 1 container
+
+        if (minFloorToUnload == numOfFloors) { continue; } // No containers to unload from this cord
+
+        while (minFloorToUnload <= upperContainerHeight)
+        {
+
+            Container &upperContainer = *cargoMat[cord][upperContainerHeight];
+            int floorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cord);
+            XYCord newMoveCord = cord;
+
+            // if container belongs to this port we simply unload it
+            if (upperContainer.getDestinationPort().toStr() == curSeaPortCode.toStr())
+            {
+                dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord,
+                                floorHeightOffset + upperContainerHeight);
+
+                Crane::performUnload(shipPlan, cord);
+            }
+
+                // if we find a place to move the container we move it there
+            else if (getBestCordForLoading(newMoveCord, true))
+            {
+                int newFloorHeight = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(newMoveCord);
+                int newCordContainerIdx = newFloorHeight + upperCellsMat[cord] - 1;
+
+                dumpMoveInstruction(outputFile, upperContainer,
+                                    cord, floorHeightOffset + upperContainerHeight,
+                                    newMoveCord, newCordContainerIdx);
+
+                Crane::performMove(shipPlan, cord, newMoveCord);
+
+            }
+
+                // else, no place to move the container. we have to unload it, and remember to reload it later
+            else
+            {
+                dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord,
+                                floorHeightOffset + upperContainerHeight);
+                Crane::performUnload(shipPlan, cord);
+                containerToLoad.push_back(upperContainer);
+
+            }
+
+            if (upperContainerHeight == 0)
+            {
+                break; // deal with negative unsigned number problems
+            }
+            upperContainerHeight--;
+        }
+
+    }
+
+}
+
+
+/// loading
+
+void GoodAlgorithm::loadContainers(std::ofstream &outputFile, vector<Container> &containerToLoad)
+{
+    sortContainersVec(travelRouteStack, containerToLoad, true);
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    XYCord cordToLoad{};
+
+    for (auto const &container : containerToLoad)
+    {
+        getBestCordForLoading(cordToLoad);
+        int floorHeight = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cordToLoad);
+        dumpInstruction(outputFile, container, Crane::LOAD, cordToLoad, floorHeight + upperCellsMat[cordToLoad]);
+        Crane::performLoad(shipPlan, container, cordToLoad);
+
+    }
 }

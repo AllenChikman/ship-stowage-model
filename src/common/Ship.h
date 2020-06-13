@@ -17,12 +17,6 @@ struct XYCord
     unsigned y;
 };
 
-struct XYZCord
-{
-    unsigned x;
-    unsigned y;
-    unsigned z;
-};
 
 struct UIntMat
 {
@@ -59,9 +53,6 @@ struct CargoMat
 
     const std::vector<std::optional<Container>> &operator[](XYCord cord) const { return tripMat[cord.x][cord.y]; }
 
-    std::optional<Container> &operator[](XYZCord cord) { return tripMat[cord.x][cord.y][cord.z]; }
-
-    const std::optional<Container> &operator[](XYZCord cord) const { return tripMat[cord.x][cord.y][cord.z]; }
 
 };
 
@@ -74,7 +65,6 @@ private:
     const unsigned maxHeight;   //z
 
     std::vector<XYCord> shipXYCords;
-    //std::vector<XYCord> shipXYZCords;
 
     CargoMat cargo;
     UIntMat upperCellsMat;
@@ -107,10 +97,6 @@ public:
     }
 
     ~ShipPlan() = default;
-
-    unsigned getWidth() { return width; }
-
-    unsigned getLength() { return length; }
 
     unsigned getMaxHeight() { return maxHeight; }
 

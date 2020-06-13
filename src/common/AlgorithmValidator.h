@@ -70,6 +70,9 @@ public:
 
     bool validateShipFull(const std::shared_ptr<ShipPlan> &shipPlan);
 
+    bool validateShipFull(unsigned numberOfFreeCells, unsigned numberOfContainersToBeUnloaded,
+            const vector<Container> &portContainers);
+
     bool validateDuplicateXYCordsWithDifferentData(const std::vector<std::vector<std::string>> &vecLines);
 
     void filterInvalidVecLines(const vector<vector<string>> &vecLines, vector<vector<string>> &validVecLines);

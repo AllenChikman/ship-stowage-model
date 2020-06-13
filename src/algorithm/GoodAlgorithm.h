@@ -37,11 +37,17 @@ private:
     int parseInputToContainersVec(std::vector<Container> &ContainersVec, const std::string &inputPath,
                                   std::ofstream &outputPath);
 
-    void Unloading(std::vector<Container> &containersToUnload,
-                   XYCord xyCord, std::ofstream &outputFile);
+    bool performInstructionsValidations(const std::string &inputFilePath,
+                                        std::ofstream &outputFile, std::vector<Container> &portContainers);
 
-    void Loading(std::vector<Container> &containersToLoad,
-                 std::ofstream &outputFile);
+    void unloadAndMoveContainers(std::ofstream &outputFile, std::vector<Container> &containerToLoad);
+
+    void loadContainers(std::ofstream &outputFile, std::vector<Container> &containerToLoad);
+
+    bool getBestCordForLoading(XYCord &currCord, bool excludeCurCord = false);
+
+    void cleanAndRejectFarContainers(std::ofstream &outputFile, vector<Container> &portContainers);
+
 
 public:
 
@@ -57,6 +63,7 @@ public:
 
     int getInstructionsForCargo(const std::string &inputFilePath,
                                 const std::string &outputFilePath) override;
+
 
 };
 

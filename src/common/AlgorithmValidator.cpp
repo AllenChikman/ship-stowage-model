@@ -170,7 +170,7 @@ bool AlgorithmValidator::validateDuplicateXYCordsWithDifferentData(const vector<
                 if (userIsSimulator)
                 {
                     writeToErrorFile(" Ship plan: travel error - duplicate x,y appearance with different data.",
-                        MessageSeverity::ERROR, errorFilePath);
+                                     MessageSeverity::ERROR, errorFilePath);
                 }
                 return false;
             }
@@ -499,10 +499,10 @@ bool AlgorithmValidator::validateReadingContainingFileAltogether(const string &c
 }
 
 bool AlgorithmValidator::validateContainerAtLastPort(const std::string &shipRouteFilePath,
-        const vector<SeaPortCode> &travelRouteStack)
+                                                     const vector<SeaPortCode> &travelRouteStack)
 {
     const bool isLastPort = travelRouteStack.size() == 1;
-    if(isLastPort && !isFileEmpty(shipRouteFilePath))
+    if (isLastPort && !isFileEmpty(shipRouteFilePath))
     {
         errorHandle.reportError(Errors::lastPortHasContainersWaiting);
         return false;
@@ -528,6 +528,25 @@ bool AlgorithmValidator::validateShipFull(const std::shared_ptr<ShipPlan> &shipP
     }
     errorHandle.reportError(Errors::containersExceedShipCapacity);
     return true;
+}
+
+
+bool AlgorithmValidator::validateShipFull(unsigned numberOfFreeCells,unsigned numberOfContainersToBeUnloaded,
+        const vector<Container> &portContainers)
+{
+    if (numberOfFreeCells + numberOfContainersToBeUnloaded >= portContainers.size())
+    {
+        return true;
+    }
+
+    std::ostringstream msg;
+    msg << "Containers at port: total containers amount exceeds ship capacity.";
+    if (userIsSimulator)
+    {
+        writeToErrorFile(msg.str(), MessageSeverity::Reject, errorFilePath);
+    }
+    errorHandle.reportError(Errors::containersExceedShipCapacity);
+    return false;
 }
 
 
