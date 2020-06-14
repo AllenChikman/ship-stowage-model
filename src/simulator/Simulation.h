@@ -124,10 +124,6 @@ public:
 
     int readShipRoute(const std::string &path);
 
-    //void loadAlgorithms(const string &algorithmsRootDit, const std::string &outputDir);
-
-    //void runAlgorithmsOnTravels(const string &travelsRootDir, const string &outputDirPath, unsigned numOfThreads);
-
     void runAlgorithmTravelPair(const string &travelDirPath,
                                 const std::pair<AlgorithmFactory, string> &algoFactoryNamePair,
                                 const string &outputDirPath, RunResults &pairResult);
