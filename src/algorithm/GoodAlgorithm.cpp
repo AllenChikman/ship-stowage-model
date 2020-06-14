@@ -123,7 +123,9 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
 int getPortDistance(const vector<SeaPortCode> &travelRouteStack, const SeaPortCode &destPort)
 {
     int i = 0;
-    for (auto const &port : travelRouteStack)
+
+    const vector<SeaPortCode> &routeVec = vector<SeaPortCode>(travelRouteStack.rbegin(), travelRouteStack.rend());
+    for (auto const &port : routeVec)
     {
         if (port.toStr() == destPort.toStr())
         {
@@ -331,7 +333,7 @@ bool GoodAlgorithm::getBestCordForLoading(XYCord &currCord, bool excludeCurCord)
     }
 
     currCord = bestCord;
-    return bestMinimalDistance == -1;
+    return bestMinimalDistance != -1;
 }
 
 
