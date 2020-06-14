@@ -1,0 +1,1 @@
+#simple test to check loading, unloading and reject of non ISO 6346
