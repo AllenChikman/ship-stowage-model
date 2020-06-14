@@ -158,16 +158,16 @@ unsigned getNumberOfContainersToBeUnloaded(const std::shared_ptr<ShipPlan> &ship
     unsigned res = 0;
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
     const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
-    const CargoMat & cargoMat = shipPlan->getCargo();
+    const CargoMat &cargoMat = shipPlan->getCargo();
 
     for (const XYCord cord : shipXYCordVec)
     {
         for (unsigned floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
         {
             const Container &curContainer = *cargoMat[cord][floorIdx];
-            if(curContainer.getDestinationPort().toStr() == destPort.toStr())
+            if (curContainer.getDestinationPort().toStr() == destPort.toStr())
             {
-                res ++;
+                res++;
             }
         }
     }
@@ -209,6 +209,31 @@ unsigned findLowestContainerToUnload(const CargoMat &cargoMat, const SeaPortCode
     return numOfFloors;
 }
 
+
+XYCord findLowestFreeXYCord(const std::shared_ptr<ShipPlan> &shipPlan)
+{
+    /* this is the function finding the free cell of Algorithm2  */
+
+    const auto shipXYCords = shipPlan->getShipXYCordsVec();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+
+    XYCord bestCord{0, 0};
+    unsigned bestFreeFloors = 0;
+
+    for (XYCord xyCord: shipXYCords)
+    {
+        const unsigned cordFreeFloors = shipPlan->getNumOfFloors(xyCord) - upperCellsMat[xyCord];
+        if (cordFreeFloors > bestFreeFloors)
+        {
+            bestFreeFloors = cordFreeFloors;
+            bestCord = xyCord;
+        }
+    }
+
+    return bestCord;
+
+
+}
 
 // private header functions
 
@@ -313,7 +338,7 @@ bool GoodAlgorithm::getBestCordForLoading(XYCord &currCord, bool excludeCurCord)
         if (upperCellsMat[cord] == shipPlan->getNumOfFloors(cord)) { continue; } // if there is place in this cord
 
         int cordMinimalDistance = static_cast<int>(travelRouteStack.size() + 1);
-        for (int floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
+        for (unsigned int floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
         {
             Container &curContainer = *cargoMat[cord][floorIdx];
             int containerDistance = getPortDistance(travelRouteStack, curContainer.getDestinationPort());
@@ -586,7 +611,14 @@ void GoodAlgorithm::loadContainers(std::ofstream &outputFile, vector<Container> 
 
     for (auto const &container : containerToLoad)
     {
-        getBestCordForLoading(cordToLoad);
+        if (useSecondAlgorithm)
+        {
+            cordToLoad = findLowestFreeXYCord(shipPlan);
+        }
+        else
+        {
+            getBestCordForLoading(cordToLoad);
+        }
         int floorHeight = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cordToLoad);
         dumpInstruction(outputFile, container, Crane::LOAD, cordToLoad, floorHeight + upperCellsMat[cordToLoad]);
         Crane::performLoad(shipPlan, container, cordToLoad);
