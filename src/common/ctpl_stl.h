@@ -17,8 +17,8 @@
 *********************************************************/
 
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wsign-conversion"
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wsign-conversion"
 #ifndef __ctpl_stl_thread_pool_H__
 #define __ctpl_stl_thread_pool_H__
 
@@ -301,4 +301,4 @@ private:
 }
 
 #endif // __ctpl_stl_thread_pool_H__
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop

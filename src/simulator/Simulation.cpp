@@ -873,6 +873,7 @@ SimulationRun::performAndValidateAlgorithmInstructions(const std::string &portFi
 
     (void) portFilePath;
     (void) curPort;
+    (void)travelRouteStack;
 
     // TODO: check that every line in the file was rejected ignored or perforemd
 
