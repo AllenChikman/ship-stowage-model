@@ -93,7 +93,7 @@ void clearDuplicatedContainers(vector<Container> &portContainers, std::ofstream 
     }
 }
 
-void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<ShipPlan> &shipPlan)
+void clearDuplicatedContainers(vector<Container> &containers, std::ofstream &outputFile , std::shared_ptr<ShipPlan> &shipPlan)
 {
     auto xyCords = shipPlan->getShipXYCordsVec();
     unsigned pos = 0;
@@ -106,6 +106,7 @@ void clearDuplicatedContainers(vector<Container> &containers, std::shared_ptr<Sh
             {
                 if (shipPlan->getCargo()[xyCord][floor]->getID() == containers[pos].getID())
                 {
+                    dumpInstruction(outputFile, containers[pos], Crane::Command::REJECT, XYCord{0, 0}, -1);
                     containers.erase(containers.begin() + pos);
                     continue;
                 }
@@ -390,7 +391,7 @@ bool GoodAlgorithm::performInstructionsValidations(const std::string &inputFileP
         string containerID = container.getID();
         if (!validator.validateDuplicateIDOnShip(containerID, shipPlan))
         {
-            clearDuplicatedContainers(portContainers, shipPlan);
+            clearDuplicatedContainers(portContainers, outputFile, shipPlan);
             break;
         }
     }
@@ -568,12 +569,11 @@ void GoodAlgorithm::unloadAndMoveContainers(std::ofstream &outputFile, vector<Co
                 // if we find a place to move the container we move it there
             else if (getBestCordForLoading(newMoveCord, true))
             {
-                int newFloorHeight = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(newMoveCord);
-                int newCordContainerIdx = newFloorHeight + upperCellsMat[cord] - 1;
+                int newFloorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(newMoveCord);
 
                 dumpMoveInstruction(outputFile, upperContainer,
                                     cord, floorHeightOffset + upperContainerHeight,
-                                    newMoveCord, newCordContainerIdx);
+                                    newMoveCord, newFloorHeightOffset + upperCellsMat[newMoveCord]);
 
                 Crane::performMove(shipPlan, cord, newMoveCord);
 
