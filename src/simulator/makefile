@@ -4,8 +4,8 @@ SIMULATOR_OBJS = $\
 main.o $\
 Simulation.o $\
 AlgorithmRegistration.o $\
+WeightBalanceCalculator.o $\
 AlgorithmRegistrar.o
-
 
 COMMON_OBJS = $\
 ../common/Port.o $\
@@ -13,11 +13,8 @@ COMMON_OBJS = $\
 ../common/Container.o $\
 ../common/AlgorithmValidator.o
 
-INTERFACE_OBJS = $\
-../interfaces/WeightBalanceCalculator.o $\
 
 OBJS = $(SIMULATOR_OBJS) $(COMMON_OBJS) $(INTERFACE_OBJS)
-
 
 
 EXEC = simulator

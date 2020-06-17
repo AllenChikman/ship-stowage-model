@@ -18,9 +18,6 @@ COMMON_OBJS = $\
 ../common/Container.o $\
 ../common/AlgorithmValidator.o
 
-INTERFACE_OBJS = $\
-../interfaces/WeightBalanceCalculator.o $\
-
 OBJS = $(ALGORITHM_OBJS) $(COMMON_OBJS) $(INTERFACE_OBJS)
 
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fvisibility=hidden -fvisibility-inlines-hidden -fPIC
