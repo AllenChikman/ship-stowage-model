@@ -1,6 +1,3 @@
-# Bonus
-For more Information please read the bonus.txt
-
 # Folder Hierarchy
 
 #### simulator/
