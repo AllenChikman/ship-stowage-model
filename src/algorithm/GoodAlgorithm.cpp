@@ -93,7 +93,8 @@ void clearDuplicatedContainers(vector<Container> &portContainers, std::ofstream 
     }
 }
 
-void clearDuplicatedContainers(vector<Container> &containers, std::ofstream &outputFile , std::shared_ptr<ShipPlan> &shipPlan)
+void
+clearDuplicatedContainers(vector<Container> &containers, std::ofstream &outputFile, std::shared_ptr<ShipPlan> &shipPlan)
 {
     auto xyCords = shipPlan->getShipXYCordsVec();
     unsigned pos = 0;
@@ -322,44 +323,95 @@ void GoodAlgorithm::cleanAndRejectFarContainers(std::ofstream &outputFile, vecto
 }
 
 
-bool GoodAlgorithm::getBestCordForLoading(XYCord &currCord, bool excludeCurCord)
+bool GoodAlgorithm::getBestCordForLoading(XYCord &cordToLoad, const Container &containerToLoad, bool excludeCurCord)
+{
+    SeaPortCode curSeaPortCode = travelRouteStack.back();
+    CargoMat &cargoMat = shipPlan->getCargo();
+    UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
+    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
+    const int containerToLoadDistance = getPortDistance(travelRouteStack, containerToLoad.getDestinationPort());
+
+    XYCord bestCord{};
+    int bestMinimalDistance = -1;
+    bool success = false;
+
+    for (const XYCord cord : shipXYCordVec)
+    {
+        if (excludeCurCord && cord.x == cordToLoad.x && cord.y == cordToLoad.y) { continue; } // not the original cord
+
+        if (upperCellsMat[cord] == shipPlan->getNumOfFloors(cord)) { continue; } // if there is place in this cord
+
+        int cordDistance;
+        if (upperCellsMat[cord] > 0)
+        {
+            Container &curContainer = *cargoMat[cord][0];
+            cordDistance = getPortDistance(travelRouteStack, curContainer.getDestinationPort());
+
+            if (cordDistance == containerToLoadDistance)
+            {
+                cordToLoad = cord;
+                return true;
+            }
+
+            else if (cordDistance > containerToLoadDistance)
+            {
+                cordDistance = static_cast<int>(10 * travelRouteStack.size() - cordDistance);
+            }
+
+
+        }
+        else
+        {
+            cordDistance = containerToLoadDistance;
+        }
+
+        if (cordDistance > bestMinimalDistance)
+        {
+            bestCord = cord;
+            bestMinimalDistance = cordDistance;
+            success = true;
+        }
+
+    }
+
+    cordToLoad = bestCord;
+    return success;
+}
+
+
+bool GoodAlgorithm::getBestCordForUnloading(XYCord &cordToUnload)
 {
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     CargoMat &cargoMat = shipPlan->getCargo();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
     const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
 
-    XYCord bestCord{};
-    int bestMinimalDistance = -1;
-
-    for (const XYCord cord : shipXYCordVec)
+    bool success = false;
+    unsigned minimalDepth = shipPlan->getMaxHeight() + 1;
+    for (XYCord cord : shipXYCordVec)
     {
-        if (excludeCurCord && cord.x == currCord.x && cord.y == currCord.y) { continue; } // not the original cord
+        const unsigned upperCell = upperCellsMat[cord];
+        if (upperCell == 0) { continue; }
 
-        if (upperCellsMat[cord] == shipPlan->getNumOfFloors(cord)) { continue; } // if there is place in this cord
-
-        int cordMinimalDistance = static_cast<int>(travelRouteStack.size() + 1);
-        for (unsigned int floorIdx = 0; floorIdx < upperCellsMat[cord]; floorIdx++)
+        const unsigned highestContainerFloor = upperCell - 1;
+        for (unsigned curHeight = highestContainerFloor; true ; curHeight--)
         {
-            Container &curContainer = *cargoMat[cord][floorIdx];
-            int containerDistance = getPortDistance(travelRouteStack, curContainer.getDestinationPort());
-            if (containerDistance < cordMinimalDistance)
+            const Container &curContainer = *cargoMat[cord][curHeight];
+            const bool containerBelongsToPort = (curContainer.getDestinationPort().toStr() == curSeaPortCode.toStr());
+            const unsigned curDepth = highestContainerFloor - curHeight;
+
+            if (containerBelongsToPort && curDepth < minimalDepth)
             {
-                cordMinimalDistance = containerDistance;
+                minimalDepth = curHeight;
+                cordToUnload = cord;
+                success = true;
             }
 
+            if (curHeight == 0) { break; } // handling special case of non-positive unsigned variable
         }
-
-        if (cordMinimalDistance > bestMinimalDistance)
-        {
-            bestCord = cord;
-            bestMinimalDistance = cordMinimalDistance;
-        }
-
     }
 
-    currCord = bestCord;
-    return bestMinimalDistance != -1;
+    return success;
 }
 
 
@@ -540,60 +592,42 @@ void GoodAlgorithm::unloadAndMoveContainers(std::ofstream &outputFile, vector<Co
     SeaPortCode curSeaPortCode = travelRouteStack.back();
     CargoMat &cargoMat = shipPlan->getCargo();
     UIntMat &upperCellsMat = shipPlan->getUpperCellsMat();
-    const auto shipXYCordVec = shipPlan->getShipXYCordsVec();
 
-    for (const XYCord cord : shipXYCordVec)
+    XYCord cord{};
+    while (getBestCordForUnloading(cord))
     {
-        unsigned numOfFloors = shipPlan->getNumOfFloors(cord);
-        unsigned minFloorToUnload = findLowestContainerToUnload(cargoMat, curSeaPortCode, numOfFloors, cord);
-        unsigned upperContainerHeight = upperCellsMat[cord] - 1; // we assume we have at least 1 container
+        const unsigned upperContainerHeight = upperCellsMat[cord] - 1;      // we assume we have at least 1 container
+        Container &upperContainer = *cargoMat[cord][upperContainerHeight];
+        int floorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cord);
+        XYCord newMoveCord = cord;
 
-        if (minFloorToUnload == numOfFloors) { continue; } // No containers to unload from this cord
-
-        while (minFloorToUnload <= upperContainerHeight)
+        // if container belongs to this port we simply unload it
+        if (upperContainer.getDestinationPort().toStr() == curSeaPortCode.toStr())
         {
+            dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord, floorHeightOffset + upperContainerHeight);
+            Crane::performUnload(shipPlan, cord);
+        }
 
-            Container &upperContainer = *cargoMat[cord][upperContainerHeight];
-            int floorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cord);
-            XYCord newMoveCord = cord;
+            // if we find a place to move the container we move it there
+        else if (getBestCordForLoading(newMoveCord, upperContainer, true))
+        {
+            int newFloorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(newMoveCord);
 
-            // if container belongs to this port we simply unload it
-            if (upperContainer.getDestinationPort().toStr() == curSeaPortCode.toStr())
-            {
-                dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord,
-                                floorHeightOffset + upperContainerHeight);
+            dumpMoveInstruction(outputFile, upperContainer,
+                                cord, floorHeightOffset + upperContainerHeight,
+                                newMoveCord, newFloorHeightOffset + upperCellsMat[newMoveCord]);
 
-                Crane::performUnload(shipPlan, cord);
-            }
+            Crane::performMove(shipPlan, cord, newMoveCord);
 
-                // if we find a place to move the container we move it there
-            else if (getBestCordForLoading(newMoveCord, true))
-            {
-                int newFloorHeightOffset = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(newMoveCord);
+        }
 
-                dumpMoveInstruction(outputFile, upperContainer,
-                                    cord, floorHeightOffset + upperContainerHeight,
-                                    newMoveCord, newFloorHeightOffset + upperCellsMat[newMoveCord]);
+            // else, no place to move the container. we have to unload it, and remember to reload it later
+        else
+        {
+            dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord, floorHeightOffset + upperContainerHeight);
+            Crane::performUnload(shipPlan, cord);
+            containerToLoad.push_back(upperContainer);
 
-                Crane::performMove(shipPlan, cord, newMoveCord);
-
-            }
-
-                // else, no place to move the container. we have to unload it, and remember to reload it later
-            else
-            {
-                dumpInstruction(outputFile, upperContainer, Crane::UNLOAD, cord,
-                                floorHeightOffset + upperContainerHeight);
-                Crane::performUnload(shipPlan, cord);
-                containerToLoad.push_back(upperContainer);
-
-            }
-
-            if (upperContainerHeight == 0)
-            {
-                break; // deal with negative unsigned number problems
-            }
-            upperContainerHeight--;
         }
 
     }
@@ -617,7 +651,7 @@ void GoodAlgorithm::loadContainers(std::ofstream &outputFile, vector<Container> 
         }
         else
         {
-            getBestCordForLoading(cordToLoad);
+            getBestCordForLoading(cordToLoad, container, false);
         }
         int floorHeight = shipPlan->getMaxHeight() - shipPlan->getNumOfFloors(cordToLoad);
         dumpInstruction(outputFile, container, Crane::LOAD, cordToLoad, floorHeight + upperCellsMat[cordToLoad]);
@@ -625,3 +659,5 @@ void GoodAlgorithm::loadContainers(std::ofstream &outputFile, vector<Container> 
 
     }
 }
+
+

@@ -44,7 +44,7 @@ private:
 
     void loadContainers(std::ofstream &outputFile, std::vector<Container> &containerToLoad);
 
-    bool getBestCordForLoading(XYCord &currCord, bool excludeCurCord = false);
+    bool getBestCordForLoading(XYCord &cordToLoad, const Container &containerToLoad, bool excludeCurCord);
 
     void cleanAndRejectFarContainers(std::ofstream &outputFile, vector<Container> &portContainers);
 
@@ -65,6 +65,7 @@ public:
                                 const std::string &outputFilePath) override;
 
 
+    bool getBestCordForUnloading(XYCord &cordToUnload);
 };
 
 #endif //SHIP_STOWAGE_MODEL_GOODALGORITHM_H
